@@ -7,6 +7,9 @@
 #include "utils.h"
 #include "Player.h"
 
+//hello
+
+
 enum Keys { ESC = 27 };
 
 void game::run_game() {
@@ -14,7 +17,6 @@ void game::run_game() {
 	main_menu();
 	cls();
 }
-
 void game::main_menu() {
     bool exit_requested = false;
 
