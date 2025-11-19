@@ -96,19 +96,38 @@ void game::game_loop(Screen& screen, Player players[]) {
    bool quitToMenu = false;
 
    while (!quitToMenu) {
-       // 1. Move all players
-       for (int i = 0; i < 2; ++i) { // Replace range-based for loop with traditional for loop
+       for (int i = 0; i < 2; ++i) {
            players[i].move();
        }
 
        if (_kbhit()) {
+           Direction newDir = Direction::STAY;
            char key = _getch();
            if (key == Keys::ESC) {
-               quitToMenu = handle_pause();
+               quitToMenu = handle_pause(players);
+
+               /*int prevX1 = players[0].getX();
+               int prevY1 = players[0].getY();
+               int prevX2 = players[1].getX();
+               int prevY2 = players[1].getY();
+
+			   Point p1(prevX1, prevY1);
+			   Point p2(prevX2, prevY2);
+
+			   char prevChar1 = screens[current_screen].getCharAt(p1);
+			   char prevChar2 = screens[current_screen].getCharAt(p2);
+
+               players[0].body.setDirection(newDir);
+               players[1].body.setDirection(newDir);
+
+               screens[current_screen].draw();
+
+               screens[current_screen].setCharAt(players[0].getX(), players[0].getY(), '$');
+               screens[current_screen].setCharAt(players[1].getX(), players[1].getY(), '&');*/
+
            }
            else {
-               // Send key to players (each will decide if it cares)
-               for (int i = 0; i < 2; ++i) { // Replace range-based for loop with traditional for loop
+               for (int i = 0; i < 2; ++i) { 
                    players[i].handleKeyPressed(key);
                }
            }
@@ -117,7 +136,20 @@ void game::game_loop(Screen& screen, Player players[]) {
    }
 }
 
-bool game::handle_pause() {
+bool game::handle_pause(Player players[]) {
+
+    int prevX1 = players[0].getX();
+    int prevY1 = players[0].getY();
+    int prevX2 = players[1].getX();
+    int prevY2 = players[1].getY();
+
+    Point p1(prevX1, prevY1);
+    Point p2(prevX2, prevY2);
+    char prevChar1 = screens[current_screen].getCharAt(p1);
+    char prevChar2 = screens[current_screen].getCharAt(p2);
+
+
+    Direction newDir = Direction::STAY;
 	pause_screen();
 	bool returnToMenu = false;
 	bool stillPaused = true;
@@ -126,6 +158,14 @@ bool game::handle_pause() {
 			char key = _getch();
 			switch (key) {
 			case Keys::ESC:
+
+				players[0].body.setDirection(newDir); //stops movement
+                players[1].body.setDirection(newDir);
+
+                screens[current_screen].draw(); // Redraw the screen
+                players[0].draw();              // Redraw P1 at current position
+                players[1].draw();              // Redraw P2 at current position
+
 				stillPaused = false; // Resume game
 				break;
 			case '4':
@@ -149,6 +189,7 @@ bool game::handle_pause() {
 void game::pause_screen() {
     cls();
     gotoxy(0, 0);
+
 
     set_text_color(Color::YELLOW);
     std::cout << "================= GAME PAUSED ==================\n";

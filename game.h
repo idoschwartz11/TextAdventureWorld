@@ -45,7 +45,7 @@ public:
 	void game_loop(Screen& screen,Player players[]); // main game loop
 
 	void pause_screen(); // draw pause screen
-	bool handle_pause();
+	bool handle_pause(Player players[]);
 
 	void set_text_color(Color color);
 

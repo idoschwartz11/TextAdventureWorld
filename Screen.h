@@ -27,8 +27,8 @@ private:
             "WW                         oooooooooooooooooooooooo                  W| Inv:   |", // 5
             "WW                                                                   W|        |", // 6
             "WW                                                                   W|        |", // 7
-            "WW                  WWWWWWWWW                        !               W|  X=00  |", // 8
-            "WW       K          WWWWWWWWW         WWW WWW                        W|  Y=00  |", // 9
+            "WW                  WWWWWWWWW                        !               W|  X=10  |", // 8
+            "WW       K          WWWWWWWWW         WWW WWW                        W|  Y=10  |", // 9
             "WW                   WWWWWWW          WWW WWW                        W|        |", // 10
             "WW                    WWWWW           WWW WWW                 #######W|--------|", // 11
             "WW                     WWW            WWWxWWW                        W|  P.II: |", // 12
@@ -39,8 +39,8 @@ private:
             "WW                                                                   W|        |", // 17
             "WW                                                #                  W|        |", // 18
             "WWWW  WWWWWWWWWWWWWW  WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW|        |", // 19
-            "WWWW  WWWWWWWWWWWWWW  WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW|  X=00  |", // 20
-            "WWWW  WWWWWWWWWWWWWW  WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW|  Y=00  |", // 21
+            "WWWW  WWWWWWWWWWWWWW  WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW|  X=15  |", // 20
+            "WWWW  WWWWWWWWWWWWWW  WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW|  Y=05  |", // 21
             "WWWW                  WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW|        |", // 22
             "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW|        |", // 23
             "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW|--------|"  // 24
@@ -57,9 +57,9 @@ public:
     }
     // Draw full static background (frame, HUD, etc.)
     //void drawBackground() const;
-    void draw() const;
+    void draw();
 
-	void setCharAt(int x, int y, char c); // Set character at (x, y) to c
+    void setCharAt(int x, int y, char c); // Set character at (x, y) to c
 
     void setP1Coins(int coins);
     void setP2Coins(int coins);
@@ -78,7 +78,7 @@ public:
 
     bool isPlayer(const Point& p) const {
         char c = getCharAt(p);
-		return (c == '$' || c == '&'); // Assuming '$' and '&' are player characters
+        return (c == '$' || c == '&'); // Assuming '$' and '&' are player characters
     }
 
 
@@ -87,6 +87,6 @@ public:
     void setP1Inventory(char c) { setCharAt(77, 5, c); }
     void setP2Inventory(char c) { setCharAt(77, 16, c); }
 
-    
 
-};
+
+} ;

@@ -9,7 +9,6 @@ class Player {
 
     int x = 5;
     int y = 5;
-    Point body;
     char ch;                 // '$' or '&'
     char keys[NUM_KEYS + 1]; // movement keys + stay
     Screen& screen;
@@ -42,6 +41,8 @@ class Player {
     void springRestoreTick();
 
 public:
+    Point body;
+
     Player(const Point& p, char c, int startX, int startY,const char movKeys[], Screen& scr);
 
     Player(const Point& p, char c, const char movKeys[], Screen& scr);
