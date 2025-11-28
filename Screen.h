@@ -8,6 +8,8 @@ using std::cout;
 using std::endl;
 using std::string;
 
+class game; // Forward declaration
+
 // 1st player inventory at (78,5)
 // 2nd player inventory at (78,16)
 
@@ -17,6 +19,8 @@ public:
 
 
 private:
+    game* activeGame = nullptr;
+
     string screen[MAX_Y] = {
         //   01234567890123456789012345678901234567890123456789012345678901234567890123456789
             "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW|--------|", // 0
@@ -27,22 +31,22 @@ private:
             "WW                         oooooooooooooooooooooooo                  W| Inv:   |", // 5
             "WW                                                                   W|        |", // 6
             "WW                                                                   W|        |", // 7
-            "WW                  WWWWWWWWW                        !               W|  X=10  |", // 8
-            "WW       K          WWWWWWWWW         WWW WWW                        W|  Y=10  |", // 9
+            "WW                  WWWWWWWWW                        !               W|  X=00  |", // 8
+            "WW       K          WWWWWWWWW         WWW WWW                        W|  Y=00  |", // 9
             "WW                   WWWWWWW          WWW WWW                        W|        |", // 10
             "WW                    WWWWW           WWW WWW                 #######W|--------|", // 11
-            "WW                     WWW            WWWxWWW                        W|  P.II: |", // 12
+            "WW                     WWW            WWW WWW                        W|  P.II: |", // 12
             "WW                     WWW            WWWWWWW                        W| <3 x3  |", // 13
-            "WW                      W             WWWWWWW                        W|  o x00 |", // 14
+            "WW      @               W             WWWWWWW                        W|  o x00 |", // 14
             "WW                      W             WWWWWWW                        W|        |", // 15
             "WW                                                                   W| Inv:   |", // 16
             "WW                                                                   W|        |", // 17
             "WW                                                #                  W|        |", // 18
             "WWWW  WWWWWWWWWWWWWW  WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW|        |", // 19
-            "WWWW  WWWWWWWWWWWWWW  WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW|  X=15  |", // 20
-            "WWWW  WWWWWWWWWWWWWW  WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW|  Y=05  |", // 21
+            "WWWW  WWWWWWWWWWWWWW  WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW|  X=00  |", // 20
+            "WWWW  WWWWWWWWWWWWWW  WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW|  Y=00  |", // 21
             "WWWW                  WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW|        |", // 22
-            "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW|        |", // 23
+            "WWWWWWWWWMWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW|        |", // 23
             "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW|--------|"  // 24
     };
 
@@ -57,9 +61,9 @@ public:
     }
     // Draw full static background (frame, HUD, etc.)
     //void drawBackground() const;
-    void draw();
+    void draw() const;
 
-    void setCharAt(int x, int y, char c); // Set character at (x, y) to c
+	void setCharAt(int x, int y, char c); // Set character at (x, y) to c
 
     void setP1Coins(int coins);
     void setP2Coins(int coins);
@@ -78,15 +82,21 @@ public:
 
     bool isPlayer(const Point& p) const {
         char c = getCharAt(p);
-        return (c == '$' || c == '&'); // Assuming '$' and '&' are player characters
+		return (c == '$' || c == '&'); // Assuming '$' and '&' are player characters
     }
 
+	bool is_secret_room(const Point& p) const {
+		return getCharAt(p) == 'M';
+	}
 
 
     // HUD helpers
     void setP1Inventory(char c) { setCharAt(77, 5, c); }
     void setP2Inventory(char c) { setCharAt(77, 16, c); }
 
+	void activateBomb(int x, int y);
+
+    void setGame(game* g) { activeGame = g; };
 
 
-} ;
+};

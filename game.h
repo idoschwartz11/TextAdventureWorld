@@ -18,14 +18,14 @@ private:
 	// players
 	Player player1;
 	Player player2;
-	
+
 	// colors
 	Color player1_color = Color::GREEN;
 	Color player2_color = Color::BLUE;
 
 	int current_game_cycle = 0;
 
-	
+
 public:
 
 	game()
@@ -42,11 +42,21 @@ public:
 	void start_new_game(); // starts a new game;
 	void show_instructions(); // show instructions screen
 
-	void game_loop(Screen& screen,Player players[]); // main game loop
+	void game_loop(Screen& screen, Player players[]); // main game loop
 
 	void pause_screen(); // draw pause screen
-	bool handle_pause(Player players[]);
+	bool handle_pause();
 
 	void set_text_color(Color color);
+
+	//bomb state
+	bool bombActive = false;
+	int activeBombX = -1;
+	int activeBombY = -1;
+	int bombTimer = 0; // The 5 game cycle
+	void bomb_explode(int bombX, int bombY, Screen& screen);
+	void updateBomb(Screen& screen);
+	void activateBomb(int x, int y);
+
 
 };

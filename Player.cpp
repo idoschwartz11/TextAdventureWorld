@@ -103,14 +103,30 @@ void Player::dropItem() {
     char cell = screen.getCharAt(currPos);
     if (cell != ' ')
         return;
+    
+	//ido, that's for bomb drop
+    if (item == '@') {
+        screen.activateBomb(cx, cy);
 
-    screen.setCharAt(cx, cy, item);
-    item = ' ';
+        item = ' ';
 
-    if (ch == '$')
-        screen.setP1Inventory(' ');
-    else if (ch == '&')
-        screen.setP2Inventory(' ');
+        if (ch == '$')
+            screen.setP1Inventory(' ');
+        else if (ch == '&')
+            screen.setP2Inventory(' ');
+
+        body.draw();
+        return;
+    }
+    else {
+        screen.setCharAt(cx, cy, item);
+        item = ' ';
+
+        if (ch == '$')
+            screen.setP1Inventory(' ');
+        else if (ch == '&')
+            screen.setP2Inventory(' ');
+    }
 
     body.draw();
 }
@@ -134,6 +150,7 @@ void Player::startSpringLaunch() {
         restoreDelayCounter = SPRING_RESTORE_DELAY_TICKS;
     }
 }
+
 void Player::springRestoreTick() {
     if (!restoringSpring)
         return;
@@ -158,7 +175,6 @@ void Player::springRestoreTick() {
         // לא נוגעים כאן ב compressedCount
     }
 }
-
 
 
 void Player::handleKeyPressed(char key) {
@@ -485,3 +501,5 @@ void Player::move() {
         screen.setP2Position(x, y);
 
 }
+
+
