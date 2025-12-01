@@ -58,4 +58,5 @@ public:
 
     int  getCoins() const { return coins; }
     char getItem()  const { return item; }
+    void resetPosition(int newX, int newY);
 };

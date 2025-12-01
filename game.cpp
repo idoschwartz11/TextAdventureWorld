@@ -9,6 +9,163 @@
 
 enum Keys { ESC = 27 };
 
+
+//maps
+// -------------------  ROOM 0 MAP - THIS IS THE SPAWN ROOM ---------------
+const std::string MAP_ROOM_0[Screen::MAX_Y] = {
+    // -------------------  ROOM 0 MAP ----------------------
+   //01234567890123456789012345678901234567890123456789012345678901234567890123456789
+    "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW|--------|", // 0
+    "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW1WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW|  P.I : |", // 1
+    "WW            !     WWWWWWWWW             #                          W| <3 x3  |", // 2
+    "WW                                        #         @         o      W|  o x00 |", // 3
+    "WW                                                                   W|        |", // 4
+    "WW                         oooooooooooooooooooooooo                  W| Inv:   |", // 5
+    "WW                                                                   W|        |", // 6
+    "WW                                                                   W|        |", // 7
+    "WW                  WWWWWWWWW                        !               W|  X=00  |", // 8
+    "WW       K          WWWWWWWWW         WWW WWW                        W|  Y=00  |", // 9
+    "WW                   WWWWWWW          WWW WWW                        W|        |", // 10
+    "WW                    WWWWW           WWW WWW                 #######W|--------|", // 11
+    "WW                     WWW            WWW WWW                        W|  P.II: |", // 12
+    "WW                     WWW            WWWWWWW                        W| <3 x3  |", // 13
+    "WW      @               W             WWWWWWW                        W|  o x00 |", // 14
+    "WW                      W             WWWWWWW                        W|        |", // 15
+    "WW                                                                   W| Inv:   |", // 16
+    "WW                                                                   W|        |", // 17
+    "WW                                                #                  W|        |", // 18
+    "WWWW  WWWWWWWWWWWWWW  WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW|        |", // 19
+    "WWWW  WWWWWWWWWWWWWW  WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW|  X=00  |", // 20
+    "WWWW  WWWWWWWWWWWWWW  WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW|  Y=00  |", // 21
+    "WWWW                  WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW|        |", // 22
+    "WWWWWWWWWMWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW|        |", // 23
+    "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW|--------|"  // 24
+};
+
+// -------------------  ROOM 9 MAP - THIS IS THE SECRET ROOM ---------------
+const std::string MAP_ROOM_9[Screen::MAX_Y] = {
+    // ------------------- SECRET ROOM MAP ----------------------
+//01234567890123456789012345678901234567890123456789012345678901234567890123456789
+"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW|--------|", // 0
+"W 1                                                                   |  P.I : |", // 1
+"W                                                                     | <3 x3  |", // 2
+"W                                                                     |  o x00 |", // 3
+"W                                                                     |        |", // 4
+"W                                                                     | Inv:   |", // 5
+"W                                                                     |        |", // 6
+"W                                                                     |        |", // 7
+"W                                                                     |  X=00  |", // 8
+"W                                                                     |  Y=00  |", // 9
+"W                                                                     |        |", // 10
+"W                                                                     |--------|", // 11
+"W                                                                     |  P.II: |", // 12
+"W                                                                     | <3 x3  |", // 13
+"W                                                                     |  o x00 |", // 14
+"W                                                                     |        |", // 15
+"W                                                                     | Inv:   |", // 16
+"W                                                                     |        |", // 17
+"W                                                                     |        |", // 18
+"W                                                                     |        |", // 19
+"W                                                                     |  X=00  |", // 20
+"W                                                                     |  Y=00  |", // 21
+"W                                                                     |        |", // 22
+"W                                                                     |        |", // 23
+"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW|--------|"  // 24
+};
+
+
+// -------------------  ROOM 1 MAP - THIS WILL BE THE DARK ROOM ---------------
+const std::string MAP_ROOM_1[Screen::MAX_Y] = {
+    //01234567890123456789012345678901234567890123456789012345678901234567890123456789
+     "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW|--------|", // 0
+     "W 1                                                                   |  P.I : |", // 1
+     "W                                                                     | <3 x3  |", // 2
+     "W                                                                     |  o x00 |", // 3
+     "W                                                                     |        |", // 4
+     "W                                                                     | Inv:   |", // 5
+     "W                                                                     |        |", // 6
+     "W                                                                     |        |", // 7
+     "W                                                                     |  X=00  |", // 8
+     "W                                                                     |  Y=00  |", // 9
+     "W                                                                     |        |", // 10
+     "W                                                                     |--------|", // 11
+     "W                                                                     |  P.II: |", // 12
+     "W                                                                     | <3 x3  |", // 13
+     "W                                                                     |  o x00 |", // 14
+     "W                                                                     |        |", // 15
+     "W                                                                     | Inv:   |", // 16
+     "W                                                                     |        |", // 17
+     "W                                                                     |        |", // 18
+     "W                                                                     |        |", // 19
+     "W                                                                     |  X=00  |", // 20
+     "W                                                                     |  Y=00  |", // 21
+     "W                                                                     |        |", // 22
+     "W                                                                     |        |", // 23
+     "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW|--------|"  // 24
+};
+
+// ------------------- FINAL ROOM MAP ----------------------
+const std::string MAP_ROOM_2[Screen::MAX_Y] = {
+    //01234567890123456789012345678901234567890123456789012345678901234567890123456789
+    "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW|--------|", // 0
+    "W 1                                                                   |  P.I : |", // 1
+    "W                                                                     | <3 x3  |", // 2
+    "W                                                                     |  o x00 |", // 3
+    "W                                                                     |        |", // 4
+    "W                                                                     | Inv:   |", // 5
+    "W                                                                     |        |", // 6
+    "W                                                                     |        |", // 7
+    "W                                                                     |  X=00  |", // 8
+    "W                          YOU DID IT!                                |  Y=00  |", // 9
+    "W                       ====GAME OVER====                             |        |", // 10
+    "W                                                                     |--------|", // 11
+    "W                                                                     |  P.II: |", // 12
+    "W                                                                     | <3 x3  |", // 13
+    "W                                                                     |  o x00 |", // 14
+    "W                                                                     |        |", // 15
+    "W                                                                     | Inv:   |", // 16
+    "W                                                                     |        |", // 17
+    "W                                                                     |        |", // 18
+    "W                                                                     |        |", // 19
+    "W                                                                     |  X=00  |", // 20
+    "W                                                                     |  Y=00  |", // 21
+    "W                                                                     |        |", // 22
+    "W                                                                     |        |", // 23
+    "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW|--------|"  // 24
+};
+
+
+const std::string MAP_ROOM_SECRET[Screen::MAX_Y] = {
+    // ------------------- SECRET ROOM MAP ----------------------
+//01234567890123456789012345678901234567890123456789012345678901234567890123456789
+"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW|--------|", // 0
+"W 1                                                                   |  P.I : |", // 1
+"W                                                                     | <3 x3  |", // 2
+"W                                                                     |  o x00 |", // 3
+"W                                                                     |        |", // 4
+"W                                                                     | Inv:   |", // 5
+"W                                                                     |        |", // 6
+"W                                                                     |        |", // 7
+"W                                                                     |  X=00  |", // 8
+"W                                                                     |  Y=00  |", // 9
+"W                                                                     |        |", // 10
+"W                                                                     |--------|", // 11
+"W                                                                     |  P.II: |", // 12
+"W                                                                     | <3 x3  |", // 13
+"W                                                                     |  o x00 |", // 14
+"W                                                                     |        |", // 15
+"W                                                                     | Inv:   |", // 16
+"W                                                                     |        |", // 17
+"W                                                                     |        |", // 18
+"W                                                                     |        |", // 19
+"W                                                                     |  X=00  |", // 20
+"W                                                                     |  Y=00  |", // 21
+"W                                                                     |        |", // 22
+"W                                                                     |        |", // 23
+"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW|--------|"  // 24
+};
+
+
 void game::run_game() {
 	hideCursor();
 	main_menu();
@@ -111,10 +268,12 @@ void game::game_loop(Screen& screen, Player players[]) {
 
    while (!quitToMenu) {
        // 1. Move all players
-       for (int i = 0; i < 2; ++i) { // Replace range-based for loop with traditional for loop
+       for (int i = 0; i < 2; ++i) {
            players[i].move();
        }
+       //bomb
        updateBomb(screen);
+       //room logic
 
        if (_kbhit()) {
            char key = _getch();
@@ -123,7 +282,7 @@ void game::game_loop(Screen& screen, Player players[]) {
            }
            else {
                // Send key to players (each will decide if it cares)
-               for (int i = 0; i < 2; ++i) { // Replace range-based for loop with traditional for loop
+               for (int i = 0; i < 2; ++i) {
                    players[i].handleKeyPressed(key);
                }
            }
@@ -221,7 +380,7 @@ void game::bomb_explode(int bombX, int bombY, Screen& screen) {
 
             // Prevent destroying border walls (columns 0, MAX_X-1 and rows 0, MAX_Y-1)
 			// why x == 69?? it leaves us with one W column before the border wall
-            if (x <= 2 || x >= 69 || y <= 2 || y >= 23) {
+            if (x <= 2 || x >= 69 || y <= 2 || y >= 24) {
                 continue; // Skip this cell if it's on the absolute border
             }
 
@@ -280,28 +439,6 @@ void game::updateBomb(Screen& screen) {
     }
 }
 
-
-
-//void game::updateBomb(Screen& screen) {
-//    if (!bombActive) {
-//        return;
-//    }
-//
-//    bombTimer--;
-//
-//    if (bombTimer <= 0) {
-//		// explode the bomb
-//        bomb_explode(activeBombX, activeBombY, screen);
-//
-//        // Cleanup
-//        screen.setCharAt(activeBombX, activeBombY, ' ');
-//        bombActive = false;
-//        activeBombX = -1;
-//        activeBombY = -1;
-//        bombTimer = 0;
-//    }
-//}
-
 void game::activateBomb(int x, int y) {
 	// Check if a bomb is already active - if so, ignore new activation - let me know what u think
     if (bombActive) return;
@@ -311,4 +448,23 @@ void game::activateBomb(int x, int y) {
     activeBombX = x;
     activeBombY = y;
 	bombTimer = 10; // Start the 5-cycle timer - for now i did 10 for testing
+}
+
+void game::setPlayerReady(char playerChar) {
+    if (playerChar == '$') {
+        p1_ready_to_transition = true;
+    }
+    else if (playerChar == '&') {
+        p2_ready_to_transition = true;
+    }
+}
+
+bool game::isPlayerReady(char playerChar) const {
+    if (playerChar == '$') {
+        return p1_ready_to_transition;
+    }
+    else if (playerChar == '&') {
+        return p2_ready_to_transition;
+    }
+    return false;
 }

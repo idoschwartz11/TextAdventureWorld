@@ -3,6 +3,15 @@
 #include "utils.h"
 #include "game.h"
 
+Screen::Screen() {};
+
+void Screen::setMap(const std::string map[MAX_Y]) {
+	for (int i = 0; i < MAX_Y; ++i) {
+		screen[i] = map[i];
+	}
+}
+
+
 static void setTwoDigitNumberAt(Screen& scr, int x, int y, int value) {
 	if (value < 0) value = 0;
 	if (value > 99) value = 99;
@@ -83,3 +92,18 @@ void Screen::activateBomb(int x, int y) {
 	}
 }
 
+
+//door
+void Screen::playerReadyToTransition(char playerChar) {
+	if (activeGame != nullptr) {
+		activeGame->setPlayerReady(playerChar);
+	}
+}
+
+bool Screen::isOtherPlayerReady(char playerChar) const {
+	if (activeGame != nullptr) {
+		char otherChar = (playerChar == '$' ? '&' : '$');
+		return activeGame->isPlayerReady(otherChar);
+	}
+	return false;
+}

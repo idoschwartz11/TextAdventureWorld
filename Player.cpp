@@ -241,6 +241,9 @@ void Player::handleKeyPressed(char key) {
 
 void Player::move() {
     springRestoreTick();
+    if (x < 0 || y < 0) {
+        return;
+    }
 
     // spring launch movement
     if (inSpringLaunch) {
@@ -486,6 +489,39 @@ void Player::move() {
                 screen.setP2Inventory(item);
         }
     }
+    // door
+    if (cell == '1' || cell == '2' || cell == '9') {
+        if (cell == '9' || screen.isOtherPlayerReady(ch)) {
+            gotoxy(currX, currY);
+            cout << under;
+
+            x = -1;
+            y = -1;
+            body.set(-1, -1);
+
+            screen.playerReadyToTransition(ch);
+            return;
+        }
+        if (item == 'K') {
+            //screen.setCharAt(nextX, nextY, ' ');
+            item = ' ';
+
+            gotoxy(currX, currY);
+            cout << under;
+
+            x = -1;
+            y = -1;
+            body.set(-1, -1);
+
+            screen.playerReadyToTransition(ch);
+            return;
+        }
+        else {
+            // no key
+            body.setDirection(Direction::STAY);
+            return;
+        }
+    }
 
     gotoxy(currX, currY);
     cout << under;
@@ -502,4 +538,11 @@ void Player::move() {
 
 }
 
-
+void Player::resetPosition(int newX, int newY) {
+    x = newX;
+    y = newY;
+    body.set(newX, newY);
+    body.setDirection(Direction::STAY); // Ensure they start still
+    inSpringCompress = false; 
+    inSpringLaunch = false;
+}

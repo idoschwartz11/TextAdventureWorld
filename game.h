@@ -10,9 +10,12 @@ private:
 	bool game_is_running = true;
 	bool pause = false;
 	bool colors = true; // will be toggled in menu
+	bool p1_ready_to_transition = false;
+	bool p2_ready_to_transition = false;
 
 
-	Screen screens[8]; // total number of screens
+
+	Screen screens[4]; // total number of screens - room 0,secret room,room 1, room 2
 	int current_screen = 0;
 
 	// players
@@ -27,7 +30,6 @@ private:
 
 
 public:
-
 	game()
 		: player1(Point(10, 10, 1, 0, '$'), '$', "WDAXS", screens[current_screen]),
 		player2(Point(15, 5, 0, 1, '&'), '&', "ILJMK", screens[current_screen])
@@ -59,4 +61,7 @@ public:
 	void activateBomb(int x, int y);
 
 
+	//room travel
+	void setPlayerReady(char playerChar);
+	bool isPlayerReady(char playerChar) const;
 };
