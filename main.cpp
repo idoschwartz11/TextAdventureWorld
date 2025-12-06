@@ -8,7 +8,7 @@
 
 using namespace std;
 enum Keys { ESC = 27 };
-
+//
 int main() {
 	game g;
 	g.run_game();

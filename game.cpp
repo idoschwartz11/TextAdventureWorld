@@ -1,4 +1,4 @@
-#include <iostream>
+﻿#include <iostream>
 #include <conio.h>
 #include <windows.h>
 
@@ -78,21 +78,21 @@ const std::string MAP_ROOM_9[Screen::MAX_Y] = {
 const std::string MAP_ROOM_1[Screen::MAX_Y] = {
     //01234567890123456789012345678901234567890123456789012345678901234567890123456789
      "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW|--------|", // 0
-     "W 1                                                                   |  P.I : |", // 1
+     "W 2                                                                   |  P.I : |", // 1
      "W                                                                     | <3 x3  |", // 2
      "W                                                                     |  o x00 |", // 3
-     "W                                                                     |        |", // 4
-     "W                                                                     | Inv:   |", // 5
-     "W                                                                     |        |", // 6
-     "W                                                                     |        |", // 7
-     "W                                                                     |  X=00  |", // 8
-     "W                                                                     |  Y=00  |", // 9
-     "W                                                                     |        |", // 10
-     "W                                                                     |--------|", // 11
-     "W                                                                     |  P.II: |", // 12
-     "W                                                                     | <3 x3  |", // 13
-     "W                                                                     |  o x00 |", // 14
-     "W                                                                     |        |", // 15
+     "W                      WWWWWWWWWWWWWWWWWWWWWWWWWWWWW                  |        |", // 4
+     "W                      WWWWWWWWWWWWWWWWWWWWWWWWWWWWW                  | Inv:   |", // 5
+     "W                      WWWWWWWWWWWWWWWWWWWWWWWWWWWWW                  |        |", // 6
+     "W                      WWWWWWWWWWWWWWWWWWWWWWWWWWWWW                  |        |", // 7
+     "W                      WWWWWWWWWWWWWWWWWWWWWWWWWWWWW                  |  X=00  |", // 8
+     "W                      WWWWWWWWWWWWWWWWWWWWWWWWWWWWW                  |  Y=00  |", // 9
+     "W                      WWWWWWWWWWWWWWWWWWWWWWWWWWWWW                  |        |", // 10
+     "W                      WWWWWWWWWWWWWWWWWWWWWWWWWWWWW                  |--------|", // 11
+     "W                      WWWWWWWWWWWWWWWWWWWWWWWWWWWWW                  |  P.II: |", // 12
+     "W                      WWWWWWWWWWWWWWWWWWWWWWWWWWWWW                  | <3 x3  |", // 13
+     "W                      WWWWWWWWWWWWWWWWWWWWWWWWWWWWW                  |  o x00 |", // 14
+     "W                      WWWWWWWWWWWWWWWWWWWWWWWWWWWWW                  |        |", // 15
      "W                                                                     | Inv:   |", // 16
      "W                                                                     |        |", // 17
      "W                                                                     |        |", // 18
@@ -117,6 +117,35 @@ const std::string MAP_ROOM_2[Screen::MAX_Y] = {
     "W                                                                     |        |", // 7
     "W                                                                     |  X=00  |", // 8
     "W                          YOU DID IT!                                |  Y=00  |", // 9
+    "W                       ====GAME OVER====                             |        |", // 10
+    "W                                                                     |--------|", // 11
+    "W                                                                     |  P.II: |", // 12
+    "W                                                                     | <3 x3  |", // 13
+    "W                                                                     |  o x00 |", // 14
+    "W                                                                     |        |", // 15
+    "W                                                                     | Inv:   |", // 16
+    "W                                                                     |        |", // 17
+    "W                                                                     |        |", // 18
+    "W                                                                     |        |", // 19
+    "W                                                                     |  X=00  |", // 20
+    "W                                                                     |  Y=00  |", // 21
+    "W                                                                     |        |", // 22
+    "W                                                                     |        |", // 23
+    "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW|--------|"  // 24
+};
+
+const std::string MAP_ROOM_3[Screen::MAX_Y] = {
+    //01234567890123456789012345678901234567890123456789012345678901234567890123456789
+    "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW|--------|", // 0
+    "W 1                                                                   |  P.I : |", // 1
+    "W                                                                     | <3 x3  |", // 2
+    "W                                                                     |  o x00 |", // 3
+    "W                                                                     |        |", // 4
+    "W                                                                     | Inv:   |", // 5
+    "W                                                                     |        |", // 6
+    "W                                                                     |        |", // 7
+    "W                                                                     |  X=00  |", // 8
+    "W                           YOU LOST                                  |  Y=00  |", // 9
     "W                       ====GAME OVER====                             |        |", // 10
     "W                                                                     |--------|", // 11
     "W                                                                     |  P.II: |", // 12
@@ -245,51 +274,146 @@ void game::show_instructions() {
 }
 
 void game::start_new_game() {
+    // התחלה – חדר 0
+    current_screen = 0;
+    p1_ready_to_transition = false;
+    p2_ready_to_transition = false;
+
     Screen screen;
     screen.setGame(this);
+
+    // חדר 0 – המפה הבסיסית היא זו שמוגדרת בתוך Screen::screen
     screen.draw();
 
     Player players[] = {
-        Player(Point(10, 10, 1, 0, '$'),'$', "WADXS", screen),  // P1
-        Player(Point(15,  5, 0, 1, '&'),'&', "IJLMK", screen)   // P2
+        Player(Point(10, 10, 0, 0, '$'),'$', "WADXS", screen),  // P1
+        Player(Point(15,  5, 0, 0, '&'),'&', "IJLMK", screen)   // P2
     };
 
-    // Draw Players
-    for (auto& p : players) {
-        p.draw();
-    }
+    players[0].setOther(&players[1]);
+    players[1].setOther(&players[0]);
+
+    // חדר 0 – מואר (לא חשוך), לכן משתמשים ב־renderFull
+    if (current_screen == darkRoomIndex)
+        screen.renderWithVisibility(players[0], players[1]);
+    else
+        screen.renderFull(players[0], players[1]);
 
     // Now run the main game loop for this game
     game_loop(screen, players);
 }
 
 void game::game_loop(Screen& screen, Player players[]) {
-   bool quitToMenu = false;
+    bool quitToMenu = false;
 
-   while (!quitToMenu) {
-       // 1. Move all players
-       for (int i = 0; i < 2; ++i) {
-           players[i].move();
-       }
-       //bomb
-       updateBomb(screen);
-       //room logic
+    while (!quitToMenu) {
+        // 1. תזוזת שחקנים
+        for (int i = 0; i < 2; ++i) {
+            players[i].move();
+        }
 
-       if (_kbhit()) {
-           char key = _getch();
-           if (key == Keys::ESC) {
-               quitToMenu = handle_pause();
-           }
-           else {
-               // Send key to players (each will decide if it cares)
-               for (int i = 0; i < 2; ++i) {
-                   players[i].handleKeyPressed(key);
-               }
-           }
-       }
-       Sleep(85);
-   }
+        // 2. עדכון פצצה (כולל נזק אם התפוצצה)
+        updateBomb(screen, players);
+
+        // 3. בדיקת GAME OVER אחרי פצצה / תזוזה
+        if (players[0].isDead() || players[1].isDead()) {
+            screen.setMap(MAP_ROOM_3);
+
+            // מציירים רק את המפה, בלי שחקנים
+            screen.draw();
+
+            // הודעה למטה
+            gotoxy(0, 24);
+            std::cout << "GAME OVER - Press any key to return to main menu...";
+            _getch();
+
+            quitToMenu = true;
+            continue;
+        }
+
+        // 4. בדיקה אם שני השחקנים "נכנסו לדלת" ומוכנים למעבר חדר
+        if (p1_ready_to_transition && p2_ready_to_transition) {
+            // קידום חדר נוכחי (0 -> 1 -> 2 ...)
+            current_screen++;
+
+            // איפוס דגלים
+            p1_ready_to_transition = false;
+            p2_ready_to_transition = false;
+
+            // טעינת המפה המתאימה לפי החדר
+            if (current_screen == 1)
+                screen.setMap(MAP_ROOM_1);
+            else if (current_screen == 2)
+                screen.setMap(MAP_ROOM_2);
+            else if (current_screen == 9)
+                screen.setMap(MAP_ROOM_SECRET);
+            // אם תרצי חדרים נוספים – תוסיפי כאן עוד else if
+
+            // איפוס מיקום שחקנים בחדר החדש
+            players[0].resetPosition(10, 10);
+            players[1].resetPosition(15, 5);
+
+            // --- עדכון HUD אחרי טעינת המפה החדשה ---
+
+            // מיקום שחקנים
+            screen.setP1Position(players[0].getX(), players[0].getY());
+            screen.setP2Position(players[1].getX(), players[1].getY());
+
+            // מטבעות (נשמרים מתוך השחקנים)
+            screen.setP1Coins(players[0].getCoins());
+            screen.setP2Coins(players[1].getCoins());
+
+            // לבבות – נשמרים גם במעבר חדרים
+            screen.setP1Hearts(players[0].getHearts());
+            screen.setP2Hearts(players[1].getHearts());
+
+            // אינבנטר
+            screen.setP1Inventory(players[0].getItem());
+            screen.setP2Inventory(players[1].getItem());
+
+            // ציור לפי אם החדר חשוך או לא
+            if (current_screen == darkRoomIndex)
+                screen.renderWithVisibility(players[0], players[1]);
+            else
+                screen.renderFull(players[0], players[1]);
+        }
+        else {
+            // 5. אין מעבר חדר – פשוט לצייר את הפריים הנוכחי
+            if (current_screen == darkRoomIndex)
+                screen.renderWithVisibility(players[0], players[1]);
+            else
+                screen.renderFull(players[0], players[1]);
+        }
+
+        // 6. קלט מקשים
+        if (_kbhit()) {
+            char key = _getch();
+            if (key == Keys::ESC) {
+                bool goToMenu = handle_pause();
+
+                if (goToMenu) {
+                    quitToMenu = true;
+                }
+                else {
+                    // חוזרים מהפאוז – מציירים מחדש לפי סוג החדר
+                    if (current_screen == darkRoomIndex)
+                        screen.renderWithVisibility(players[0], players[1]);
+                    else
+                        screen.renderFull(players[0], players[1]);
+                }
+            }
+            else {
+                // מעבירים את המקשים לשני השחקנים
+                for (int i = 0; i < 2; ++i) {
+                    players[i].handleKeyPressed(key);
+                }
+            }
+        }
+
+        Sleep(85);
+    }
 }
+
 
 bool game::handle_pause() {
 	pause_screen();
@@ -367,7 +491,23 @@ void game::set_text_color(Color color) {
 }
 
 
-void game::bomb_explode(int bombX, int bombY, Screen& screen) {
+void game::bomb_explode(int bombX, int bombY, Screen& screen, Player players[]) {
+    // --- שלב 0: נזק לשחקנים ברדיוס 3 ---
+    for (int i = 0; i < 2; ++i) {
+        int px = players[i].getX();
+        int py = players[i].getY();
+
+        int dx = px - bombX;
+        int dy = py - bombY;
+        if (dx < 0) dx = -dx;
+        if (dy < 0) dy = -dy;
+
+        // ריבוע של 7x7 סביב הפצצה (כמו ה-loop של הקיר)
+        if (dx <= 3 && dy <= 3) {
+            players[i].takeDamage(1);
+        }
+    }
+
     // --- Phase 1: Diminish adjacent walls (1 unit, including diagonal) ---
     for (int dy = -3; dy <= 3; ++dy) {
         for (int dx = -3; dx <= 3; ++dx) {
@@ -379,7 +519,6 @@ void game::bomb_explode(int bombX, int bombY, Screen& screen) {
             Point p(x, y, '@'); // Dummy char, only coords matter for isWall
 
             // Prevent destroying border walls (columns 0, MAX_X-1 and rows 0, MAX_Y-1)
-			// why x == 69?? it leaves us with one W column before the border wall
             if (x <= 2 || x >= 69 || y <= 2 || y >= 24) {
                 continue; // Skip this cell if it's on the absolute border
             }
@@ -388,27 +527,16 @@ void game::bomb_explode(int bombX, int bombY, Screen& screen) {
                 screen.setCharAt(x, y, '9'); // Reveal door
                 continue;
             }
-          
-
 
             if (screen.isWall(p)) {
                 // Diminish the wall (change 'W' to ' ')
                 screen.setCharAt(x, y, ' ');
             }
-            
         }
     }
-    //        // Objects to diminish: coins ('o') ??, keys ('K')?? 
-    //        //maybe will move them around rather then just diminishing it... lets think about it
-    // 
-    //        //if (cell == 'o' || cell == 'K' || cell == '!'){
-    //           // screen.setCharAt(x, y, ' ');
-
-    //also - we need to add Player damage logic here too, 
-    // maybe take_damage() function in Player class?
 }
 
-void game::updateBomb(Screen& screen) {
+void game::updateBomb(Screen& screen, Player players[]) {
     if (!bombActive) {
         return;
     }
@@ -416,7 +544,7 @@ void game::updateBomb(Screen& screen) {
     if (bombTimer <= 1) { // is this the last cycle?
         bombTimer--;
         if (bombTimer <= 0) {
-            bomb_explode(activeBombX, activeBombY, screen);
+            bomb_explode(activeBombX, activeBombY, screen, players);
 
             // Cleanup
             screen.setCharAt(activeBombX, activeBombY, ' ');
@@ -427,7 +555,8 @@ void game::updateBomb(Screen& screen) {
         }
         return;
     }
-    //this is not last cycle - do the flashing logic
+
+    // this is not last cycle - do the flashing logic
     bombTimer--;
 
     // 3. Flashing Logic: even->visible, odd->invisible :)

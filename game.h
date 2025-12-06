@@ -13,10 +13,9 @@ private:
 	bool p1_ready_to_transition = false;
 	bool p2_ready_to_transition = false;
 
-
-
 	Screen screens[4]; // total number of screens - room 0,secret room,room 1, room 2
 	int current_screen = 0;
+	int darkRoomIndex = 1;
 
 	// players
 	Player player1;
@@ -56,8 +55,8 @@ public:
 	int activeBombX = -1;
 	int activeBombY = -1;
 	int bombTimer = 0; // The 5 game cycle
-	void bomb_explode(int bombX, int bombY, Screen& screen);
-	void updateBomb(Screen& screen);
+	void bomb_explode(int bombX, int bombY, Screen& screen, Player players[]);
+	void updateBomb(Screen& screen, Player players[]);
 	void activateBomb(int x, int y);
 
 

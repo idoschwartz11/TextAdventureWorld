@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "Point.h"
 #include "Screen.h"
@@ -14,6 +14,7 @@ class Player {
     char keys[NUM_KEYS + 1]; // movement keys + stay
     Screen& screen;
     Player* other = nullptr;
+    int hearts = 3; // מספר הלבבות של השחקן (מתחיל ב-3)
 
     // coins and inventory
     int coins = 0;
@@ -59,4 +60,8 @@ public:
     int  getCoins() const { return coins; }
     char getItem()  const { return item; }
     void resetPosition(int newX, int newY);
+    int  getHearts() const { return hearts; }
+    bool isDead()   const { return hearts <= 0; }
+    void takeDamage(int dmg = 1);
+
 };

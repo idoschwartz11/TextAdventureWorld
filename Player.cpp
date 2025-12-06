@@ -175,7 +175,7 @@ void Player::springRestoreTick() {
         // לא נוגעים כאן ב compressedCount
     }
 }
-
+    
 
 void Player::handleKeyPressed(char key) {
     char lower = tolower(key);
@@ -246,10 +246,13 @@ void Player::move() {
     }
 
     // spring launch movement
+    // spring launch movement
     if (inSpringLaunch) {
-        if (springTicksLeft <= 0) {
+        // הגנה – אם אין יותר "דלק" לקפיץ, לצאת
+        if (springTicksLeft <= 0 || springSpeed <= 0 || springDir == Direction::STAY) {
             inSpringLaunch = false;
             springSpeed = 0;
+            springTicksLeft = 0;
             body.setDirection(Direction::STAY);
             return;
         }
@@ -259,40 +262,73 @@ void Player::move() {
         Point currPos(currX, currY, ch);
         char under = screen.getCharAt(currPos);
 
-        int dx = 0, dy = 0;
+        // כיוון יחידה
+        int dirX = 0, dirY = 0;
         switch (springDir) {
-        case Direction::UP:    dy = -springSpeed; break;
-        case Direction::DOWN:  dy = springSpeed; break;
-        case Direction::LEFT:  dx = -springSpeed; break;
-        case Direction::RIGHT: dx = springSpeed; break;
+        case Direction::UP:    dirY = -1; break;
+        case Direction::DOWN:  dirY = 1;  break;
+        case Direction::LEFT:  dirX = -1; break;
+        case Direction::RIGHT: dirX = 1;  break;
         default: break;
         }
 
-        int nextX = (currX + dx + Screen::MAX_X) % Screen::MAX_X;
-        int nextY = (currY + dy + Screen::MAX_Y) % Screen::MAX_Y;
-        Point nextPos(nextX, nextY, ch);
+        int finalX = currX;
+        int finalY = currY;
+        bool blocked = false;
 
-        if (screen.isWall(nextPos)) {
-            inSpringLaunch = false;
-            springSpeed = 0;
-            springTicksLeft = 0;
-            body.setDirection(Direction::STAY);
-            return;
+        // זזים צעד-צעד לאורך המסלול של הקפיץ
+        for (int step = 0; step < springSpeed; ++step) {
+            int nextX = (finalX + dirX + Screen::MAX_X) % Screen::MAX_X;
+            int nextY = (finalY + dirY + Screen::MAX_Y) % Screen::MAX_Y;
+            Point stepPos(nextX, nextY, ch);
+
+            // קיר – עוצרים לפניו
+            if (screen.isWall(stepPos)) {
+                blocked = true;
+                break;
+            }
+
+            // שחקן אחר – מתנהג כמו קיר (לא עוברים אחד דרך השני)
+            if (other != nullptr && nextX == other->getX() && nextY == other->getY()) {
+                blocked = true;
+                break;
+            }
+
+            // מה יש בתא הבא?
+            char cell = screen.getCharAt(stepPos);
+
+            // מטבעות
+            if (cell == 'o') {      // שימי לב: האות o קטנה
+                ++coins;
+                screen.setCharAt(nextX, nextY, ' ');
+                if (ch == '$')
+                    screen.setP1Coins(coins);
+                else if (ch == '&')
+                    screen.setP2Coins(coins);
+            }
+            // חפצים (!, K, @) אם אין כבר משהו ביד
+            else if ((cell == '!' || cell == 'K' || cell == '@') && item == ' ') {
+                item = cell;
+                screen.setCharAt(nextX, nextY, ' ');
+                if (ch == '$')
+                    screen.setP1Inventory(item);
+                else if (ch == '&')
+                    screen.setP2Inventory(item);
+            }
+
+            // עדכון המיקום הנוכחי לאורך המסלול
+            finalX = nextX;
+            finalY = nextY;
         }
 
-        if (other != nullptr && nextX == other->getX() && nextY == other->getY()) {
-            other->inSpringLaunch = true;
-            other->springDir = springDir;
-            other->springSpeed = springSpeed;
-            other->springTicksLeft = springTicksLeft;
-        }
-
+        // מוחקים את המיקום הישן של השחקן
         gotoxy(currX, currY);
         cout << under;
 
-        body.set(nextX, nextY);
-        x = nextX;
-        y = nextY;
+        // מציבים את השחקן במיקום הסופי (איפה שעצרנו במסלול)
+        body.set(finalX, finalY);
+        x = finalX;
+        y = finalY;
         body.draw();
 
         if (ch == '$')
@@ -300,11 +336,14 @@ void Player::move() {
         else if (ch == '&')
             screen.setP2Position(x, y);
 
-
+        // מקטינים טיק של הקפיץ
         --springTicksLeft;
-        if (springTicksLeft <= 0) {
+
+        // אם הסתיים השיגור, או נחסמנו בדרך – לעצור
+        if (springTicksLeft <= 0 || blocked) {
             inSpringLaunch = false;
             springSpeed = 0;
+            springTicksLeft = 0;
             body.setDirection(Direction::STAY);
         }
 
@@ -545,4 +584,19 @@ void Player::resetPosition(int newX, int newY) {
     body.setDirection(Direction::STAY); // Ensure they start still
     inSpringCompress = false; 
     inSpringLaunch = false;
+}
+
+void Player::takeDamage(int dmg) {
+    if (dmg <= 0)
+        return;
+
+    hearts -= dmg;
+    if (hearts < 0)
+        hearts = 0;
+
+    // עדכון HUD לפי השחקן
+    if (ch == '$')
+        screen.setP1Hearts(hearts);
+    else if (ch == '&')
+        screen.setP2Hearts(hearts);
 }
