@@ -63,8 +63,4 @@ public:
 	//room travel
 	void setPlayerReady(char playerChar);
 	bool isPlayerReady(char playerChar) const;
-
-	//colors
-	Color get_player_color(char playerChar) const;
-	bool getColorsState() const { return colors; }
 };

@@ -1,5 +1,5 @@
 #pragma once
-#include "Color.h"
+
 #include <iostream>
 #include <string>
 #include "Point.h"
@@ -21,124 +21,35 @@ public:
 private:
     game* activeGame = nullptr;
     string screen[MAX_Y] = {
-        //   01234567890123456789012345678901234567890123456789012345678901234567890123456789
-            "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW|--------|", // 0
-            "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW1WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW|  P.I : |", // 1
-            "WW            !     WWWWWWWWW             #                          W| <3 x3  |", // 2
-            "WW                                        #         @         o      W|  o x00 |", // 3
-            "WW                                                                   W|        |", // 4
-            "WW                         oooooooooooooooooooooooo                  W| Inv:   |", // 5
-            "WW        @                                                          W|        |", // 6
-            "WW                                                                   W|        |", // 7
-            "WW                  WWWWWWWWW                        !               W|  X=00  |", // 8
-            "WW       K          WWWWWWWWW         WWW WWW                        W|  Y=00  |", // 9
-            "WW                   WWWWWWW          WWW WWW                        W|        |", // 10
-            "WW    @               WWWWW           WWW WWW                 #######W|--------|", // 11
-            "WW             @       WWW            WWW WWW                        W|  P.II: |", // 12
-            "WW                     WWW            WWWWWWW                        W| <3 x3  |", // 13
-            "WW      @               W             WWWWWWW                        W|  o x00 |", // 14
-            "WW                      W             WWWWWWW                        W|        |", // 15
-            "WW                                                                   W| Inv:   |", // 16
-            "WW                                                                   W|        |", // 17
-            "WW                                                #                  W|        |", // 18
-            "WWWW  WWWWWWWWWWWWWW  WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW|        |", // 19
-            "WWWW  WWWWWWWWWWWWWW  WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW|  X=00  |", // 20
-            "WWWW  WWWWWWWWWWWWWW  WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW|  Y=00  |", // 21
-            "WWWW                  WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW|        |", // 22
-            "WWWWWWWWWMWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW|        |", // 23
-            "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW|--------|"  // 24
+   //01234567890123456789012345678901234567890123456789012345678901234567890123456789
+    "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW|--------|", // 0
+    "W         WWWWWWWWWWWWWWWW  #    o     o            W              WKW|  P.I : |", // 1
+    "W         W            o  W #                @      W              WWW| <3 x3  |", // 2
+    "W   o     W   WWWWWWW     W # WWWWWWWWWWW         WWW   WWWWWWWWW    W|  o x00 |", // 3
+    "WK        W   W     W     W   W       o W   o     W o   Woo     W    W|        |", // 4
+    "W   WWWWWWW   W ooo W  o  W   W  o      W         W     Woo     W    W| Inv:   |", // 5
+    "W   W     W   W ooo W     W   W      o  WWWWWWWWWWW  o  WWWWWWWWW    W|        |", // 6
+    "W o W     W   W ooo W     W   W   o      o      o          o         W|        |", // 7
+    "W   W     W   W     W     W   W           WWWWWWWWWWWWW            o W|  X=00  |", // 8
+    "W1  W     W   WWWWWWW  o  W   WWWWWWWW o  W          o W             W|  Y=00  |", // 9
+    "W                                         W   o        W         o   W|        |", // 10
+    "W     o        WWWWWWWWWWWWWW      @      W      @     WWWWWWWWWWWWWWW|--------|", // 11
+    "W              W            W             W o        o W   W       W1W|  P.II: |", // 12
+    "W   WWWWWWWW   W   o        W   WWWWWWWWWWW          WWW   W   o   WWW| <3 x3  |", // 13
+    "W   W      W   W       o    W   W          o   o        o  W        oW|  o x00 |", // 14
+    "W o W  o   W   W                W   o   o                 WWWWWW     W|        |", // 15
+    "W   W      W   WWWWWWWWWWWWWW   WWWWWWWWWWWWWWWWWWWWWWWWWWW    W    oW| Inv:   |", // 16
+    "W   WWWWWWWW                 o                o           W    W     W|        |", // 17
+    "W                o      o           o      o       o      W o  W     W|        |", // 18
+    "W   o          WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW    W     W|        |", // 19
+    "W         o    W                     o         o           WWWWWWWWWWW|  X=00  |", // 20
+    "W   o          W   o             o                    o              W|  Y=00  |", // 21
+    "W         o    W         o                  o      o                 W|        |", // 22
+    "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWMWWWWWWWWW|        |", // 23
+    "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW|--------|"  // 24
     };
 
-    
-            // -------------------  ROOM 1 MAP - THIS WILL BE THE DARK ROOM ---------------
-    const std::string MAP_ROOM_1[Screen::MAX_Y] = {
-        //01234567890123456789012345678901234567890123456789012345678901234567890123456789
-         "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW|--------|", // 0
-         "W 2                                                                   |  P.I : |", // 1
-         "W                                                                     | <3 x3  |", // 2
-         "W                                                                     |  o x00 |", // 3
-         "W                      WWWWWWWWWWWWWWWWWWWWWWWWWWWWW                  |        |", // 4
-         "W                      WWWWWWWWWWWWWWWWWWWWWWWWWWWWW                  | Inv:   |", // 5
-         "W                      WWWWWWWWWWWWWWWWWWWWWWWWWWWWW                  |        |", // 6
-         "W                      WWWWWWWWWWWWWWWWWWWWWWWWWWWWW                  |        |", // 7
-         "W                      WWWWWWWWWWWWWWWWWWWWWWWWWWWWW                  |  X=00  |", // 8
-         "W                      WWWWWWWWWWWWWWWWWWWWWWWWWWWWW                  |  Y=00  |", // 9
-         "W                      WWWWWWWWWWWWWWWWWWWWWWWWWWWWW                  |        |", // 10
-         "W                      WWWWWWWWWWWWWWWWWWWWWWWWWWWWW                  |--------|", // 11
-         "W                      WWWWWWWWWWWWWWWWWWWWWWWWWWWWW                  |  P.II: |", // 12
-         "W                      WWWWWWWWWWWWWWWWWWWWWWWWWWWWW                  | <3 x3  |", // 13
-         "W                      WWWWWWWWWWWWWWWWWWWWWWWWWWWWW                  |  o x00 |", // 14
-         "W                      WWWWWWWWWWWWWWWWWWWWWWWWWWWWW                  |        |", // 15
-         "W                                                                     | Inv:   |", // 16
-         "W                                                                     |        |", // 17
-         "W                                                                     |        |", // 18
-         "W                                                                     |        |", // 19
-         "W                                                                     |  X=00  |", // 20
-         "W                                                                     |  Y=00  |", // 21
-         "W                                                                     |        |", // 22
-         "W                                                                     |        |", // 23
-         "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW|--------|"  // 24
-    };
 
-                 // ------------------- FINAL ROOM MAP ----------------------
-    const std::string MAP_ROOM_2[Screen::MAX_Y] = {
-        //01234567890123456789012345678901234567890123456789012345678901234567890123456789
-        "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW|--------|", // 0
-        "W                                                                     |  P.I : |", // 1
-        "W                                                                     | <3 x3  |", // 2
-        "W                                                                     |  o x00 |", // 3
-        "W                                                                     |        |", // 4
-        "W                                                                     | Inv:   |", // 5
-        "W                                                                     |        |", // 6
-        "W                                                                     |        |", // 7
-        "W                                                                     |  X=00  |", // 8
-        "W                             YOU DID IT!                             |  Y=00  |", // 9
-        "W                          ====GAME OVER====                          |        |", // 10
-        "W                                                                     |--------|", // 11
-        "W                                                                     |  P.II: |", // 12
-        "W                                                                     | <3 x3  |", // 13
-        "W                                                                     |  o x00 |", // 14
-        "W                                                                     |        |", // 15
-        "W                                                                     | Inv:   |", // 16
-        "W                                                                     |        |", // 17
-        "W                                                                     |        |", // 18
-        "W                                                                     |        |", // 19
-        "W                                                                     |  X=00  |", // 20
-        "W                                                                     |  Y=00  |", // 21
-        "W                                                                     |        |", // 22
-        "W                                                                     |        |", // 23
-        "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW|--------|"  // 24
-    };
-
-    const std::string MAP_ROOM_SECRET[Screen::MAX_Y] = {
-                // ------------------- SECRET ROOM MAP ----------------------
-        //01234567890123456789012345678901234567890123456789012345678901234567890123456789
-        "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW|--------|", // 0
-        "W 3                                                                   |  P.I : |", // 1
-        "W                                                                     | <3 x3  |", // 2
-        "W                                                                     |  o x00 |", // 3
-        "W                                                                     |        |", // 4
-        "W                                                                     | Inv:   |", // 5
-        "W                                                                     |        |", // 6
-        "W                                                                     |        |", // 7
-        "W                                                                     |  X=00  |", // 8
-        "W                                                                     |  Y=00  |", // 9
-        "W                                                                     |        |", // 10
-        "W            WWWWWWWWWWWWWWW                                          |--------|", // 11
-        "W            WWWWWWWWWWWWWWW                                          |  P.II: |", // 12
-        "W            WWWWWWWWWWWWWWW                                          | <3 x3  |", // 13
-        "W            WWWWWWWWWWWWWWW                                          |  o x00 |", // 14
-        "W            WWWWWWWWWWWWWWW                                          |        |", // 15
-        "W            WWWWWWWWWWWWWWW                                          | Inv:   |", // 16
-        "W            WWWWWWWWWWWWWWW                                          |        |", // 17
-        "W            WWWWWWWWWWWWWWW                                          |        |", // 18
-        "W            WWWWWWWWWWWWWWW                                          |        |", // 19
-        "W            WWWWWWWWWWWWWWW                                          |  X=00  |", // 20
-        "W                                                                     |  Y=00  |", // 21
-        "W                                                                     |        |", // 22
-        "W                                                                     |        |", // 23
-        "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW|--------|"  // 24
-    };
 
     char getCharAtInternal(const Point& p) const {
             return screen[p.getY()][p.getX()];
@@ -205,11 +116,4 @@ public:
 
     bool isOtherPlayerReady(char playerChar) const;
 
-
-    // colors
-    void drawCharAt(int x, int y, char c);
-    Color get_object_color(char c) const; 
-    Color get_player_color(char playerChar) const; 
-    void set_text_color(Color color);
-    bool is_heart_char(int x, int y, char c) const;
 };

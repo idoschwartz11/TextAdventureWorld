@@ -1,6 +1,5 @@
 ﻿#include "Player.h"
 #include "Direction.h"
-#include "Color.h"
 #include <cctype>
 #include <iostream>
 
@@ -43,13 +42,8 @@ Player::Player(const Point& p, char c, const char movKeys[], Screen& scr)
 }
 
 void Player::draw() {
-    Color playerColor = screen.get_player_color(ch);
-    screen.set_text_color(playerColor);
-
     body = Point(x, y, ch);
     body.draw();
-
-    screen.set_text_color(Color::WHITE);
 }
 
 // find the direction from the spring line towards the wall
@@ -178,7 +172,6 @@ void Player::springRestoreTick() {
         numCollapsedSpringCells = 0;
         restoreIndex = 0;
         restoreDelayCounter = 0;
-        // לא נוגעים כאן ב compressedCount
     }
 }
     
@@ -359,7 +352,7 @@ void Player::move() {
     int nextX = (currX + body.getDiffX() + Screen::MAX_X) % Screen::MAX_X;
     int nextY = (currY + body.getDiffY() + Screen::MAX_Y) % Screen::MAX_Y;
     Point nextPos(nextX, nextY, ch);
-    
+
     // wall
     if (screen.isWall(nextPos)) {
         body.setDirection(Direction::STAY);
@@ -522,12 +515,12 @@ void Player::move() {
             return;
         }
         if (item == 'K') {
+            //screen.setCharAt(nextX, nextY, ' ');
             item = ' ';
             if (ch == '$')
                 screen.setP1Inventory(' ');
             else if (ch == '&')
                 screen.setP2Inventory(' ');
-
             gotoxy(currX, currY);
             cout << under;
 
