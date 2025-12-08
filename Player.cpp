@@ -42,8 +42,13 @@ Player::Player(const Point& p, char c, const char movKeys[], Screen& scr)
 }
 
 void Player::draw() {
+    Color playerColor = screen.get_player_color(ch);
+    screen.set_text_color(playerColor);
+
     body = Point(x, y, ch);
     body.draw();
+
+    screen.set_text_color(Color::WHITE);
 }
 
 // find the direction from the spring line towards the wall

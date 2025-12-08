@@ -151,7 +151,6 @@ bool Screen::isCellVisible(int x, int y, const Player& p1, const Player& p2) con
 // render map with visibility from both players
 void Screen::renderWithVisibility(const Player& p1, const Player& p2) {
 	for (int y = 0; y < MAX_Y; ++y) {
-		gotoxy(0, y);
 		for (int x = 0; x < MAX_X; ++x) {
 
 			Point p(x, y, ' ');
@@ -169,15 +168,13 @@ void Screen::renderWithVisibility(const Player& p1, const Player& p2) {
 				if (isP1)      c = '$';
 				else if (isP2) c = '&';
 			}
-
-			cout << c;
+			drawCharAt(x, y, c);
 		}
 	}
 }
 
 void Screen::renderFull(const Player& p1, const Player& p2) {
 	for (int y = 0; y < MAX_Y; ++y) {
-		gotoxy(0, y);
 		for (int x = 0; x < MAX_X; ++x) {
 			Point p(x, y, ' ');
 			char c = getCharAt(p);
@@ -188,7 +185,81 @@ void Screen::renderFull(const Player& p1, const Player& p2) {
 			if (isP1)      c = '$';
 			else if (isP2) c = '&';
 
-			cout << c;
+			drawCharAt(x, y, c);
 		}
 	}
+}
+
+// colors
+bool Screen::is_heart_char(int x, int y, char c) const {
+	// 1. Check if the character is one of the two static symbols.
+	if (c != '<' && c != '3') {
+		return false;
+	}
+
+	// 2. Check Player 1 static heart symbol coordinates: (71, 2) and (72, 2)
+	if ((x == 73 && y == 2) || (x == 72 && y == 2)) {
+		return true;
+	}
+
+	// 3. Check Player 2 static heart symbol coordinates: (71, 13) and (72, 13)
+	if ((x == 73 && y == 13) || (x == 72 && y == 13)) {
+		return true;
+	}
+
+
+	return false;
+}
+
+Color Screen::get_object_color(char c) const {
+	if (activeGame == nullptr || !activeGame->getColorsState()) {
+		return Color::WHITE;
+	}
+
+	switch (c) {
+	case '@': return Color::BLUE;    // Bomb
+	case 'K': return Color::DARK_YELLOW;  // Key
+	case '!': return Color::DARK_RED;     // Torch
+	case 'W': return Color::DARK_GRAY; // wall
+	case '#': return Color::DARK_MAGENTA; // spring
+	case 'o': return Color::YELLOW; // spring
+
+	default:  return Color::WHITE;
+	}
+}
+
+Color Screen::get_player_color(char playerChar) const {
+	if (activeGame == nullptr) return Color::WHITE;
+	return activeGame->get_player_color(playerChar);
+}
+
+void Screen::set_text_color(Color color) {
+	if (activeGame != nullptr) {
+		activeGame->set_text_color(color);
+	}
+}
+
+void Screen::drawCharAt(int x, int y, char c) {
+	if (x < 0 || x >= MAX_X || y < 0 || y >= MAX_Y) {
+		return;
+	}
+	Color color;
+
+	if (c == '$' || c == '&') {
+		color = get_player_color(c);
+	}
+	else if (is_heart_char(x, y, c)) {
+		color = Color::RED;
+	}
+	else {
+		color = get_object_color(c);
+	}
+
+	set_text_color(color);
+
+	gotoxy(x, y);
+	std::cout << c;
+	std::cout.flush();
+
+	set_text_color(Color::WHITE);
 }

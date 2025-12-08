@@ -573,3 +573,17 @@ bool game::isPlayerReady(char playerChar) const {
     }
     return false;
 }
+
+//colors
+Color game::get_player_color(char playerChar) const {
+    if (!colors) {
+        return Color::WHITE; // Use White if colors are off
+    }
+    if (playerChar == '$') {
+        return Color::CYAN;
+    }
+    else if (playerChar == '&') {
+        return Color::GREEN;
+    }
+    return Color::WHITE;
+}
