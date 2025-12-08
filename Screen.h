@@ -1,5 +1,5 @@
 #pragma once
-
+#include "Color.h"
 #include <iostream>
 #include <string>
 #include "Point.h"
@@ -205,4 +205,11 @@ public:
 
     bool isOtherPlayerReady(char playerChar) const;
 
+
+    // colors
+    void drawCharAt(int x, int y, char c);
+    Color get_object_color(char c) const; 
+    Color get_player_color(char playerChar) const; 
+    void set_text_color(Color color);
+    bool is_heart_char(int x, int y, char c) const;
 };

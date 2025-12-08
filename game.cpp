@@ -164,35 +164,6 @@ const std::string MAP_ROOM_3[Screen::MAX_Y] = {
 };
 
 
-const std::string MAP_ROOM_SECRET[Screen::MAX_Y] = {
-    // ------------------- SECRET ROOM MAP ----------------------
-//01234567890123456789012345678901234567890123456789012345678901234567890123456789
-"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW|--------|", // 0
-"W 1                                                                  W|  P.I : |", // 1
-"W                                                                    W| <3 x3  |", // 2
-"W                                                                    W|  o x00 |", // 3
-"W                                                                    W|        |", // 4
-"W                                                                    W| Inv:   |", // 5
-"W                                                                    W|        |", // 6
-"W                                                                    W|        |", // 7
-"W                                                                    W|  X=00  |", // 8
-"W                                                                    W|  Y=00  |", // 9
-"W                                                                    W|        |", // 10
-"W                                                                    W|--------|", // 11
-"W                                                                    W|  P.II: |", // 12
-"W                                                                    W| <3 x3  |", // 13
-"W                                                                    W|  o x00 |", // 14
-"W                                                                    W|        |", // 15
-"W                                                                    W| Inv:   |", // 16
-"W                                                                    W|        |", // 17
-"W                                                                    W|        |", // 18
-"W                                                                    W|        |", // 19
-"W                                                                    W|  X=00  |", // 20
-"W                                                                    W|  Y=00  |", // 21
-"W                                                                    W|        |", // 22
-"W                                                                    W|        |", // 23
-"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW|--------|"  // 24
-};
 
 
 void game::run_game() {
@@ -332,7 +303,7 @@ void game::game_loop(Screen& screen, Player players[]) {
             else if (current_screen == 2)
                 screen.setMap(MAP_ROOM_2);
             else if (current_screen == 9)
-                screen.setMap(MAP_ROOM_SECRET);
+                screen.setMap(MAP_ROOM_9);
 
             players[0].resetPosition(10, 10);
             players[1].resetPosition(15, 5);
@@ -387,7 +358,7 @@ void game::game_loop(Screen& screen, Player players[]) {
             }
         }
 
-        Sleep(85);
+        Sleep(65);
     }
 }
 
@@ -572,4 +543,18 @@ bool game::isPlayerReady(char playerChar) const {
         return p2_ready_to_transition;
     }
     return false;
+}
+
+//colors
+Color game::get_player_color(char playerChar) const {
+    if (!colors) {
+        return Color::WHITE; // Use White if colors are off
+    }
+    if (playerChar == '$') {
+        return Color::CYAN;
+    }
+    else if (playerChar == '&') {
+        return Color::GREEN;
+    }
+    return Color::WHITE;
 }
