@@ -16,7 +16,7 @@ static Direction oppositeDirection(Direction d) {
     }
 }
 
-static const int SPRING_RESTORE_DELAY_TICKS = 10; // בערך שניה אם יש Sleep(50)
+static constexpr int SPRING_RESTORE_DELAY_TICKS = 10;
 
 // ctor with explicit start position
 Player::Player(const Point& p, char c, int startX, int startY,
@@ -187,7 +187,7 @@ void Player::handleKeyPressed(char key) {
         return;
     }
 
-    // while under spring launch effect: stay and direction changes are ignored
+    // while under spring launch effect: stay and direction changes are ignored 
     if (inSpringLaunch) {
         if (lower == tolower(keys[4])) {
             return;
@@ -210,8 +210,6 @@ void Player::handleKeyPressed(char key) {
             // any of this player's movement keys (up/left/right/down/stay) releases the spring
             startSpringLaunch();
         }
-        // if the key is not one of this player's keys – ignore it completely
-
         return;
     }
 
@@ -241,14 +239,13 @@ void Player::handleKeyPressed(char key) {
 
 void Player::move() {
     springRestoreTick();
-    if (x < 0 || y < 0) {
+    if (x < 0 || y < 0) { 
         return;
     }
-
+   
     // spring launch movement
     // spring launch movement
     if (inSpringLaunch) {
-        // הגנה – אם אין יותר "דלק" לקפיץ, לצאת
         if (springTicksLeft <= 0 || springSpeed <= 0 || springDir == Direction::STAY) {
             inSpringLaunch = false;
             springSpeed = 0;
@@ -262,7 +259,6 @@ void Player::move() {
         Point currPos(currX, currY, ch);
         char under = screen.getCharAt(currPos);
 
-        // כיוון יחידה
         int dirX = 0, dirY = 0;
         switch (springDir) {
         case Direction::UP:    dirY = -1; break;
@@ -276,29 +272,24 @@ void Player::move() {
         int finalY = currY;
         bool blocked = false;
 
-        // זזים צעד-צעד לאורך המסלול של הקפיץ
         for (int step = 0; step < springSpeed; ++step) {
             int nextX = (finalX + dirX + Screen::MAX_X) % Screen::MAX_X;
             int nextY = (finalY + dirY + Screen::MAX_Y) % Screen::MAX_Y;
             Point stepPos(nextX, nextY, ch);
 
-            // קיר – עוצרים לפניו
             if (screen.isWall(stepPos)) {
                 blocked = true;
                 break;
             }
 
-            // שחקן אחר – מתנהג כמו קיר (לא עוברים אחד דרך השני)
             if (other != nullptr && nextX == other->getX() && nextY == other->getY()) {
                 blocked = true;
                 break;
             }
 
-            // מה יש בתא הבא?
             char cell = screen.getCharAt(stepPos);
 
-            // מטבעות
-            if (cell == 'o') {      // שימי לב: האות o קטנה
+            if (cell == 'o') {  
                 ++coins;
                 screen.setCharAt(nextX, nextY, ' ');
                 if (ch == '$')
@@ -306,7 +297,6 @@ void Player::move() {
                 else if (ch == '&')
                     screen.setP2Coins(coins);
             }
-            // חפצים (!, K, @) אם אין כבר משהו ביד
             else if ((cell == '!' || cell == 'K' || cell == '@') && item == ' ') {
                 item = cell;
                 screen.setCharAt(nextX, nextY, ' ');
@@ -316,16 +306,13 @@ void Player::move() {
                     screen.setP2Inventory(item);
             }
 
-            // עדכון המיקום הנוכחי לאורך המסלול
             finalX = nextX;
             finalY = nextY;
         }
 
-        // מוחקים את המיקום הישן של השחקן
         gotoxy(currX, currY);
         cout << under;
 
-        // מציבים את השחקן במיקום הסופי (איפה שעצרנו במסלול)
         body.set(finalX, finalY);
         x = finalX;
         y = finalY;
@@ -336,10 +323,8 @@ void Player::move() {
         else if (ch == '&')
             screen.setP2Position(x, y);
 
-        // מקטינים טיק של הקפיץ
         --springTicksLeft;
 
-        // אם הסתיים השיגור, או נחסמנו בדרך – לעצור
         if (springTicksLeft <= 0 || blocked) {
             inSpringLaunch = false;
             springSpeed = 0;
@@ -388,7 +373,6 @@ void Player::move() {
         // spring: snap to wall side and fully compress
     if (cell == '#') {
 
-        // אם יש קפיץ שנמצא ב-restoring – בודקים אם זה אותו קפיץ או קפיץ אחר
         if (restoringSpring) {
             bool sameSpringCell = false;
             for (int i = 0; i < numCollapsedSpringCells; ++i) {
@@ -400,13 +384,9 @@ void Player::move() {
             }
 
             if (sameSpringCell) {
-                // זה אותו קפיץ שעושה restore כרגע:
-                // לא מפעילים קפיץ, מתייחסים לזה כמו קרקע רגילה.
-                // כלומר לא נכנסים ללוגיקה של ה-spring, נותנים לקוד למטה לטפל בתנועה רגילה.
+				//the spring cell is still restoring, do nothing
             }
             else {
-                // זה קפיץ אחר בזמן שהראשון עוד עושה restore:
-                // מסיימים את ה-restore הקודם במכה אחת.
                 for (int i = 0; i < numCollapsedSpringCells; ++i) {
                     Point& p = collapsedSpringCells[i];
                     screen.setCharAt(p.getX(), p.getY(), '#');
@@ -418,7 +398,6 @@ void Player::move() {
             }
         }
 
-        // אם זה אותו קפיץ שעושה restore – מדלגים על לוגיקת spring
         bool sameSpringCell = false;
         if (restoringSpring) {
             for (int i = 0; i < numCollapsedSpringCells; ++i) {
@@ -431,10 +410,9 @@ void Player::move() {
         }
 
         if (sameSpringCell) {
-            // לא מפעילים את הקפיץ, נמשיך לתנועה רגילה/מטבעות/חפצים למטה
+            //do nothing
         }
         else {
-            // כאן לוגיקת הקפיץ הרגילה שלך (snap to wall + כיווץ מלא)
             Direction wallDir = findWallDirForSpring(nextPos);
             if (wallDir != Direction::STAY) {
                 int dx = 0, dy = 0;
@@ -446,7 +424,6 @@ void Player::move() {
                 default: break;
                 }
 
-                // מוצאים את תא הקפיץ הראשון מהצד הפתוח
                 int sx = nextPos.getX();
                 int sy = nextPos.getY();
 
@@ -464,7 +441,6 @@ void Player::move() {
                     sy = ny;
                 }
 
-                // sx,sy עכשיו תא הקפיץ הראשון מהצד הפתוח
                 numCollapsedSpringCells = 0;
                 compressedCount = 0;
 
@@ -508,7 +484,6 @@ void Player::move() {
             }
         }
     }
-    // coins
     if (cell == 'o') {
         ++coins;
         screen.setCharAt(nextX, nextY, ' ');
@@ -517,7 +492,6 @@ void Player::move() {
         else if (ch == '&')
             screen.setP2Coins(coins);
     }
-    // items
     else if (cell == '!' || cell == 'K' || cell == '@') {
         if (item == ' ') {
             item = cell;
@@ -594,7 +568,6 @@ void Player::takeDamage(int dmg) {
     if (hearts < 0)
         hearts = 0;
 
-    // עדכון HUD לפי השחקן
     if (ch == '$')
         screen.setP1Hearts(hearts);
     else if (ch == '&')

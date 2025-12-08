@@ -14,7 +14,7 @@ class Player {
     char keys[NUM_KEYS + 1]; // movement keys + stay
     Screen& screen;
     Player* other = nullptr;
-    int hearts = 3; // מספר הלבבות של השחקן (מתחיל ב-3)
+    int hearts = 3;
 
     // coins and inventory
     int coins = 0;

@@ -38,9 +38,7 @@ void Screen::setCharAt(int x, int y, char c) {
 	if (x < 0 || x >= MAX_X || y < 0 || y >= MAX_Y) {
 		return; // Out of bounds
 	}
-	// òãëåï äîôä äìåâéú
 	screen[y][x] = c;
-	// òãëåï òì äîñê ø÷ ùì äúà äæä
 	gotoxy(x, y);
 	cout << c;
 	cout.flush();
@@ -52,7 +50,6 @@ void Screen::setP1Coins(int coins) {
 	int tens = coins / 10;
 	int ones = coins % 10;
 
-	// שורה 3, עמודות 76–77 (x00 של P.I)
 	setCharAt(76, 3, '0' + tens);
 	setCharAt(77, 3, '0' + ones);
 }
@@ -64,16 +61,14 @@ void Screen::setP2Coins(int coins) {
 	int tens = coins / 10;
 	int ones = coins % 10;
 
-	// שורה 14, עמודות 76–77 (x00 של P.II)
 	setCharAt(76, 14, '0' + tens);
 	setCharAt(77, 14, '0' + ones);
 }
 
 void Screen::setP1Hearts(int hearts) {
 	if (hearts < 0) hearts = 0;
-	if (hearts > 9) hearts = 9; // ספרה אחת
+	if (hearts > 9) hearts = 9; 
 
-	// בשורה 2, עמודה 76 – שם נמצאת הספרה של x3 ב-| <3 x3  |
 	setCharAt(76, 2, '0' + hearts);
 }
 
@@ -81,22 +76,17 @@ void Screen::setP2Hearts(int hearts) {
 	if (hearts < 0) hearts = 0;
 	if (hearts > 9) hearts = 9;
 
-	// בשורה 13, עמודה 76 – הספרה של x3 ב-| <3 x3  | של P.II
 	setCharAt(76, 13, '0' + hearts);
 }
 
 
 void Screen::setP1Position(int px, int py) {
-	// X ùì ùç÷ï I – ùåøä 8, òîåãåú 75–76
 	setTwoDigitNumberAt(*this, 75, 8, px);
-	// Y ùì ùç÷ï I – ùåøä 9, òîåãåú 75–76
 	setTwoDigitNumberAt(*this, 75, 9, py);
 }
 
 void Screen::setP2Position(int px, int py) {
-	// X ùì ùç÷ï II – ùåøä 20, òîåãåú 75–76
 	setTwoDigitNumberAt(*this, 75, 20, px);
-	// Y ùì ùç÷ï II – ùåøä 21, òîåãåú 75–76
 	setTwoDigitNumberAt(*this, 75, 21, py);
 }
 
@@ -147,11 +137,9 @@ bool Screen::isVisibleFromPlayer(int x, int y, const Player& p) const {
 
 // is cell (x,y) visible to at least one player?
 bool Screen::isCellVisible(int x, int y, const Player& p1, const Player& p2) const {
-	// HUD úîéã âìåé
 	if (isInHud(x, y))
 		return true;
 
-	// úà âìåé àí ìôçåú àçã îäùç÷ðéí øåàä àåúå
 	if (isVisibleFromPlayer(x, y, p1))
 		return true;
 	if (isVisibleFromPlayer(x, y, p2))
@@ -166,7 +154,6 @@ void Screen::renderWithVisibility(const Player& p1, const Player& p2) {
 		gotoxy(0, y);
 		for (int x = 0; x < MAX_X; ++x) {
 
-			// áøéøú îçãì: îä ùéù áîôä
 			Point p(x, y, ' ');
 			char c = getCharAt(p);
 
@@ -176,11 +163,9 @@ void Screen::renderWithVisibility(const Player& p1, const Player& p2) {
 			bool visible = isCellVisible(x, y, p1, p2);
 
 			if (!visible && !isInHud(x, y)) {
-				// çåùê – ìà øåàéí ëìåí áîùáöú äæàú
 				c = ' ';
 			}
 			else {
-				// àí øåàéí – äùç÷ðéí òöîí âåáøéí òì îä ùéù áîôä
 				if (isP1)      c = '$';
 				else if (isP2) c = '&';
 			}

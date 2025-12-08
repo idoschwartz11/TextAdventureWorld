@@ -12,7 +12,3 @@ enum class Color : WORD {
     WHITE = 7
 };
 
-
-/*void setTextColor(Color color) {
-	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), static_cast<WORD>(color));
-}*/
