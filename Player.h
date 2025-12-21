@@ -64,4 +64,9 @@ public:
     bool isDead()   const { return hearts <= 0; }
     void takeDamage(int dmg = 1);
 
+    //shop
+    bool tryToBuyItem(int itemX, int itemY);
+
+
+    void setDoorUnlocked(int x, int y) { screen.setDoorUnlocked(x, y); }
 };

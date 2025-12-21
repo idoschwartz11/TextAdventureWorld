@@ -34,20 +34,20 @@ const std::string MAP_ROOM_0[Screen::MAX_Y] = {
     "W                                                                    W| Inv:   |", // 16
     "W                                                 #                  W|        |", // 17
     "W                                                 #                  W|        |", // 18
-    "W     WWWWWWWWWWWWWW  WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW|        |", // 19
-    "W     WWWWWWWWWWWWWW  WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW|  X=00  |", // 20
-    "W     WWWWWWWWWWWWWW  WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW|  Y=00  |", // 21
-    "W                     WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW|        |", // 22
-    "WWWWWWWWWMWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW|        |", // 23
+    "W     WWWWWWWWWWWWWW  WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW|  X=00  |", // 19
+    "W     WWWWWWWWWWWWWW  WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW|  Y=00  |", // 20
+    "W     WWWWWWWWWWWWWW  WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW|        |", // 21
+    "W                     WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW| score: |", // 22
+    "WWWWWWWWWMWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW|  1000  |", // 23
     "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW|--------|"  // 24
 };
 
 // -------------------  ROOM 9 MAP - THIS IS THE SECRET ROOM ---------------
 const std::string MAP_ROOM_9[Screen::MAX_Y] = {
-    // ------------------- SECRET ROOM MAP ----------------------
+    // ------------------- SECRET ROOM MAP (Shop) ----------------------
 //01234567890123456789012345678901234567890123456789012345678901234567890123456789
  "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW|--------|", // 0
- "W                                                                    W|  P.I : |", // 1
+ "W 9                                                                  W|  P.I : |", // 1
  "W                                                                    W| <3 x3  |", // 2
  "W                                                                    W|  o x00 |", // 3
  "W                                                                    W|        |", // 4
@@ -55,24 +55,23 @@ const std::string MAP_ROOM_9[Screen::MAX_Y] = {
  "W                                                                    W|        |", // 6
  "W                                                                    W|        |", // 7
  "W                                                                    W|  X=00  |", // 8
- "W                                                                    W|  Y=00  |", // 9
- "W                                                                    W|        |", // 10
- "W                                                                    W|--------|", // 11
- "W                                                                    W|  P.II: |", // 12
+ "W            W                                       W               W|  Y=00  |", // 9 
+ "W            W     !       H       K       ?         W               W|        |", // 10
+ "W            W     5       5       8       5         W               W|--------|", // 11
+ "W            WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW               W|  P.II: |", // 12
  "W                                                                    W| <3 x3  |", // 13
  "W                                                                    W|  o x00 |", // 14
  "W                                                                    W|        |", // 15
  "W                                                                    W| Inv:   |", // 16
  "W                                                                    W|        |", // 17
  "W                                                                    W|        |", // 18
- "W                                                                    W|        |", // 19
- "W                                                                    W|  X=00  |", // 20
- "W                                                                    W|  Y=00  |", // 21
+ "W        *** THIS IS THE SECRET SHOP ***                             W|        |", // 19
+ "W        * ITEM PRICES ARE LISTED UNDER EACH OBJECT                  W|  X=00  |", // 20 
+ "W        * TO PURCHASE, SIMPLY STEP ONTO THE ITEM.                   W|  Y=00  |", // 21 
  "W                                                                    W|        |", // 22
  "W                                                                    W|        |", // 23
  "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW|--------|"  // 24
 };
-
 
 // -------------------  ROOM 1 MAP - THIS WILL BE THE DARK ROOM ---------------
 const std::string MAP_ROOM_1[Screen::MAX_Y] = {
@@ -164,35 +163,6 @@ const std::string MAP_ROOM_3[Screen::MAX_Y] = {
 };
 
 
-const std::string MAP_ROOM_SECRET[Screen::MAX_Y] = {
-    // ------------------- SECRET ROOM MAP ----------------------
-//01234567890123456789012345678901234567890123456789012345678901234567890123456789
- "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW|--------|", // 0
- "W                                                                    W|  P.I : |", // 1
- "W                                                                    W| <3 x3  |", // 2
- "W                                                                    W|  o x00 |", // 3
- "W                                                                    W|        |", // 4
- "W                                                                    W| Inv:   |", // 5
- "W                                                                    W|        |", // 6
- "W                                                                    W|        |", // 7
- "W                                                                    W|  X=00  |", // 8
- "W                                                                    W|  Y=00  |", // 9
- "W                                                                    W|        |", // 10
- "W                                                                    W|--------|", // 11
- "W                                                                    W|  P.II: |", // 12
- "W                                                                    W| <3 x3  |", // 13
- "W                                                                    W|  o x00 |", // 14
- "W                                                                    W|        |", // 15
- "W                                                                    W| Inv:   |", // 16
- "W                                                                    W|        |", // 17
- "W                                                                    W|        |", // 18
- "W                                                                    W|        |", // 19
- "W                                                                    W|  X=00  |", // 20
- "W                                                                    W|  Y=00  |", // 21
- "W                                                                    W|        |", // 22
- "W                                                                    W|        |", // 23
- "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW|--------|"  // 24
-};
 
 
 void game::run_game() {
@@ -302,11 +272,14 @@ void game::game_loop(Screen& screen, Player players[]) {
     bool quitToMenu = false;
 
     while (!quitToMenu) {
+        clearUnlockedDoor();
         for (int i = 0; i < 2; ++i) {
             players[i].move();
         }
 
         updateBomb(screen, players);
+
+        updateScore(screen);
 
         if (players[0].isDead() || players[1].isDead()) {
             screen.setMap(MAP_ROOM_3);
@@ -321,18 +294,37 @@ void game::game_loop(Screen& screen, Player players[]) {
             continue;
         }
 
-		if (p1_ready_to_transition && p2_ready_to_transition) { //room transition only if both ready
-            current_screen++;
+        if (p1_ready_to_transition && p2_ready_to_transition) {
+            int dest_room = p1_dest_room;
+
+            current_screen = dest_room;
 
             p1_ready_to_transition = false;
             p2_ready_to_transition = false;
+            p1_dest_room = -1;
+            p2_dest_room = -1;
 
             if (current_screen == 1)
                 screen.setMap(MAP_ROOM_1);
             else if (current_screen == 2)
                 screen.setMap(MAP_ROOM_2);
             else if (current_screen == 9)
-                screen.setMap(MAP_ROOM_SECRET);
+                screen.setMap(MAP_ROOM_9);
+            else if (current_screen == 0)
+                screen.setMap(MAP_ROOM_0);
+
+            if (current_screen == 0) {
+                players[0].resetPosition(3, 1);
+                players[1].resetPosition(1, 1);
+            }
+            else if (current_screen == 9) {
+                players[0].resetPosition(10, 10);
+                players[1].resetPosition(12, 10);
+            }
+            else if (current_screen == 2) {
+                players[0].resetPosition(3, 2);
+                players[1].resetPosition(4, 2);
+            }
 
             players[0].resetPosition(1, 8);
             players[1].resetPosition(3, 8);
@@ -358,6 +350,7 @@ void game::game_loop(Screen& screen, Player players[]) {
             else
                 screen.renderFull(players[0], players[1]);
         }
+
         else {
             if (current_screen == darkRoomIndex)
                 screen.renderWithVisibility(players[0], players[1]);
@@ -387,7 +380,7 @@ void game::game_loop(Screen& screen, Player players[]) {
             }
         }
 
-        Sleep(85);
+        Sleep(30);
     }
 }
 
@@ -555,14 +548,19 @@ void game::activateBomb(int x, int y) {
 	bombTimer = 10; // Start the 5-cycle timer - for now i did 10 for testing
 }
 
-void game::setPlayerReady(char playerChar) {
+void game::setPlayerReady(char playerChar, char destChar) {
+    int destIndex = destChar - '0';
+
     if (playerChar == '$') {
         p1_ready_to_transition = true;
+        p1_dest_room = destIndex;
     }
     else if (playerChar == '&') {
         p2_ready_to_transition = true;
+        p2_dest_room = destIndex;
     }
 }
+
 
 bool game::isPlayerReady(char playerChar) const {
     if (playerChar == '$') {
@@ -586,4 +584,46 @@ Color game::get_player_color(char playerChar) const {
         return Color::GREEN;
     }
     return Color::WHITE;
+}
+
+//score
+void game::updateScore(Screen& screen) {
+    game_cycle_counter++;
+
+    if (game_cycle_counter >= 5) {
+        score--;
+        game_cycle_counter = 0;
+
+        screen.set_score(score);
+
+        if (score <= 0) {
+            screen.set_score(0);
+        }
+    }
+}
+
+bool game::isDoorUnlocked(int x, int y) const {
+    return (unlockedDoorX == x && unlockedDoorY == y);
+}
+
+void game::setDoorUnlocked(int x, int y) {
+    unlockedDoorX = x;
+    unlockedDoorY = y;
+}
+
+void game::clearUnlockedDoor() {
+    unlockedDoorX = -1;
+    unlockedDoorY = -1;
+}
+
+bool game::isShopHeart(int x, int y) const {
+    if (current_screen != 9) {
+        return false;
+    }
+
+    if (x == 27 && y == 10) {
+        return true;
+    }
+
+    return false;
 }

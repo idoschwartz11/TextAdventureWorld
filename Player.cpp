@@ -42,13 +42,7 @@ Player::Player(const Point& p, char c, const char movKeys[], Screen& scr)
 }
 
 void Player::draw() {
-    Color playerColor = screen.get_player_color(ch);
-    screen.set_text_color(playerColor);
-
-    body = Point(x, y, ch);
-    body.draw();
-
-    screen.set_text_color(Color::WHITE);
+    screen.drawCharAt(x, y, ch);
 }
 
 // find the direction from the spring line towards the wall
@@ -314,13 +308,12 @@ void Player::move() {
             finalY = nextY;
         }
 
-        gotoxy(currX, currY);
-        cout << under;
+        screen.drawCharAt(currX, currY, under);
 
         body.set(finalX, finalY);
         x = finalX;
         y = finalY;
-        body.draw();
+        draw();
 
         if (ch == '$')
             screen.setP1Position(x, y);
@@ -372,6 +365,12 @@ void Player::move() {
     }
 
     char cell = screen.getCharAt(nextPos);
+
+    if (screen.is_shop_item(cell)) {
+        if (tryToBuyItem(nextX, nextY)) {
+            return;
+        }
+    }
 
     // spring: snap to wall side and fully compress
         // spring: snap to wall side and fully compress
@@ -516,11 +515,11 @@ void Player::move() {
             y = -1;
             body.set(-1, -1);
 
-            screen.playerReadyToTransition(ch);
+            screen.playerReadyToTransition(ch, cell);
             return;
         }
         if (item == 'K') {
-            //screen.setCharAt(nextX, nextY, ' ');
+            setDoorUnlocked(nextX, nextY); 
             item = ' ';
             if (ch == '$')
                 screen.setP1Inventory(' ');
@@ -533,7 +532,7 @@ void Player::move() {
             y = -1;
             body.set(-1, -1);
 
-            screen.playerReadyToTransition(ch);
+            screen.playerReadyToTransition(ch, cell);
             return;
         }
         else {
@@ -542,14 +541,11 @@ void Player::move() {
             return;
         }
     }
-
-    gotoxy(currX, currY);
-    cout << under;
-
+    screen.drawCharAt(currX, currY, under);
     body.move();
     x = body.getX();
     y = body.getY();
-    body.draw();
+    draw();
 
     if (ch == '$')
         screen.setP1Position(x, y);
@@ -579,4 +575,67 @@ void Player::takeDamage(int dmg) {
         screen.setP1Hearts(hearts);
     else if (ch == '&')
         screen.setP2Hearts(hearts);
+}
+
+
+//shop
+bool Player::tryToBuyItem(int itemX, int itemY) {
+    Point itemPos(itemX, itemY, ' ');
+    char itemChar = screen.getCharAt(itemPos);
+
+    int price = 0;
+    if (itemChar == 'K') {
+        price = 8;
+    }
+    else if (itemChar == '!' || itemChar == 'H' || itemChar == '?') {
+        price = 5;
+    }
+    else {
+        return false;
+    }
+
+    Point pricePos(itemX, itemY + 1, ' ');
+    char priceTagChar = screen.getCharAt(pricePos);
+
+    if (priceTagChar != ('0' + price)) {
+        return false; 
+    }
+
+    if (coins < price) {
+        return false;
+    }
+
+    bool hasRoom = false;
+
+    if (itemChar == 'H' && hearts < 9) {
+        hasRoom = true;
+    }
+    else if ((itemChar == '!' || itemChar == 'K' || itemChar == '?') && item == ' ') {
+        hasRoom = true;
+    }
+
+    if (!hasRoom) {
+        return false;
+    }
+
+
+    coins -= price;
+    if (ch == '$') screen.setP1Coins(coins);
+    else if (ch == '&') screen.setP2Coins(coins);
+
+    if (itemChar == 'H') {
+        hearts++;
+        if (ch == '$') screen.setP1Hearts(hearts);
+        else if (ch == '&') screen.setP2Hearts(hearts);
+    }
+    else {
+        item = itemChar;
+        if (ch == '$') screen.setP1Inventory(item);
+        else if (ch == '&') screen.setP2Inventory(item);
+    }
+
+    screen.setCharAt(itemX, itemY, ' ');
+    screen.setCharAt(itemX, itemY + 1, ' ');
+
+    return true;
 }

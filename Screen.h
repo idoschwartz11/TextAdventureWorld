@@ -42,11 +42,11 @@ private:
     "W   W      W   WWWWWWWWWWWWWW   WWWWWWWWWWWWWWWWWWWWWWWWWWW    W    oW| Inv:   |", // 16
     "W   WWWWWWWW                 o                o           W    W     W|        |", // 17
     "W                o      o           o      o       o      W o  W     W|        |", // 18
-    "W   o          WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW    W     W|        |", // 19
-    "W         o    W                     o         o           WWWWWWWWWWW|  X=00  |", // 20
-    "W   o          W   o             o                    o              W|  Y=00  |", // 21
-    "W         o    W         o                  o      o                 W|        |", // 22
-    "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWMWWWWWWWWW|        |", // 23
+    "W   o          WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW    W     W|  X=00  |", // 19
+    "W         o                          o         o           WWWWWWWWWWW|  Y=00  |", // 20
+    "W   o              o             o                    o              W|        |", // 21
+    "W         o              o                  o     @ o                W| SCORE: |", // 22
+    "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWMWWWWWWWWW|  999   |", // 23
     "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW|--------|"  // 24
     };
 
@@ -109,20 +109,26 @@ public:
     void setP1Inventory(char c) { setCharAt(77, 5, c); }
     void setP2Inventory(char c) { setCharAt(77, 16, c); }
 
+	void set_score(int score);
+
     void activateBomb(int x, int y);
 
     void setGame(game* g) { activeGame = g; };
 
-    void playerReadyToTransition(char playerChar);
+    void playerReadyToTransition(char playerChar, char destChar);
 
     bool isOtherPlayerReady(char playerChar) const;
 
     // colors
     void drawCharAt(int x, int y, char c);
-    Color get_object_color(char c) const;
+    Color get_object_color(int x, int y, char c) const;
     Color get_player_color(char playerChar) const;
     void set_text_color(Color color);
     bool is_heart_char(int x, int y, char c) const;
 
+    //shop
+    bool is_shop_item(char c) const;
 
+
+    void setDoorUnlocked(int x, int y);
 };

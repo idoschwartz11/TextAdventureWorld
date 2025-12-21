@@ -12,10 +12,15 @@ private:
 	bool colors = true; // will be toggled in menu
 	bool p1_ready_to_transition = false;
 	bool p2_ready_to_transition = false;
+	int p1_dest_room = -1;
+	int p2_dest_room = -1;
+	int unlockedDoorX = -1;
+	int unlockedDoorY = -1;
 
 	Screen screens[4]; // total number of screens - room 0,secret room,room 1, room 2
 	int current_screen = 0;
 	int darkRoomIndex = 1;
+
 
 	// players
 	Player player1;
@@ -24,9 +29,16 @@ private:
 	// colors
 	Color player1_color = Color::GREEN;
 	Color player2_color = Color::BLUE;
-
+	
+	//bomb
 	int current_game_cycle = 0;
 
+
+	//score
+	int score = 1000;
+	int game_cycle_counter = 0;
+
+	
 
 public:
 	game()
@@ -61,11 +73,22 @@ public:
 
 
 	//room travel
-	void setPlayerReady(char playerChar);
+	void setPlayerReady(char playerChar, char destChar);
 	bool isPlayerReady(char playerChar) const;
+	bool isDoorUnlocked(int x, int y) const;
+	void setDoorUnlocked(int x, int y);
+	void clearUnlockedDoor();
 
 
 	//colors
 	Color get_player_color(char playerChar) const;
 	bool getColorsState() const { return colors; }
+	Color get_object_color(int x, int y, char c) const;
+
+	//score
+	void updateScore(Screen& screen);
+
+	bool isShopHeart(int x, int y) const;
+
+
 };

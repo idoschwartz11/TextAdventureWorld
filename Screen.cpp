@@ -41,7 +41,6 @@ void Screen::setCharAt(int x, int y, char c) {
 	screen[y][x] = c;
 	gotoxy(x, y);
 	cout << c;
-	cout.flush();
 }
 void Screen::setP1Coins(int coins) {
 	if (coins < 0) coins = 0;
@@ -90,6 +89,21 @@ void Screen::setP2Position(int px, int py) {
 	setTwoDigitNumberAt(*this, 75, 21, py);
 }
 
+void Screen::set_score(int score) {
+	if (score < 0) score = 0;
+	if (score > 9999) score = 999;
+
+	//int thousands = score / 1000;
+	int hundreds = (score / 100) % 10;
+	int tens = (score / 10) % 10;
+	int ones = score % 10;
+
+	//(73, 23, '0' + thousands); 
+	setCharAt(73, 23, '0' + hundreds);  
+	setCharAt(74, 23, '0' + tens);     
+	setCharAt(75, 23, '0' + ones);  
+}
+
 void Screen::activateBomb(int x, int y) {
 	if (activeGame != nullptr) {
 		setCharAt(x, y, '@');
@@ -98,10 +112,14 @@ void Screen::activateBomb(int x, int y) {
 }
 
 
+
+
+
 //door
-void Screen::playerReadyToTransition(char playerChar) {
+void Screen::playerReadyToTransition(char playerChar, char destChar) {
 	if (activeGame != nullptr) {
-		activeGame->setPlayerReady(playerChar);
+		// Pass the destination character to the game object
+		activeGame->setPlayerReady(playerChar, destChar);
 	}
 }
 
@@ -211,22 +229,39 @@ bool Screen::is_heart_char(int x, int y, char c) const {
 	return false;
 }
 
-Color Screen::get_object_color(char c) const {
+
+// Screen.cpp (Inside Screen::get_object_color)
+
+Color Screen::get_object_color(int x, int y, char c) const {
 	if (activeGame == nullptr || !activeGame->getColorsState()) {
 		return Color::WHITE;
 	}
 
+	if (c == 'H' && activeGame->isShopHeart(x, y)) {
+		return Color::RED;
+	}
+
+	bool isDoorChar = (c == '1' || c == '2' || c == '9');
+
+	if (isDoorChar && x < 70) {
+		bool isTemporarilyUnlocked = activeGame->isDoorUnlocked(x, y);
+		return isTemporarilyUnlocked ? Color::GREEN : Color::RED;
+	}
 	switch (c) {
 	case '@': return Color::BLUE;    // Bomb
 	case 'K': return Color::DARK_YELLOW;  // Key
 	case '!': return Color::DARK_RED;     // Torch
 	case 'W': return Color::DARK_GRAY; // wall
 	case '#': return Color::DARK_MAGENTA; // spring
-	case 'o': return Color::YELLOW; // spring
+	case 'o': return Color::YELLOW; // coin
+	case '?': return Color::MAGENTA; // clue
+	case 'H': return Color::WHITE; 
+
 
 	default:  return Color::WHITE;
 	}
 }
+
 
 Color Screen::get_player_color(char playerChar) const {
 	if (activeGame == nullptr) return Color::WHITE;
@@ -252,14 +287,26 @@ void Screen::drawCharAt(int x, int y, char c) {
 		color = Color::RED;
 	}
 	else {
-		color = get_object_color(c);
+		color = get_object_color(x, y, c);
 	}
 
 	set_text_color(color);
 
 	gotoxy(x, y);
 	std::cout << c;
-	std::cout.flush();
 
 	set_text_color(Color::WHITE);
+}
+
+
+//shop
+bool Screen::is_shop_item(char c) const {
+	return (c == '!' || c == 'K' || c == 'H' || c == '?');
+	//torch key health clue
+}
+
+void Screen::setDoorUnlocked(int x, int y) {
+	if (activeGame != nullptr) {
+		activeGame->setDoorUnlocked(x, y);
+	}
 }
