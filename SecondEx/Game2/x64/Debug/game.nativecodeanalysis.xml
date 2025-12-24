@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<DEFECTS>
+  <DEFECT>
+    <SFA>
+      <FILEPATH>C:\Users\idosh\source\repos\SecondEx\</FILEPATH>
+      <FILENAME>game.cpp</FILENAME>
+      <LINE>271</LINE>
+      <COLUMN>10</COLUMN>
+    </SFA>
+    <DEFECTCODE>6031</DEFECTCODE>
+    <DESCRIPTION>Return value ignored: '_getch'.</DESCRIPTION>
+    <FUNCTION>game::show_instructions</FUNCTION>
+    <DECORATED>?show_instructions@game@@QEAAXXZ</DECORATED>
+    <FUNCLINE>257</FUNCLINE>
+    <PATH></PATH>
+  </DEFECT>
+  <DEFECT>
+    <SFA>
+      <FILEPATH>C:\Users\idosh\source\repos\SecondEx\</FILEPATH>
+      <FILENAME>game.cpp</FILENAME>
+      <LINE>318</LINE>
+      <COLUMN>18</COLUMN>
+    </SFA>
+    <DEFECTCODE>6031</DEFECTCODE>
+    <DESCRIPTION>Return value ignored: '_getch'.</DESCRIPTION>
+    <FUNCTION>game::game_loop</FUNCTION>
+    <DECORATED>?game_loop@game@@QEAAXAEAVScreen@@QEAVPlayer@@@Z</DECORATED>
+    <FUNCLINE>301</FUNCLINE>
+    <PATH></PATH>
+  </DEFECT>
+</DEFECTS>
