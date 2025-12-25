@@ -12,13 +12,12 @@ void gotoxy(int x, int y) {
     SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
 }
 
-void hideCursor()
-{
-    HANDLE hStdOut = GetStdHandle(STD_OUTPUT_HANDLE);
-    CONSOLE_CURSOR_INFO curInfo;
-    GetConsoleCursorInfo(hStdOut, &curInfo);
-    curInfo.bVisible = FALSE; // Set to TRUE to make it visible
-    SetConsoleCursorInfo(hStdOut, &curInfo);
+void hideCursor() {
+    HANDLE consoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
+    CONSOLE_CURSOR_INFO info;
+    info.dwSize = 100;
+    info.bVisible = FALSE; // Visibility set to FALSE
+    SetConsoleCursorInfo(consoleHandle, &info);
 }
 
 void cls() {

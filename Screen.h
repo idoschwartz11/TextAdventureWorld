@@ -18,7 +18,6 @@ class Screen {
 public:
     enum { MAX_X = 80, MAX_Y = 25 };
 
-
 private:
     game* activeGame = nullptr;
     string screen[MAX_Y] = {
@@ -33,8 +32,8 @@ private:
     "W o W     W   W ooo W     W   W   o      o      o          o         W|        |", // 7
     "W   W     W   W     W     W   W           WWWWWWWWWWWWW            o W|  X=00  |", // 8
     "W1  W     W   WWWWWWW  o  W   WWWWWWWW o  W          o W             W|  Y=00  |", // 9
-    "W                                         W   o        W         o   W|        |", // 10
-    "W     o        WWWWWWWWWWWWWW      @      W      @     WWWWWWWWWWWWWWW|--------|", // 11
+    "W              /                          W   o        W         o   W|        |", // 10
+    "W     o  R     WWWWWWWWWWWWWW      @      W      @     WWWWWWWWWWWWWWW|--------|", // 11
     "W              W            W             W o        o W   W       W1W|  P.II: |", // 12
     "W   WWWWWWWW   W   o        W   WWWWWWWWWWW          WWW   W   o   WWW| <3 x3  |", // 13
     "W   W      W   W       o    W   W          o   o        o  W        oW|  o x00 |", // 14
@@ -90,6 +89,7 @@ public:
     bool isWall(const Point& p) const {
         return getCharAt(p) == 'W';
     }
+    
 
     bool isSpring(const Point& p) const {
         return getCharAt(p) == '#';
@@ -131,4 +131,10 @@ public:
 
 
     void setDoorUnlocked(int x, int y);
+
+    //riddels
+    void displayMessage(const std::string& msg);
+    std::string getGameClue() const; 
+    bool triggerRiddle();
+    game* getGame() { return activeGame; }
 };

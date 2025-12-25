@@ -42,6 +42,7 @@ void Screen::setCharAt(int x, int y, char c) {
 	gotoxy(x, y);
 	cout << c;
 }
+
 void Screen::setP1Coins(int coins) {
 	if (coins < 0) coins = 0;
 	if (coins > 99) coins = 99;
@@ -230,7 +231,6 @@ bool Screen::is_heart_char(int x, int y, char c) const {
 }
 
 
-// Screen.cpp (Inside Screen::get_object_color)
 
 Color Screen::get_object_color(int x, int y, char c) const {
 	if (activeGame == nullptr || !activeGame->getColorsState()) {
@@ -255,7 +255,9 @@ Color Screen::get_object_color(int x, int y, char c) const {
 	case '#': return Color::DARK_MAGENTA; // spring
 	case 'o': return Color::YELLOW; // coin
 	case '?': return Color::MAGENTA; // clue
-	case 'H': return Color::WHITE; 
+	case 'H': return Color::WHITE; //hearts in shop
+	case '\\': return Color::GREEN; // ON
+	case '/':  return Color::RED; // OFF
 
 
 	default:  return Color::WHITE;
@@ -310,3 +312,26 @@ void Screen::setDoorUnlocked(int x, int y) {
 		activeGame->setDoorUnlocked(x, y);
 	}
 }
+
+//riddels
+std::string Screen::getGameClue() const {
+	if (activeGame) {
+		return activeGame->getCurrentClue();
+	}
+	return "No active game.";
+}
+
+void Screen::displayMessage(const std::string& msg) {
+	gotoxy(10, 16);
+	set_text_color(Color::CYAN);
+	std::cout << "CLUE: " << msg << "   ";
+	set_text_color(Color::WHITE);
+}
+
+bool Screen::triggerRiddle() {
+	if (activeGame) {
+		return activeGame->handle_riddle_encounter();
+	}
+	return false;
+}
+

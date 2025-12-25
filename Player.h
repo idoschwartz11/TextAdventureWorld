@@ -1,5 +1,4 @@
 ﻿#pragma once
-
 #include "Point.h"
 #include "Screen.h"
 #include <cstring>

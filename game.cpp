@@ -55,10 +55,10 @@ const std::string MAP_ROOM_9[Screen::MAX_Y] = {
  "W                                                                    W|        |", // 6
  "W                                                                    W|        |", // 7
  "W                                                                    W|  X=00  |", // 8
- "W            W                                       W               W|  Y=00  |", // 9 
- "W            W     !       H       K       ?         W               W|        |", // 10
- "W            W     5       5       8       5         W               W|--------|", // 11
- "W            WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW               W|  P.II: |", // 12
+ "W                  W W     W W     W W      W W                      W|  Y=00  |", // 9 
+ "W                  W!W     WHW     WKW      W?W                      W|        |", // 10
+ "W                  W5W     W5W     W8W      W5W                      W|--------|", // 11
+ "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW|  P.II: |", // 12
  "W                                                                    W| <3 x3  |", // 13
  "W                                                                    W|  o x00 |", // 14
  "W                                                                    W|        |", // 15
@@ -83,17 +83,17 @@ const std::string MAP_ROOM_1[Screen::MAX_Y] = {
      "W   W      WWWW    W   W   W   W   WWWWWWWW       W    W             W|        |", // 4
      "W   WWWWWW    W    W   W   W  !W          W       W    WWWWWWW       W| Inv:   |", // 5
      "W        W    W    W   W   WWWWW    WWWWWWW     WWW    W @   W       W|        |", // 6
-     "WW1WW    W    W oo W   W        o         W   ooo W    W  K  W       W|        |", // 7
+     "WW1 W    W    W oo W   W        o         W   ooo W    W  K  W       W|        |", // 7
      "W   W    W    WWWWWW   WWWWWWWWWW   WWWWWWW   WWWWW    WWW WWW       W|  X=00  |", // 8
      "W   W    W        oo   W             o              o                W|  Y=00  |", // 9
      "W   W    WWWWWWWWWWW   WWWWWWWWW       WWWWWWW       WWWWWWW      WWWW|        |", // 10
-     "W   W               o          W  o          W  !        W        W 2W|--------|", // 11
+     "W                   o             o             !                 W 2W|--------|", // 11
      "W   WWWWWWWWWWWWWWWWWWWWWW     W  WWWWWWW    W  WWWWWWW WWWWWWW   WWWW|  P.II: |", // 12
      "W        ooo             W     W       W     W      o   W            W| <3 x3  |", // 13
      "W   WWWWWWWWWWWWWWWWWWW  W  WWWWWWWWWWWWWWWWWWWW   WWWWWW            W|  o x00 |", // 14
      "W            !W          W                !    W      o              W|        |", // 15
      "W   WWWWWWWWWWW   WWWWWWWWWWW   WWWWWWWW       W  WWWWWWWWWW         W| Inv:   |", // 16
-     "W   Wooo      W   W/ ooooo  W   W      W   o   W  W         W        W|        |", // 17
+     "W   Wooo      W    / ooooo  W   W      W   o   W  W         W        W|        |", // 17
      "W   Wooo      W   W  ooooo  W   W      W       W  W    o    W        W|        |", // 18
      "W   W   WWWWWWW   W  ooooo  W   WWWWWWWW   WWWWWW  WWWWWWWWWW        W|        |", // 19
      "W   W             WWWWWWWWWWW    o             o            W        W|  X=00  |", // 20
@@ -167,6 +167,7 @@ const std::string MAP_ROOM_3[Screen::MAX_Y] = {
 
 void game::run_game() {
 	hideCursor();
+    riddle_manager.loadRiddles("riddles.txt"); 
 	main_menu();
 	cls();
 }
@@ -243,6 +244,7 @@ void game::show_instructions() {
 
 void game::start_new_game() {
     current_screen = 0;
+    last_riddle_index = riddle_manager.getRandomRiddleIndex();
     p1_ready_to_transition = false;
     p2_ready_to_transition = false;
 
@@ -379,7 +381,7 @@ void game::game_loop(Screen& screen, Player players[]) {
                 }
             }
         }
-
+        check_switches(screen);
         Sleep(30);
     }
 }
@@ -621,9 +623,121 @@ bool game::isShopHeart(int x, int y) const {
         return false;
     }
 
-    if (x == 27 && y == 10) {
+    if (x == 28 && y == 10) {
         return true;
     }
 
     return false;
+}
+
+
+//riddle
+bool game::handle_riddle_encounter() {
+    int ridx;
+
+    // 1. STICKY LOGIC: Check if we already have an unsolved riddle
+    if (last_riddle_index != -1) {
+        // We have an active riddle from before (or the shop), force the player to solve IT.
+        ridx = last_riddle_index;
+    }
+    else {
+        // No active riddle, pick a new random one
+        ridx = riddle_manager.getRandomRiddleIndex();
+        if (ridx == -1) return true; // No riddles loaded
+
+        last_riddle_index = ridx; // Save it as the "Active" riddle
+    }
+
+    std::string question = riddle_manager.getQuestion(ridx);
+    std::string userInput = "";
+    bool inRiddle = true;
+    bool solved = false;
+    std::string message = "Type answer & Enter, or ESC to leave.";
+
+    while (inRiddle) {
+        cls();
+        gotoxy(0, 5);
+        set_text_color(Color::CYAN);
+        std::cout << "=================== RIDDLE ENCOUNTER ===================" << std::endl;
+        set_text_color(Color::WHITE);
+
+        gotoxy(1, 8);
+        std::cout << "Riddle: " << question << std::endl;
+
+        gotoxy(1, 12);
+        std::cout << "Your Answer: " << userInput << "_" << std::endl;
+
+        gotoxy(10, 15);
+        set_text_color(Color::YELLOW);
+        std::cout << message << std::endl;
+        set_text_color(Color::WHITE);
+
+        char c = _getch();
+
+        if (c == 27) { // ESC
+            inRiddle = false;
+            solved = false;
+            // NOTE: We do NOT reset last_riddle_index here. 
+            // It stays saved so the clue works!
+        }
+        else if (c == 13) { // ENTER
+            if (riddle_manager.checkAnswer(ridx, userInput)) {
+                message = "CORRECT! The path opens.";
+                gotoxy(10, 15);
+                set_text_color(Color::GREEN);
+                std::cout << message << "                       " << std::endl;
+                Sleep(1000);
+
+                inRiddle = false;
+                solved = true;
+
+                // 2. SUCCESS LOGIC: Reset the memory
+                last_riddle_index = -1;
+            }
+            else {
+                message = "WRONG! Try again or ESC.";
+                userInput = "";
+            }
+        }
+        else if (c == 8) { // BACKSPACE
+            if (!userInput.empty()) {
+                userInput.pop_back();
+            }
+        }
+        else if (isalnum(c) || c == ' ') {
+            userInput += c;
+        }
+    }
+    cls();
+    return solved;
+}
+
+
+
+std::string game::getCurrentClue() const {
+    if (last_riddle_index == -1) {
+        return "Find a riddle first to get a hint!";
+    }
+    return riddle_manager.getClue(last_riddle_index);
+}
+
+
+void game::check_switches(Screen& screen) {
+    if (current_screen == 1) { // Room 1
+        char sw1 = screen.getCharAt(Point(1, 1));
+        char sw2 = screen.getCharAt(Point(19, 17));
+
+        if (sw1 == '/' && sw2 == '/') {
+            // BOTH ON: Remove the wall barrier
+            if (screen.getCharAt(Point(66, 11)) == 'W') {
+                screen.setCharAt(67, 11, ' ');
+            }
+        }
+        else {
+            // AT LEAST ONE OFF: Ensure the wall barrier is there
+            if (screen.getCharAt(Point(66, 11)) == ' ') {
+                screen.setCharAt(67, 11, 'W');
+            }
+        }
+    }
 }

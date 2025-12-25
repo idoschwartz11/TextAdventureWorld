@@ -3,7 +3,7 @@
 #include "Screen.h"
 #include "Point.h"
 #include "Color.h"
-
+#include "Riddle.h"
 
 class game {
 private:
@@ -21,6 +21,9 @@ private:
 	int current_screen = 0;
 	int darkRoomIndex = 1;
 
+	// riddles
+	RiddleManager riddle_manager;
+	int last_riddle_index = -1;  // <--- 2. Declare this here!
 
 	// players
 	Player player1;
@@ -91,4 +94,10 @@ public:
 	bool isShopHeart(int x, int y) const;
 
 
+	//riddle
+	bool handle_riddle_encounter();
+	std::string getCurrentClue() const;
+
+	//switch
+	void check_switches(Screen& screen);
 };

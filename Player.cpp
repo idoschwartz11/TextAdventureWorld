@@ -2,6 +2,7 @@
 #include "Direction.h"
 #include <cctype>
 #include <iostream>
+#include <conio.h>
 
 using std::tolower;
 using std::cout; 
@@ -275,10 +276,12 @@ void Player::move() {
             int nextY = (finalY + dirY + Screen::MAX_Y) % Screen::MAX_Y;
             Point stepPos(nextX, nextY, ch);
 
-            if (screen.isWall(stepPos)) {
+            if (screen.isWall(stepPos)){
                 blocked = true;
                 break;
             }
+            
+
 
             if (other != nullptr && nextX == other->getX() && nextY == other->getY()) {
                 blocked = true;
@@ -286,6 +289,7 @@ void Player::move() {
             }
 
             char cell = screen.getCharAt(stepPos);
+
 
             if (cell == 'o') {  
                 ++coins;
@@ -370,6 +374,36 @@ void Player::move() {
         if (tryToBuyItem(nextX, nextY)) {
             return;
         }
+    }
+
+    // 2. Riddle Check
+    if (cell == 'R') {
+        bool solved = screen.triggerRiddle();
+
+        if (solved) {
+            // Remove 'R' from map
+            screen.setCharAt(nextX, nextY, ' ');
+
+            gotoxy(currX, currY);
+            cout << under;
+            body.set(nextX, nextY);
+            x = nextX;
+            y = nextY;
+            draw();
+
+            if (ch == '$') screen.setP1Position(x, y);
+            else if (ch == '&') screen.setP2Position(x, y);
+        }
+        else {
+            
+            body.setDirection(Direction::STAY);
+        }
+        return;
+    }
+    if (cell == '\\' || cell == '/') {
+        char newState = (cell == '\\') ? '/' : '\\';
+        screen.setCharAt(nextX, nextY, newState);
+        cell = newState;
     }
 
     // spring: snap to wall side and fully compress
@@ -605,12 +639,29 @@ bool Player::tryToBuyItem(int itemX, int itemY) {
         return false;
     }
 
+    if (itemChar == '?') {
+        coins -= price;
+        if (ch == '$') screen.setP1Coins(coins);
+        else if (ch == '&') screen.setP2Coins(coins);
+        screen.setCharAt(itemX, itemY, ' ');
+        screen.setCharAt(itemX, itemY + 1, ' ');
+        std::string clue = screen.getGameClue();
+        screen.displayMessage(clue);
+
+        gotoxy(10, 17);
+        std::cout << "Press any key to continue...";
+        _getch();
+        gotoxy(2, 23);
+        std::cout << "                                                      ";
+        return true;
+    }
+
     bool hasRoom = false;
 
     if (itemChar == 'H' && hearts < 9) {
         hasRoom = true;
     }
-    else if ((itemChar == '!' || itemChar == 'K' || itemChar == '?') && item == ' ') {
+    else if ((itemChar == '!' || itemChar == 'K') && item == ' ') {
         hasRoom = true;
     }
 
