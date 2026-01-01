@@ -3,45 +3,53 @@
 #include "Screen.h"
 #include "Point.h"
 #include "Color.h"
-#include "Riddle.h"
+#include "Obstacle.h" // User 1 feature
+#include "Riddle.h"   // User 2 feature
+#include <vector>
+#include <string>
 
 class game {
 private:
 	bool game_is_running = true;
 	bool pause = false;
-	bool colors = true; // will be toggled in menu
+	bool colors = true; // toggled in menu
+	
+	// Transition State
 	bool p1_ready_to_transition = false;
 	bool p2_ready_to_transition = false;
-	int p1_dest_room = -1;
+	int p1_dest_room = -1; // User 2: specific room destination
 	int p2_dest_room = -1;
+	
+	// Doors (User 2)
 	int unlockedDoorX = -1;
 	int unlockedDoorY = -1;
 
-	Screen screens[4]; // total number of screens - room 0,secret room,room 1, room 2
+	// Obstacles (User 1)
+	std::vector<Obstacle> obstacles;
+	void loadObstaclesFromScreen(Screen& screen);
+	void renderFrame(Screen& screen, Player players[]);
+	int findObstacleIndexAt(int x, int y) const;
+
+	Screen screens[4]; // room 0, secret room, room 1, room 2
 	int current_screen = 0;
 	int darkRoomIndex = 1;
 
-	// riddles
+	// Riddles (User 2)
 	RiddleManager riddle_manager;
-	int last_riddle_index = -1;  // <--- 2. Declare this here!
+	int last_riddle_index = -1;
 
-	// players
+	// Players
 	Player player1;
 	Player player2;
 
-	// colors
+	// Colors
 	Color player1_color = Color::GREEN;
 	Color player2_color = Color::BLUE;
-	
-	//bomb
-	int current_game_cycle = 0;
 
-
-	//score
+	// Score & Time (User 2)
 	int score = 1000;
 	int game_cycle_counter = 0;
-
-	
+	int current_game_cycle = 0;
 
 public:
 	game()
@@ -52,52 +60,54 @@ public:
 		player2.setOther(&player1);
 	}
 
+	// --- Obstacles Logic (User 1) ---
+	bool isObstacleAt(int x, int y) const;
+	bool tryPushObstacle(Screen& screen, Player& p, Player& other, Direction dir, int pBonusPower = 0);
 
-	void run_game(); // entry point
+	// --- Core Game Flow ---
+	void run_game(); 
 	void main_menu();
-	void start_new_game(); // starts a new game;
-	void show_instructions(); // show instructions screen
+	void start_new_game(); 
+	void show_instructions(); 
+	void game_loop(Screen& screen, Player players[]); 
 
-	void game_loop(Screen& screen, Player players[]); // main game loop
-
-	void pause_screen(); // draw pause screen
+	// --- Pause & Utils ---
+	void pause_screen(); 
 	bool handle_pause();
-
 	void set_text_color(Color color);
 
-	//bomb state
+	// --- Bomb State ---
 	bool bombActive = false;
 	int activeBombX = -1;
 	int activeBombY = -1;
-	int bombTimer = 0; // The 5 game cycle
+	int bombTimer = 0; 
 	void bomb_explode(int bombX, int bombY, Screen& screen, Player players[]);
 	void updateBomb(Screen& screen, Player players[]);
 	void activateBomb(int x, int y);
 
-
-	//room travel
+	// --- Room Travel & Doors (Merged) ---
+	// Updated to accept destination char (User 2 requirement)
 	void setPlayerReady(char playerChar, char destChar);
 	bool isPlayerReady(char playerChar) const;
+	
+	// Door locking helpers (User 2)
 	bool isDoorUnlocked(int x, int y) const;
 	void setDoorUnlocked(int x, int y);
 	void clearUnlockedDoor();
 
-
-	//colors
+	// --- Colors ---
 	Color get_player_color(char playerChar) const;
 	bool getColorsState() const { return colors; }
-	Color get_object_color(int x, int y, char c) const;
+	// Note: get_object_color is handled in Screen.cpp logic using isShopHeart below
 
-	//score
+	// --- Score & Shop (User 2) ---
 	void updateScore(Screen& screen);
-
 	bool isShopHeart(int x, int y) const;
 
-
-	//riddle
+	// --- Riddles (User 2) ---
 	bool handle_riddle_encounter();
 	std::string getCurrentClue() const;
 
-	//switch
+	// --- Switches (User 2) ---
 	void check_switches(Screen& screen);
 };
