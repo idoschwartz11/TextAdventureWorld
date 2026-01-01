@@ -129,6 +129,7 @@
   <ItemGroup>
     <ClCompile Include="game.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Obstacle.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Point.cpp" />
     <ClCompile Include="Riddle.cpp" />
@@ -139,6 +140,7 @@
     <ClInclude Include="Color.h" />
     <ClInclude Include="Direction.h" />
     <ClInclude Include="game.h" />
+    <ClInclude Include="Obstacle.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Point.h" />
     <ClInclude Include="Riddle.h" />

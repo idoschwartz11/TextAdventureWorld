@@ -183,22 +183,15 @@ void Player::springRestoreTick() {
 void Player::handleKeyPressed(char key) {
     char lower = tolower(key);
 
-    // item drop
     if ((ch == '$' && lower == 'e') ||
         (ch == '&' && lower == 'o')) {
         dropItem();
         return;
     }
-
-    // while under spring launch effect: stay and direction changes are ignored 
     if (inSpringLaunch) {
-        if (lower == tolower(keys[4])) {
-            return;
-        }
         return;
     }
 
-    // while compressed against spring near the wall:
     if (inSpringCompress) {
         bool isMyKey = false;
         for (int i = 0; i < NUM_KEYS; ++i) {
@@ -207,45 +200,23 @@ void Player::handleKeyPressed(char key) {
                 break;
             }
         }
-
         if (isMyKey) {
-            // any move releases the spring
             startSpringLaunch();
         }
         return;
     }
 
-    Direction newDir = Direction::STAY;
-    bool hasDir = false;
-
-    if (lower == tolower(keys[0])) {
-        newDir = Direction::UP; hasDir = true;
-    }
-    else if (lower == tolower(keys[1])) {
-        newDir = Direction::LEFT; hasDir = true;
-    }
-    else if (lower == tolower(keys[2])) {
-        newDir = Direction::RIGHT; hasDir = true;
-    }
-    else if (lower == tolower(keys[3])) {
-        newDir = Direction::DOWN; hasDir = true;
-    }
-    else if (lower == tolower(keys[4])) {
-        newDir = Direction::STAY; hasDir = true;
-    }
-
-    if (hasDir) {
-        body.setDirection(newDir);
-    }
+    if (lower == tolower(keys[0])) currentDir = Direction::UP;
+    else if (lower == tolower(keys[1])) currentDir = Direction::LEFT;
+    else if (lower == tolower(keys[2])) currentDir = Direction::RIGHT;
+    else if (lower == tolower(keys[3])) currentDir = Direction::DOWN;
+    else if (lower == tolower(keys[4])) currentDir = Direction::STAY;
 }
 
 void Player::move() {
     springRestoreTick();
-    if (x < 0 || y < 0) { 
-        return;
-    }
-   
-    // --- Spring Launch Movement ---
+    if (x < 0 || y < 0) return;
+
     if (inSpringLaunch) {
         if (springTicksLeft <= 0 || springSpeed <= 0 || springDir == Direction::STAY) {
             inSpringLaunch = false;
@@ -274,28 +245,14 @@ void Player::move() {
         bool blocked = false;
 
         for (int step = 0; step < springSpeed; ++step) {
-
             int nextX = (finalX + dirX + Screen::MAX_X) % Screen::MAX_X;
             int nextY = (finalY + dirY + Screen::MAX_Y) % Screen::MAX_Y;
 
-            if (screen.isHudCell(nextX, nextY)) {
-                blocked = true;
-                break;
-            }
-
+            if (screen.isHudCell(nextX, nextY)) { blocked = true; break; }
             Point stepPos(nextX, nextY, ch);
+            if (screen.isWall(stepPos)) { blocked = true; break; }
+            if (other != nullptr && nextX == other->getX() && nextY == other->getY()) { blocked = true; break; }
 
-            if (screen.isWall(stepPos)) {
-                blocked = true;
-                break;
-            }
-
-            if (other != nullptr && nextX == other->getX() && nextY == other->getY()) {
-                blocked = true;
-                break;
-            }
-
-            // Merged: Keep User 1's superior obstacle pushing with spring bonus
             game* g = screen.getGame();
             if (g && g->isObstacleAt(nextX, nextY)) {
                 int bonus = compressedCount;
@@ -303,20 +260,15 @@ void Player::move() {
                 if (other != nullptr) {
                     pushed = g->tryPushObstacle(screen, *this, *other, springDir, bonus);
                 }
-                if (!pushed) {
-                    blocked = true;
-                    break;
-                }
+                if (!pushed) { blocked = true; break; }
             }
 
             char cell = screen.getCharAt(stepPos);
-
-            // Merged: Using User 2's coin logic (individual wallets) for Shop compatibility
             if (cell == 'o') {
                 ++coins;
                 screen.setCharAt(nextX, nextY, ' ');
-                if (ch == '$') screen.setP1Coins(coins);
-                else if (ch == '&') screen.setP2Coins(coins);
+                int total = coins + (other ? other->getCoins() : 0);
+                screen.setCoins(total);
             }
             else if ((cell == '!' || cell == 'K' || cell == '@') && item == ' ') {
                 item = cell;
@@ -329,40 +281,28 @@ void Player::move() {
             finalY = nextY;
         }
 
-        gotoxy(currX, currY);
-        cout << under;
-
+        gotoxy(currX, currY); std::cout << under;
         body.set(finalX, finalY);
-        x = finalX;
-        y = finalY;
-        draw(); // Use local draw for color support
-
-        if (ch == '$')
-            screen.setP1Position(x, y);
-        else if (ch == '&')
-            screen.setP2Position(x, y);
+        x = finalX; y = finalY;
+        draw();
+        if (ch == '$') screen.setP1Position(x, y);
+        else if (ch == '&') screen.setP2Position(x, y);
 
         --springTicksLeft;
-
         if (springTicksLeft <= 0 || blocked) {
             inSpringLaunch = false;
             springSpeed = 0;
             springTicksLeft = 0;
             body.setDirection(Direction::STAY);
         }
-
         return;
     }
 
-    // while compressed we do not move automatically, only wait for key
-    if (inSpringCompress) {
-        return;
-    }
+    if (inSpringCompress) return;
 
-    // --- Normal Movement ---
-    if (body.getDiffX() == 0 && body.getDiffY() == 0) {
-        return;
-    }
+    body.setDirection(currentDir);
+
+    if (body.getDiffX() == 0 && body.getDiffY() == 0) return;
 
     int currX = body.getX();
     int currY = body.getY();
@@ -373,104 +313,96 @@ void Player::move() {
     int nextY = (currY + body.getDiffY() + Screen::MAX_Y) % Screen::MAX_Y;
     Point nextPos(nextX, nextY, ch);
 
-    // wall
     if (screen.isWall(nextPos)) {
+        currentDir = Direction::STAY;
         body.setDirection(Direction::STAY);
         return;
     }
 
-    // other player
     if (other != nullptr && nextX == other->getX() && nextY == other->getY()) {
-        body.setDirection(Direction::STAY);
-        other->body.setDirection(Direction::STAY);
-        return;
-    }
-
-    // obstacle (not in screen map, drawn by game overlay) - User 1 logic
-    if (screen.getGame() != nullptr && screen.getGame()->isObstacleAt(nextX, nextY)) {
-        Direction dir = Direction::STAY;
-        int dx = body.getDiffX();
-        int dy = body.getDiffY();
-
-        if (dx == 1 && dy == 0) dir = Direction::RIGHT;
-        else if (dx == -1 && dy == 0) dir = Direction::LEFT;
-        else if (dx == 0 && dy == -1) dir = Direction::UP;
-        else if (dx == 0 && dy == 1) dir = Direction::DOWN;
-
-        bool pushed = false;
-        if (other != nullptr && dir != Direction::STAY) {
-            pushed = screen.getGame()->tryPushObstacle(screen, *this, *other, dir);
-        }
-
-        if (!pushed) {
+        if (currentDir != Direction::STAY && currentDir == other->currentDir) {
             return;
         }
+        currentDir = Direction::STAY;
+        body.setDirection(Direction::STAY);
+        return;
+    }
+
+    if (screen.getGame() != nullptr && screen.getGame()->isObstacleAt(nextX, nextY)) {
+        Direction dir = currentDir;
+        bool pushed = false;
+        if (other != nullptr && dir != Direction::STAY) {
+            pushed = screen.getGame()->tryPushObstacle(screen, *this, *other, dir, 0);
+        }
+        if (!pushed) return;
     }
 
     char cell = screen.getCharAt(nextPos);
 
-    // --- MERGED FEATURES FROM USER 2 (Shop, Riddles, Slopes) ---
+    bool isShopItemChar = screen.is_shop_item(cell);
+    bool isMerchandise = false;
 
-    // 1. Shop Check
-    if (screen.is_shop_item(cell)) {
-        if (tryToBuyItem(nextX, nextY)) {
-            return; // If interaction happened, don't move onto the item
+    if (isShopItemChar && nextY + 1 < Screen::MAX_Y) {
+        char tag = screen.getCharAt(Point(nextX, nextY + 1, ' '));
+        if (isdigit(tag)) {
+            isMerchandise = true;
         }
     }
 
-    // 2. Riddle Check
+    if (isMerchandise) {
+        if (tryToBuyItem(nextX, nextY)) {
+            currentDir = Direction::STAY;
+            body.setDirection(Direction::STAY);
+            return;
+        }
+        else {
+            currentDir = Direction::STAY;
+            body.setDirection(Direction::STAY);
+            return;
+        }
+    }
+
     if (cell == 'R') {
         bool solved = screen.triggerRiddle();
         if (solved) {
             screen.setCharAt(nextX, nextY, ' ');
-            // Move into the riddle spot after solving
-            gotoxy(currX, currY);
-            cout << under;
+            gotoxy(currX, currY); std::cout << under;
             body.set(nextX, nextY);
-            x = nextX;
-            y = nextY;
+            x = nextX; y = nextY;
             draw();
             if (ch == '$') screen.setP1Position(x, y);
             else if (ch == '&') screen.setP2Position(x, y);
         }
         else {
+            currentDir = Direction::STAY;
             body.setDirection(Direction::STAY);
         }
         return;
     }
 
-    // 3. Slopes
     if (cell == '\\' || cell == '/') {
         char newState = (cell == '\\') ? '/' : '\\';
         screen.setCharAt(nextX, nextY, newState);
         cell = newState;
     }
 
-    // --- Spring Compression (User 1 Logic) ---
     if (cell == '#') {
         if (restoringSpring) {
             bool sameSpringCell = false;
             for (int i = 0; i < numCollapsedSpringCells; ++i) {
-                if (collapsedSpringCells[i].getX() == nextX &&
-                    collapsedSpringCells[i].getY() == nextY) {
-                    sameSpringCell = true;
-                    break;
+                if (collapsedSpringCells[i].getX() == nextX && collapsedSpringCells[i].getY() == nextY) {
+                    sameSpringCell = true; break;
                 }
             }
             if (!sameSpringCell) {
-                // Clean up previous spring restoration instantly if entering a new one
                 for (int i = 0; i < numCollapsedSpringCells; ++i) {
                     Point& p = collapsedSpringCells[i];
                     screen.setCharAt(p.getX(), p.getY(), '#');
                 }
-                restoringSpring = false;
-                numCollapsedSpringCells = 0;
-                restoreIndex = 0;
-                restoreDelayCounter = 0;
+                restoringSpring = false; numCollapsedSpringCells = 0; restoreIndex = 0; restoreDelayCounter = 0;
             }
         }
 
-        // Logic to find wall and compress
         if (!restoringSpring) {
             Direction wallDir = findWallDirForSpring(nextPos);
             if (wallDir != Direction::STAY) {
@@ -482,136 +414,86 @@ void Player::move() {
                 case Direction::RIGHT: dx = 1; break;
                 default: break;
                 }
-
-                int sx = nextPos.getX();
-                int sy = nextPos.getY();
-                int odx = -dx;
-                int ody = -dy;
-
-                // Find start of spring
+                int sx = nextPos.getX(); int sy = nextPos.getY();
+                int odx = -dx; int ody = -dy;
                 while (true) {
-                    int nx = sx + odx;
-                    int ny = sy + ody;
+                    int nx = sx + odx; int ny = sy + ody;
                     if (nx < 0 || nx >= Screen::MAX_X || ny < 0 || ny >= Screen::MAX_Y) break;
-                    Point p(nx, ny, ch);
-                    if (!screen.isSpring(p)) break;
-                    sx = nx;
-                    sy = ny;
+                    Point p(nx, ny, ch); if (!screen.isSpring(p)) break; sx = nx; sy = ny;
                 }
-
-                numCollapsedSpringCells = 0;
-                compressedCount = 0;
-
-                int cx2 = sx;
-                int cy2 = sy;
-                Point p2(cx2, cy2, ch);
-
+                numCollapsedSpringCells = 0; compressedCount = 0;
+                int cx2 = sx; int cy2 = sy; Point p2(cx2, cy2, ch);
                 while (screen.isSpring(p2) && numCollapsedSpringCells < MAX_SPRING_LEN) {
-                    collapsedSpringCells[numCollapsedSpringCells] = p2;
-                    ++numCollapsedSpringCells;
-                    ++compressedCount;
-
-                    screen.setCharAt(cx2, cy2, ' ');
-
-                    cx2 += dx;
-                    cy2 += dy;
-                    p2 = Point(cx2, cy2, ch);
+                    collapsedSpringCells[numCollapsedSpringCells] = p2; ++numCollapsedSpringCells; ++compressedCount;
+                    screen.setCharAt(cx2, cy2, ' '); cx2 += dx; cy2 += dy; p2 = Point(cx2, cy2, ch);
                 }
-
-                int wallNeighborX = cx2 - dx;
-                int wallNeighborY = cy2 - dy;
-
-                gotoxy(currX, currY);
-                cout << under;
-
+                int wallNeighborX = cx2 - dx; int wallNeighborY = cy2 - dy;
+                gotoxy(currX, currY); std::cout << under;
                 body.set(wallNeighborX, wallNeighborY);
-                x = wallNeighborX;
-                y = wallNeighborY;
+                x = wallNeighborX; y = wallNeighborY;
                 draw();
-
-                if (ch == '$') screen.setP1Position(x, y);
-                else if (ch == '&') screen.setP2Position(x, y);
-
-                inSpringCompress = true;
-                compressDir = wallDir;
+                if (ch == '$') screen.setP1Position(x, y); else if (ch == '&') screen.setP2Position(x, y);
+                inSpringCompress = true; compressDir = wallDir;
+                currentDir = Direction::STAY;
                 body.setDirection(Direction::STAY);
-
                 return;
             }
         }
     }
 
-    // --- Items (Coins/Keys/Bombs) - User 2 logic for individual wallets ---
     if (cell == 'o') {
         ++coins;
         screen.setCharAt(nextX, nextY, ' ');
-        if (ch == '$') screen.setP1Coins(coins);
-        else if (ch == '&') screen.setP2Coins(coins);
+        int total = coins + (other ? other->getCoins() : 0);
+        screen.setCoins(total);
     }
-    else if (cell == '!' || cell == 'K' || cell == '@') {
-        if (item == ' ') {
-            item = cell;
-            screen.setCharAt(nextX, nextY, ' ');
-            if (ch == '$') screen.setP1Inventory(item);
-            else if (ch == '&') screen.setP2Inventory(item);
-        }
+    else if ((cell == '!' || cell == 'K' || cell == '@') && item == ' ') {
+        item = cell;
+        screen.setCharAt(nextX, nextY, ' ');
+        if (ch == '$') screen.setP1Inventory(item);
+        else if (ch == '&') screen.setP2Inventory(item);
     }
 
-    // --- Doors (User 2 logic for specific door IDs) ---
     if (cell == '1' || cell == '2' || cell == '9') {
-        // If it's the exit door (9) or other player is ready
         if (cell == '9' || screen.isOtherPlayerReady(ch)) {
-            gotoxy(currX, currY);
-            cout << under;
-            x = -1;
-            y = -1;
-            body.set(-1, -1);
-            screen.playerReadyToTransition(ch, cell); // Pass cell ID
+            gotoxy(currX, currY); std::cout << under;
+            x = -1; y = -1; body.set(-1, -1);
+            currentDir = Direction::STAY;
+            screen.playerReadyToTransition(ch, cell);
             return;
         }
         if (item == 'K') {
-            // User 2: setDoorUnlocked logic could be added here if implemented in screen
-            // For now, we consume key and wait
+            setDoorUnlocked(nextX, nextY);
             item = ' ';
-            if (ch == '$') screen.setP1Inventory(' ');
-            else if (ch == '&') screen.setP2Inventory(' ');
-            
-            gotoxy(currX, currY);
-            cout << under;
-            x = -1;
-            y = -1;
-            body.set(-1, -1);
-            screen.playerReadyToTransition(ch, cell); // Pass cell ID
+            if (ch == '$') screen.setP1Inventory(' '); else if (ch == '&') screen.setP2Inventory(' ');
+            gotoxy(currX, currY); std::cout << under;
+            x = -1; y = -1; body.set(-1, -1);
+            currentDir = Direction::STAY;
+            screen.playerReadyToTransition(ch, cell);
             return;
         }
         else {
-            // no key
-            body.setDirection(Direction::STAY);
-            return;
+            currentDir = Direction::STAY; body.setDirection(Direction::STAY); return;
         }
     }
 
-    gotoxy(currX, currY);
-    cout << under;
-
+    gotoxy(currX, currY); std::cout << under;
     body.move();
-    x = body.getX();
-    y = body.getY();
+    x = body.getX(); y = body.getY();
     draw();
-
-    if (ch == '$')
-        screen.setP1Position(x, y);
-    else if (ch == '&')
-        screen.setP2Position(x, y);
-
+    if (ch == '$') screen.setP1Position(x, y);
+    else if (ch == '&') screen.setP2Position(x, y);
 }
+
+
 
 void Player::resetPosition(int newX, int newY) {
     x = newX;
     y = newY;
     body.set(newX, newY);
-    body.setDirection(Direction::STAY); // Ensure they start still
-    inSpringCompress = false; 
+    body.setDirection(Direction::STAY);
+    currentDir = Direction::STAY;
+    inSpringCompress = false;
     inSpringLaunch = false;
 }
 

@@ -41,11 +41,11 @@ public:
 
     void setDirection(Direction dir);
 
-    void draw() {
+    void draw() const {
         draw(ch);
     }
 
-    void draw(char c) {
+    void draw(char c) const {
         gotoxy(x, y);
         cout << c;
     }

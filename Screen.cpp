@@ -30,26 +30,23 @@ void Screen::writeHudLine(int rowOffset, const std::string& text) {
 }
 
 void Screen::rebuildHud() {
-    // 3 lines x 20 chars, anchored at (legendCol, legendRow)
-    // We use User 1's format but populate it with data that might come from User 2's logic
-    char buf[128];
+	char buf[128];
 
-    // Line 0: Player 1 info
-    // Format: $ P:X,Y H:3 I:K (Example compact format)
-    std::snprintf(buf, sizeof(buf), "$:%02d,%02d H:%d I:%c", 
-        hudP1x, hudP1y, hudP1Hearts, (hudP1Inv == 0 ? ' ' : hudP1Inv));
-    writeHudLine(0, buf);
+	std::snprintf(buf, sizeof(buf), "$:%02dx%02d Inv:%c <3:%d |",
+		hudP1x, hudP1y,
+		(hudP1Inv == 0 ? ' ' : hudP1Inv),
+		hudP1Hearts);
+	writeHudLine(0, buf);
 
-    // Line 1: Shared info (Score + Coins) - Adapted to show P1/P2 coins if needed, or total
-    // Currently using User 2's logic where coins are separate, but HUD space is limited.
-    // We'll show P1 coins and P2 coins.
-    std::snprintf(buf, sizeof(buf), "C1:%02d Sc:%03d C2:%02d", hudP1Coins, hudScore, hudP2Coins);
-    writeHudLine(1, buf);
+	std::snprintf(buf, sizeof(buf), "-SCORE:%03d----C:%02d-|",
+		hudScore, hudCoins);
+	writeHudLine(1, buf);
 
-    // Line 2: Player 2 info
-    std::snprintf(buf, sizeof(buf), "&:%02d,%02d H:%d I:%c", 
-        hudP2x, hudP2y, hudP2Hearts, (hudP2Inv == 0 ? ' ' : hudP2Inv));
-    writeHudLine(2, buf);
+	std::snprintf(buf, sizeof(buf), "&:%02dx%02d Inv:%c <3:%d |",
+		hudP2x, hudP2y,
+		(hudP2Inv == 0 ? ' ' : hudP2Inv),
+		hudP2Hearts);
+	writeHudLine(2, buf);
 }
 
 Screen::Screen() {};
@@ -57,8 +54,11 @@ Screen::Screen() {};
 void Screen::setMap(const std::string map[MAX_Y]) {
 	for (int i = 0; i < MAX_Y; ++i) {
 		screen[i] = map[i];
+
+		if ((int)screen[i].size() < MAX_X) {
+			screen[i].append(MAX_X - (int)screen[i].size(), ' ');
+		}
 	}
-	rebuildHud();
 }
 
 // User 1's File Loading (Crucial for Ex2)
@@ -125,9 +125,14 @@ void Screen::setCharAt(int x, int y, char c) {
     
     // We need to determine color for this specific char update
     Color color;
-    if (c == '$' || c == '&') color = get_player_color(c);
-    else if (is_heart_char(x, y, c)) color = Color::RED;
-    else color = get_object_color(x, y, c);
+    if (c == '$' || c == '&') 
+		color = get_player_color(c);
+	else if ((x == 14 && y == 0) || (x == 15 && y == 0) ||
+		(x == 14 && y == 2) || (x == 15 && y == 2)) {
+		color = Color::RED;
+	}
+    else
+		color = get_object_color(x, y, c);
     
     set_text_color(color);
 	std::cout << c;
@@ -137,13 +142,11 @@ void Screen::setCharAt(int x, int y, char c) {
 // --- Data Setters (Merged: User 2's split data feeding User 1's HUD) ---
 
 void Screen::setCoins(int totalCoins) {
-    // Legacy support if needed, otherwise ignored in favor of P1/P2 coins
-    hudCoins = totalCoins; 
-    // Mirror to score for now if no score logic exists
-    if(hudScore == 0) hudScore = totalCoins; 
-    rebuildHud();
+	if (totalCoins < 0) totalCoins = 0;
+	if (totalCoins > 99) totalCoins = 99;
+	hudCoins = totalCoins;
+	rebuildHud();
 }
-
 void Screen::setP1Coins(int coins) {
 	if (coins < 0) coins = 0;
 	if (coins > 99) coins = 99;
@@ -359,7 +362,8 @@ void Screen::drawCharAt(int x, int y, char c) {
 	if (c == '$' || c == '&') {
 		color = get_player_color(c);
 	}
-	else if (is_heart_char(x, y, c)) {
+	else if ((x == 14 && y == 0) || (x == 15 && y == 0) ||
+		(x == 14 && y == 2) || (x == 15 && y == 2)) {
 		color = Color::RED;
 	}
 	else {

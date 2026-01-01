@@ -16,6 +16,8 @@ class Player {
     Player* other = nullptr;
     int hearts = 3;
 
+    Direction currentDir = Direction::STAY;
+
     // coins and inventory
     int coins = 0;
     char item = ' ';         // '!', 'K', '@' or ' ' if empty

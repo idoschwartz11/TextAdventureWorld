@@ -110,4 +110,7 @@ public:
 
 	// --- Switches (User 2) ---
 	void check_switches(Screen& screen);
+
+
+	int getCurrentScreen() const { return current_screen; }
 };
