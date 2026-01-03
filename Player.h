@@ -19,7 +19,6 @@ class Player {
     Direction currentDir = Direction::STAY;
 
     // coins and inventory
-    int coins = 0;
     char item = ' ';         // '!', 'K', '@' or ' ' if empty
 
     // spring state
@@ -59,7 +58,6 @@ public:
     int getX() const { return x; }
     int getY() const { return y; }
 
-    int  getCoins() const { return coins; }
     char getItem()  const { return item; }
     void resetPosition(int newX, int newY);
     int  getHearts() const { return hearts; }

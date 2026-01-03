@@ -147,19 +147,7 @@ void Screen::setCoins(int totalCoins) {
 	hudCoins = totalCoins;
 	rebuildHud();
 }
-void Screen::setP1Coins(int coins) {
-	if (coins < 0) coins = 0;
-	if (coins > 99) coins = 99;
-    hudP1Coins = coins;
-    rebuildHud();
-}
 
-void Screen::setP2Coins(int coins) {
-	if (coins < 0) coins = 0;
-	if (coins > 99) coins = 99;
-    hudP2Coins = coins;
-    rebuildHud();
-}
 
 void Screen::setScore(int score) {
     if (score < 0) score = 0;
@@ -322,10 +310,7 @@ Color Screen::get_object_color(int x, int y, char c) const {
 	bool isDoorChar = (c == '1' || c == '2' || c == '9');
     // Note: User 2 checked x < 70, but now HUD is dynamic. 
     // We assume anything that isn't HUD is part of the map.
-	if (isDoorChar && !isInHud(x,y)) {
-		bool isTemporarilyUnlocked = activeGame->isDoorUnlocked(x, y);
-		return isTemporarilyUnlocked ? Color::GREEN : Color::RED;
-	}
+	if (isDoorUnlocked(x, y) && isdigit(c)) return Color::GREEN;
 
 	switch (c) {
 	case '@': return Color::BLUE;    // Bomb
@@ -382,11 +367,6 @@ bool Screen::is_shop_item(char c) const {
 	return (c == '!' || c == 'K' || c == 'H' || c == '?');
 }
 
-void Screen::setDoorUnlocked(int x, int y) {
-	if (activeGame != nullptr) {
-		activeGame->setDoorUnlocked(x, y);
-	}
-}
 
 std::string Screen::getGameClue() const {
 	if (activeGame) {
@@ -408,4 +388,47 @@ bool Screen::triggerRiddle() {
 		return activeGame->handle_riddle_encounter();
 	}
 	return false;
+}
+
+std::vector<std::string> Screen::getMapState() const {
+	std::vector<std::string> currentState;
+	for (int i = 0; i < MAX_Y; ++i) {
+		std::string row = screen[i];
+		for (char& c : row) { //ignoring players..
+			if (c == '$' || c == '&') {
+				c = ' ';
+			}
+		}
+		currentState.push_back(row);
+	}
+	return currentState;
+}
+
+void Screen::setMapFromState(const std::vector<std::string>& mapState) {
+	for (int i = 0; i < MAX_Y && i < (int)mapState.size(); ++i) {
+		screen[i] = mapState[i];
+	}
+	rebuildHud();
+}
+
+
+void Screen::setDoorUnlocked(int x, int y) {
+	if (x >= 0 && x < MAX_X && y >= 0 && y < MAX_Y) {
+		unlockedDoors[y][x] = true;
+	}
+}
+
+bool Screen::isDoorUnlocked(int x, int y) const {
+	if (x >= 0 && x < MAX_X && y >= 0 && y < MAX_Y) {
+		return unlockedDoors[y][x];
+	}
+	return false;
+}
+
+void Screen::resetUnlockedDoors() {
+	for (int y = 0; y < MAX_Y; ++y) {
+		for (int x = 0; x < MAX_X; ++x) {
+			unlockedDoors[y][x] = false;
+		}
+	}
 }

@@ -7,12 +7,14 @@
 #include "Riddle.h"   // User 2 feature
 #include <vector>
 #include <string>
+#include <map>
 
 class game {
 private:
 	bool game_is_running = true;
 	bool pause = false;
 	bool colors = true; // toggled in menu
+	std::map<int, std::vector<std::string>> visitedRooms;
 	
 	// Transition State
 	bool p1_ready_to_transition = false;

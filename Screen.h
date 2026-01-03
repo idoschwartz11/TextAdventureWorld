@@ -21,7 +21,7 @@ public:
 
 private:
     game* activeGame = nullptr;
-
+    bool unlockedDoors[MAX_Y][MAX_X] = { false };
     // HUD anchor (top-left) taken from 'L' in the .screen file.
     // If no 'L' exists in the file, defaults to (0,0).
     int legendRow = 0;
@@ -33,8 +33,6 @@ private:
     int hudP2x = 0, hudP2y = 0;
     int hudP1Hearts = 3;
     int hudP2Hearts = 3;
-    int hudP1Coins = 0;
-    int hudP2Coins = 0;
     int hudCoins = 0; // Legacy/Total backup
     int hudScore = 0;
     char hudP1Inv = ' ';
@@ -90,19 +88,25 @@ public:
     // Also detects 'L' and uses it as HUD anchor.
     bool loadFromFile(const std::string& filename);
 
+    std::vector<std::string> getMapState() const;
+
+    void setMapFromState(const std::vector<std::string>& mapState);
+
     char getCharAt(const Point& p) const { 
         return screen[p.getY()][p.getX()];
     }
-    
+    void setDoorUnlocked(int x, int y);
+
+    bool isDoorUnlocked(int x, int y) const;
+
+    void resetUnlockedDoors();
+
     void draw() const;
 
     void setCharAt(int x, int y, char c); 
 
     // HUD Data Setters
     void setCoins(int totalCoins); // Shared/Total
-    void setP1Coins(int coins);    // User 2: Individual
-    void setP2Coins(int coins);    // User 2: Individual
-    
     void setScore(int score);
 
     void setP1Hearts(int hearts);
@@ -113,6 +117,7 @@ public:
     
     void setP1Inventory(char c);
     void setP2Inventory(char c);
+    int getCoins() const { return hudCoins; }
 
     // Rendering
     void renderWithVisibility(const Player& p1, const Player& p2);
@@ -138,7 +143,6 @@ public:
     void playerReadyToTransition(char playerChar, char destChar);
     void playerReadyToTransition(char playerChar) { playerReadyToTransition(playerChar, '0'); } // overload for compatibility
     bool isOtherPlayerReady(char playerChar) const;
-    void setDoorUnlocked(int x, int y);
 
     // Colors
     void drawCharAt(int x, int y, char c);

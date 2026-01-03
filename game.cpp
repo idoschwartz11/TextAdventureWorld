@@ -119,8 +119,8 @@ const std::string MAP_ROOM_1[Screen::MAX_Y] = {
 const std::string MAP_ROOM_2[Screen::MAX_Y] = {
      "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW", // 0
      "W                                                                              W", // 1
-     "W                                YOU DID IT!                                   W", // 2
      "W                                                                              W", // 3
+     "W                                YOU DID IT!                                   W", // 2
      "W              .g8"" bgd       db      `7MMM.     ,MMF'`7MM" "YMM              W", // 4
      "W            .dP'     `M      ;MM:       MMMb    dPMM    MM    `7              W", // 5
      "W            dM'       `     ,V^MM.      M YM   ,M MM    MM   d                W", // 6
@@ -332,14 +332,14 @@ void game::game_loop(Screen& screen, Player players[]) {
     bool quitToMenu = false;
 
     while (!quitToMenu) {
-        clearUnlockedDoor(); // Reset door state (User 2)
-        
+        clearUnlockedDoor();
+
         for (int i = 0; i < 2; ++i) {
             players[i].move();
         }
 
         updateBomb(screen, players);
-        updateScore(screen); // User 2
+        updateScore(screen);
 
         if (players[0].isDead() || players[1].isDead()) {
             screen.setMap(MAP_ROOM_3);
@@ -351,9 +351,10 @@ void game::game_loop(Screen& screen, Player players[]) {
             continue;
         }
 
-        // --- Transition Logic (Merged) ---
         if (p1_ready_to_transition && p2_ready_to_transition) {
+            visitedRooms[current_screen] = screen.getMapState();
 
+            int prev_room = current_screen;
             int next_room = current_screen + 1;
 
             if (p1_dest_room != -1) next_room = p1_dest_room;
@@ -366,47 +367,65 @@ void game::game_loop(Screen& screen, Player players[]) {
             p1_dest_room = -1;
             p2_dest_room = -1;
 
-            std::string filename = makeWorldFileName(current_screen);
-            bool loaded = screen.loadFromFile(filename);
-            if (!loaded) {
-                // Fallback map loading
-                if (current_screen == 1) screen.setMap(MAP_ROOM_1);
-                else if (current_screen == 2) screen.setMap(MAP_ROOM_2);
-                else if (current_screen == 9) screen.setMap(MAP_ROOM_9);
-                else if (current_screen == 0) screen.setMap(MAP_ROOM_0);
-                else {
-                     // Victory if no more screens?
-                    screen.setMap(MAP_ROOM_2); // Win screen
-                    // Or just break loop
+            if (visitedRooms.count(current_screen)) {
+                screen.setMapFromState(visitedRooms[current_screen]);
+            }
+            else {
+                std::string filename = makeWorldFileName(current_screen);
+                bool loaded = screen.loadFromFile(filename);
+            
+                if (!loaded) {
+                    if (current_screen == 0) screen.setMap(MAP_ROOM_0);
+                    else if (current_screen == 1) screen.setMap(MAP_ROOM_1);
+                    else if (current_screen == 2) screen.setMap(MAP_ROOM_2);
+                    else if (current_screen == 9) screen.setMap(MAP_ROOM_9);
                 }
             }
+            screen.resetUnlockedDoors();
+            
 
             loadObstaclesFromScreen(screen);
 
-            // Reset positions based on room (Hardcoded safe spots for fallback)
+            // Spawn Logic
+            int p1x = 1, p1y = 1, p2x = 3, p2y = 1;
+
             if (current_screen == 0) {
-                players[0].resetPosition(3, 1);
-                players[1].resetPosition(1, 1);
-            } else if (current_screen == 9) { // Shop
-                players[0].resetPosition(10, 10);
-                players[1].resetPosition(12, 10);
-            } else { // Standard default start
-                players[0].resetPosition(1, 8);
-                players[1].resetPosition(3, 8);
+                if (prev_room == 1) { p1x = 2; p1y = 9; p2x = 2; p2y = 11; }
+                else if (prev_room == 9) { p1x = 69; p1y = 22; p2x = 72; p2y = 22; } // חזרה מ-9 ל-0
+                else { p1x = 3; p1y = 1; p2x = 1; p2y = 1; }
+            }
+            else if (current_screen == 1) {
+                if (prev_room == 0) { p1x = 2; p1y = 10; p2x = 2; p2y = 12; }
+                else if (prev_room == 2) { p1x = 76; p1y = 8; p2x = 76; p2y = 10; }
+                else if (prev_room == 9) { p1x = 30; p1y = 5; p2x = 32; p2y = 5; }
+            }
+            else if (current_screen == 2)
+                {p1x = 1; p1y = 5; p2x = 3; p2y = 4; }
+            
+            else if (current_screen == 9){
+                p1x = 5; p1y = 4;
+                p2x = 7; p2y = 4;
             }
 
-            // Sync HUD
-            screen.setP1Position(players[0].getX(), players[0].getY());
-            screen.setP2Position(players[1].getX(), players[1].getY());
-            screen.setP1Coins(players[0].getCoins());
-            screen.setP2Coins(players[1].getCoins());
+            players[0].resetPosition(p1x, p1y);
+            players[1].resetPosition(p2x, p2y);
+
+            players[0].resetPosition(p1x, p1y);
+            players[1].resetPosition(p2x, p2y);
+
+            screen.setP1Position(p1x, p1y);
+            screen.setP2Position(p2x, p2y);
             screen.setP1Hearts(players[0].getHearts());
             screen.setP2Hearts(players[1].getHearts());
             screen.setP1Inventory(players[0].getItem());
             screen.setP2Inventory(players[1].getItem());
-            
-            renderFrame(screen, players);
-        } else {
+
+            if (current_screen == darkRoomIndex)
+                screen.renderWithVisibility(players[0], players[1]);
+            else
+                screen.renderFull(players[0], players[1]);
+        }
+        else {
             renderFrame(screen, players);
         }
 
@@ -423,9 +442,9 @@ void game::game_loop(Screen& screen, Player players[]) {
                 }
             }
         }
-        
-        check_switches(screen); // User 2 logic
-        Sleep(60); // Balanced sleep
+
+        check_switches(screen);
+        Sleep(60);
     }
 }
 

@@ -2,11 +2,11 @@
 #include "Direction.h"
 #include <cctype>
 #include <iostream>
-#include <conio.h> // For _getch in shop
+#include <conio.h> 
 #include "game.h"
 
 using std::tolower;
-using std::cout; 
+using std::cout;
 
 static Direction oppositeDirection(Direction d) {
     switch (d) {
@@ -20,7 +20,6 @@ static Direction oppositeDirection(Direction d) {
 
 static constexpr int SPRING_RESTORE_DELAY_TICKS = 10;
 
-// ctor with explicit start position
 Player::Player(const Point& p, char c, int startX, int startY,
     const char movKeys[], Screen& scr)
     : screen(scr)
@@ -32,7 +31,6 @@ Player::Player(const Point& p, char c, int startX, int startY,
     std::memcpy(keys, movKeys, NUM_KEYS + 1);
 }
 
-// ctor from point
 Player::Player(const Point& p, char c, const char movKeys[], Screen& scr)
     : screen(scr)
 {
@@ -44,18 +42,13 @@ Player::Player(const Point& p, char c, const char movKeys[], Screen& scr)
 }
 
 void Player::draw() {
-    // Merged: Using User 1's Color logic
     Color playerColor = screen.get_player_color(ch);
     screen.set_text_color(playerColor);
-
-    // Using direct draw or body.draw - sticking to body.draw for consistency with Point class
     body = Point(x, y, ch);
     body.draw();
-
     screen.set_text_color(Color::WHITE);
 }
 
-// find the direction from the spring line towards the wall
 Direction Player::findWallDirForSpring(const Point& springPos) const {
     Direction dirs[4] = {
         Direction::UP,
@@ -84,13 +77,13 @@ Direction Player::findWallDirForSpring(const Point& springPos) const {
             if (cx < 0 || cx >= Screen::MAX_X || cy < 0 || cy >= Screen::MAX_Y)
                 break;
 
-            Point p(cx, cy, springPos.getX(), springPos.getY(), '#'); // dummy
+            Point p(cx, cy, springPos.getX(), springPos.getY(), '#');
             char c = screen.getCharAt(p);
             if (c == '#') {
                 continue;
             }
             else if (c == 'W') {
-                return d; // wall in direction d
+                return d;
             }
             else {
                 break;
@@ -112,8 +105,7 @@ void Player::dropItem() {
     char cell = screen.getCharAt(currPos);
     if (cell != ' ')
         return;
-    
-    // Bomb drop logic
+
     if (item == '@') {
         screen.activateBomb(cx, cy);
 
@@ -132,7 +124,7 @@ void Player::dropItem() {
         else if (ch == '&') screen.setP2Inventory(' ');
     }
 
-    body.draw(); // Redraw player
+    body.draw();
 }
 
 void Player::startSpringLaunch() {
@@ -178,7 +170,7 @@ void Player::springRestoreTick() {
         restoreDelayCounter = 0;
     }
 }
-    
+
 
 void Player::handleKeyPressed(char key) {
     char lower = tolower(key);
@@ -188,6 +180,7 @@ void Player::handleKeyPressed(char key) {
         dropItem();
         return;
     }
+
     if (inSpringLaunch) {
         return;
     }
@@ -212,6 +205,7 @@ void Player::handleKeyPressed(char key) {
     else if (lower == tolower(keys[3])) currentDir = Direction::DOWN;
     else if (lower == tolower(keys[4])) currentDir = Direction::STAY;
 }
+
 
 void Player::move() {
     springRestoreTick();
@@ -265,10 +259,8 @@ void Player::move() {
 
             char cell = screen.getCharAt(stepPos);
             if (cell == 'o') {
-                ++coins;
                 screen.setCharAt(nextX, nextY, ' ');
-                int total = coins + (other ? other->getCoins() : 0);
-                screen.setCoins(total);
+                screen.setCoins(screen.getCoins() + 1);
             }
             else if ((cell == '!' || cell == 'K' || cell == '@') && item == ' ') {
                 item = cell;
@@ -442,10 +434,8 @@ void Player::move() {
     }
 
     if (cell == 'o') {
-        ++coins;
         screen.setCharAt(nextX, nextY, ' ');
-        int total = coins + (other ? other->getCoins() : 0);
-        screen.setCoins(total);
+        screen.setCoins(screen.getCoins() + 1);
     }
     else if ((cell == '!' || cell == 'K' || cell == '@') && item == ' ') {
         item = cell;
@@ -454,27 +444,43 @@ void Player::move() {
         else if (ch == '&') screen.setP2Inventory(item);
     }
 
-    if (cell == '1' || cell == '2' || cell == '9') {
-        if (cell == '9' || screen.isOtherPlayerReady(ch)) {
+    if (isdigit(cell)) {
+        bool isOpen = screen.isDoorUnlocked(nextX, nextY);
+
+        if (cell == '9' || cell == '0') isOpen = true;
+
+        if (isOpen) {
+            if (cell == '9' && !screen.isOtherPlayerReady(ch)) {
+                gotoxy(currX, currY); std::cout << under;
+                x = -1; y = -1; body.set(-1, -1);
+                currentDir = Direction::STAY;
+                screen.playerReadyToTransition(ch, cell);
+                return;
+            }
+
             gotoxy(currX, currY); std::cout << under;
             x = -1; y = -1; body.set(-1, -1);
             currentDir = Direction::STAY;
             screen.playerReadyToTransition(ch, cell);
             return;
         }
+
         if (item == 'K') {
-            setDoorUnlocked(nextX, nextY);
+            screen.setDoorUnlocked(nextX, nextY);
             item = ' ';
-            if (ch == '$') screen.setP1Inventory(' '); else if (ch == '&') screen.setP2Inventory(' ');
+            if (ch == '$') screen.setP1Inventory(' ');
+            else if (ch == '&') screen.setP2Inventory(' ');
+
             gotoxy(currX, currY); std::cout << under;
             x = -1; y = -1; body.set(-1, -1);
             currentDir = Direction::STAY;
             screen.playerReadyToTransition(ch, cell);
             return;
         }
-        else {
-            currentDir = Direction::STAY; body.setDirection(Direction::STAY); return;
-        }
+
+        currentDir = Direction::STAY;
+        body.setDirection(Direction::STAY);
+        return;
     }
 
     gotoxy(currX, currY); std::cout << under;
@@ -484,8 +490,6 @@ void Player::move() {
     if (ch == '$') screen.setP1Position(x, y);
     else if (ch == '&') screen.setP2Position(x, y);
 }
-
-
 
 void Player::resetPosition(int newX, int newY) {
     x = newX;
@@ -511,7 +515,6 @@ void Player::takeDamage(int dmg) {
         screen.setP2Hearts(hearts);
 }
 
-// --- Merged: Shop Logic from User 2 ---
 bool Player::tryToBuyItem(int itemX, int itemY) {
     Point itemPos(itemX, itemY, ' ');
     char itemChar = screen.getCharAt(itemPos);
@@ -531,27 +534,26 @@ bool Player::tryToBuyItem(int itemX, int itemY) {
     char priceTagChar = screen.getCharAt(pricePos);
 
     if (priceTagChar != ('0' + price)) {
-        return false; 
+        return false;
     }
 
-    if (coins < price) {
+    int currentSharedCoins = screen.getCoins();
+    if (currentSharedCoins < price) {
         return false;
     }
 
     if (itemChar == '?') {
-        coins -= price;
-        if (ch == '$') screen.setP1Coins(coins);
-        else if (ch == '&') screen.setP2Coins(coins);
-        
+        screen.setCoins(currentSharedCoins - price);
+
         screen.setCharAt(itemX, itemY, ' ');
         screen.setCharAt(itemX, itemY + 1, ' ');
-        
+
         std::string clue = screen.getGameClue();
         screen.displayMessage(clue);
 
         gotoxy(10, 17);
         std::cout << "Press any key to continue...";
-        _getch(); // Blocking wait for user acknowledgement
+        _getch();
         gotoxy(2, 23);
         std::cout << "                                                      ";
         return true;
@@ -570,9 +572,7 @@ bool Player::tryToBuyItem(int itemX, int itemY) {
         return false;
     }
 
-    coins -= price;
-    if (ch == '$') screen.setP1Coins(coins);
-    else if (ch == '&') screen.setP2Coins(coins);
+    screen.setCoins(currentSharedCoins - price);
 
     if (itemChar == 'H') {
         hearts++;
