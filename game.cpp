@@ -390,9 +390,9 @@ void game::game_loop(Screen& screen, Player players[]) {
             int p1x = 1, p1y = 1, p2x = 3, p2y = 1;
 
             if (current_screen == 0) {
-                if (prev_room == 1) { p1x = 2; p1y = 9; p2x = 2; p2y = 11; }
-                else if (prev_room == 9) { p1x = 69; p1y = 22; p2x = 72; p2y = 22; } // חזרה מ-9 ל-0
-                else { p1x = 3; p1y = 1; p2x = 1; p2y = 1; }
+                if (prev_room == 1) { p1x = 75; p1y = 12; p2x = 75; p2y = 13; }
+                else if (prev_room == 9) { p1x = 69; p1y = 22; p2x = 72; p2y = 22; } 
+                else { p1x = 3; p1y = 1; p2x = 1; p2y = 1; };
             }
             else if (current_screen == 1) {
                 if (prev_room == 0) { p1x = 2; p1y = 10; p2x = 2; p2y = 12; }
@@ -746,19 +746,12 @@ void game::check_switches(Screen& screen) {
             }
         }
 
-        int barrierX = 67;
-        int barrierY = 11;
-        char current = screen.getCharAt(Point(barrierX, barrierY, ' '));
+        int doorX = 77;
+        int doorY = 11;
 
-        if (switchesOn >= 4) {
-            if (current == 'W') {
-                screen.setCharAt(barrierX, barrierY, ' ');
-            }
-        }
-        else {
-            if (current == ' ') {
-                screen.setCharAt(barrierX, barrierY, 'W');
-            }
-        }
+        bool isOpen = (switchesOn >= 4);
+
+        screen.setDoorUnlocked(doorX, doorY, isOpen);
+
     }
 }

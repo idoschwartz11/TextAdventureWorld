@@ -412,13 +412,16 @@ void Screen::setMapFromState(const std::vector<std::string>& mapState) {
 }
 
 
-void Screen::setDoorUnlocked(int x, int y) {
+void Screen::setDoorUnlocked(int x, int y, bool state) {
+	if (x >= 0 && x < MAX_X && y >= 0 && y < MAX_Y) {
+		unlockedDoors[y][x] = state;
+	}
 	if (x >= 0 && x < MAX_X && y >= 0 && y < MAX_Y) {
 		unlockedDoors[y][x] = true;
 	}
 }
 
-bool Screen::isDoorUnlocked(int x, int y) const {
+bool Screen::isDoorUnlocked(int x, int y) const { 
 	if (x >= 0 && x < MAX_X && y >= 0 && y < MAX_Y) {
 		return unlockedDoors[y][x];
 	}

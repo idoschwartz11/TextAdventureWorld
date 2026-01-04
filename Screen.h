@@ -95,9 +95,8 @@ public:
     char getCharAt(const Point& p) const { 
         return screen[p.getY()][p.getX()];
     }
-    void setDoorUnlocked(int x, int y);
 
-    bool isDoorUnlocked(int x, int y) const;
+    void setDoorUnlocked(int x, int y, bool state = true);
 
     void resetUnlockedDoors();
 
@@ -157,4 +156,6 @@ public:
     void displayMessage(const std::string& msg);
     std::string getGameClue() const; 
     bool triggerRiddle();
+    // בתוך Screen.h תחת public:
+    bool isDoorUnlocked(int x, int y) const;
 };
