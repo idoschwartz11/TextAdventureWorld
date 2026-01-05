@@ -15,6 +15,7 @@ private:
 	bool pause = false;
 	bool colors = true; // toggled in menu
 	std::map<int, std::vector<std::string>> visitedRooms;
+	std::map<int, std::vector<std::string>> visitedRoomLocks;
 	
 	// Transition State
 	bool p1_ready_to_transition = false;

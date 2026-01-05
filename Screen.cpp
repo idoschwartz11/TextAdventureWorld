@@ -29,25 +29,62 @@ void Screen::writeHudLine(int rowOffset, const std::string& text) {
     }
 }
 
+
 void Screen::rebuildHud() {
-	char buf[128];
+	for (int y = 0; y <= 2; ++y) {
+		for (int x = 0; x < 20; ++x) {
+			screen[y][x] = ' ';
+		}
+	}
 
-	std::snprintf(buf, sizeof(buf), "$:%02dx%02d Inv:%c <3:%d |",
-		hudP1x, hudP1y,
-		(hudP1Inv == 0 ? ' ' : hudP1Inv),
-		hudP1Hearts);
-	writeHudLine(0, buf);
+	std::stringstream oss1;
+	oss1 << "$:";
 
-	std::snprintf(buf, sizeof(buf), "-SCORE:%03d----C:%02d-|",
-		hudScore, hudCoins);
-	writeHudLine(1, buf);
+	if (hudP1x < 10) oss1 << "0";
+	oss1 << hudP1x << "x";
 
-	std::snprintf(buf, sizeof(buf), "&:%02dx%02d Inv:%c <3:%d |",
-		hudP2x, hudP2y,
-		(hudP2Inv == 0 ? ' ' : hudP2Inv),
-		hudP2Hearts);
-	writeHudLine(2, buf);
+	if (hudP1y < 10) oss1 << "0";
+	oss1 << hudP1y;
+
+	oss1 << " Inv:" << (hudP1Inv == 0 ? ' ' : hudP1Inv)
+		<< " <3:" << hudP1Hearts << " |";
+
+	writeHudLine(0, oss1.str());
+
+
+	std::stringstream oss2;
+	oss2 << "-SCORE:";
+
+	if (hudScore < 100) oss2 << "0";
+	if (hudScore < 10)  oss2 << "0";
+	oss2 << hudScore;
+
+	oss2 << "----C:";
+
+	if (hudCoins < 10) oss2 << "0";
+	oss2 << hudCoins << "-|";
+
+	writeHudLine(1, oss2.str());
+
+	std::stringstream oss3;
+	oss3 << "&:";
+
+	if (hudP2x < 10) oss3 << "0";
+	oss3 << hudP2x << "x";
+
+	if (hudP2y < 10) oss3 << "0";
+	oss3 << hudP2y;
+
+	oss3 << " Inv:" << (hudP2Inv == 0 ? ' ' : hudP2Inv)
+		<< " <3:" << hudP2Hearts << " |";
+
+	writeHudLine(2, oss3.str());
+
+
+
+
 }
+
 
 Screen::Screen() {};
 
@@ -376,7 +413,6 @@ std::string Screen::getGameClue() const {
 }
 
 void Screen::displayMessage(const std::string& msg) {
-    // Print message at bottom of screen or safe area
 	gotoxy(2, 23); 
 	set_text_color(Color::CYAN);
 	std::cout << "CLUE: " << msg << "   ";
@@ -390,19 +426,39 @@ bool Screen::triggerRiddle() {
 	return false;
 }
 
-std::vector<std::string> Screen::getMapState() const {
+
+std::vector<std::string> Screen::getMapState(const std::vector<Obstacle>& activeObstacles) const {
 	std::vector<std::string> currentState;
+
+	// 1. העתקת המפה הבסיסית (קירות ורצפה) ללא שחקנים
 	for (int i = 0; i < MAX_Y; ++i) {
 		std::string row = screen[i];
-		for (char& c : row) { //ignoring players..
+		for (char& c : row) {
 			if (c == '$' || c == '&') {
 				c = ' ';
 			}
 		}
 		currentState.push_back(row);
 	}
+
+	// 2. הוספת המכשולים (Obstacles) לתוך ה-State שמוחזר
+	// אנחנו עוברים על כל מכשול, ועל כל תא במכשול, ושמים כוכבית במקום המתאים
+	for (const auto& obs : activeObstacles) {
+		for (const auto& cell : obs.getCells()) { // בהנחה שיש פונקציה getCells שמחזירה נקודות
+			int x = cell.getX();
+			int y = cell.getY();
+
+			// בדיקת גבולות ליתר ביטחון
+			if (y >= 0 && y < MAX_Y && x >= 0 && x < MAX_X) {
+				currentState[y][x] = '*';
+			}
+		}
+	}
+
 	return currentState;
 }
+
+
 
 void Screen::setMapFromState(const std::vector<std::string>& mapState) {
 	for (int i = 0; i < MAX_Y && i < (int)mapState.size(); ++i) {
@@ -412,12 +468,10 @@ void Screen::setMapFromState(const std::vector<std::string>& mapState) {
 }
 
 
+
 void Screen::setDoorUnlocked(int x, int y, bool state) {
 	if (x >= 0 && x < MAX_X && y >= 0 && y < MAX_Y) {
 		unlockedDoors[y][x] = state;
-	}
-	if (x >= 0 && x < MAX_X && y >= 0 && y < MAX_Y) {
-		unlockedDoors[y][x] = true;
 	}
 }
 
@@ -432,6 +486,26 @@ void Screen::resetUnlockedDoors() {
 	for (int y = 0; y < MAX_Y; ++y) {
 		for (int x = 0; x < MAX_X; ++x) {
 			unlockedDoors[y][x] = false;
+		}
+	}
+}
+
+std::vector<std::string> Screen::getLocksState() const {
+	std::vector<std::string> state;
+	for (int y = 0; y < MAX_Y; ++y) {
+		std::string row = "";
+		for (int x = 0; x < MAX_X; ++x) {
+			row += (unlockedDoors[y][x] ? '1' : '0');
+		}
+		state.push_back(row);
+	}
+	return state;
+}
+
+void Screen::setLocksState(const std::vector<std::string>& locksState) {
+	for (int y = 0; y < MAX_Y && y < (int)locksState.size(); ++y) {
+		for (int x = 0; x < MAX_X && x < (int)locksState[y].size(); ++x) {
+			unlockedDoors[y][x] = (locksState[y][x] == '1');
 		}
 	}
 }

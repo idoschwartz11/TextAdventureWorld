@@ -6,6 +6,8 @@
 #include <vector>
 #include "Point.h"
 #include "Color.h"
+#include <sstream>
+#include "Obstacle.h"
 
 using std::cout;
 using std::endl;
@@ -83,12 +85,14 @@ private:
 public:
     Screen();
     void setMap(const std::string map[MAX_Y]);
+    std::vector<std::string> getLocksState() const;
+    void setLocksState(const std::vector<std::string>& locksState);
 
     // New (Ex2): load screen from a text file (adv-world*.screen)
     // Also detects 'L' and uses it as HUD anchor.
     bool loadFromFile(const std::string& filename);
 
-    std::vector<std::string> getMapState() const;
+    std::vector<std::string> getMapState(const std::vector<Obstacle>& activeObstacles) const;
 
     void setMapFromState(const std::vector<std::string>& mapState);
 
