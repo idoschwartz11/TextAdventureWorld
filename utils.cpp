@@ -1,5 +1,5 @@
 #include <iostream>
-#include <windows.h> // Required for Windows API console functions
+#include <windows.h> 
 #include <cstdlib>
 
 #include "utils.h"

@@ -8,3 +8,6 @@ ID'S:   322308313     212096390
 4. In the dark room, you need to turn all 4 switches in order for the door to be opened.
 5. Room 2 requires you to cooprate together in order to travers the room.
 6. There are clues in the shop, if you want to challenge yourself by not looking at the answers straight away.
+7. While in the shop, notice you cant go directly to the door leading to room 2 (the obstecle is blocked and can only
+   be approached from the correct side).
+   

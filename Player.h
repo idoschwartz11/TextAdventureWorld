@@ -64,11 +64,9 @@ public:
     bool isDead()   const { return hearts <= 0; }
     void takeDamage(int dmg = 1);
 
-    // Helpers from User 1
     int getDiffX() const { return body.getDiffX(); }
     int getDiffY() const { return body.getDiffY(); }
 
-    // Logic from User 2 (Shop and Doors)
     bool tryToBuyItem(int itemX, int itemY);
     void setDoorUnlocked(int x, int y) { screen.setDoorUnlocked(x, y); }
 };

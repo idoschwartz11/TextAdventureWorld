@@ -3,8 +3,8 @@
 #include "Screen.h"
 #include "Point.h"
 #include "Color.h"
-#include "Obstacle.h" // User 1 feature
-#include "Riddle.h"   // User 2 feature
+#include "Obstacle.h" 
+#include "Riddle.h"   
 #include <vector>
 #include <string>
 #include <map>
@@ -20,14 +20,14 @@ private:
 	// Transition State
 	bool p1_ready_to_transition = false;
 	bool p2_ready_to_transition = false;
-	int p1_dest_room = -1; // User 2: specific room destination
+	int p1_dest_room = -1;
 	int p2_dest_room = -1;
 	
-	// Doors (User 2)
+	// Doors 
 	int unlockedDoorX = -1;
 	int unlockedDoorY = -1;
 
-	// Obstacles (User 1)
+	// Obstacles 
 	std::vector<Obstacle> obstacles;
 	void loadObstaclesFromScreen(Screen& screen);
 	void renderFrame(Screen& screen, Player players[]);
@@ -37,7 +37,7 @@ private:
 	int current_screen = 0;
 	int darkRoomIndex = 1;
 
-	// Riddles (User 2)
+	// Riddles 
 	RiddleManager riddle_manager;
 	int last_riddle_index = -1;
 
@@ -63,7 +63,7 @@ public:
 		player2.setOther(&player1);
 	}
 
-	// --- Obstacles Logic (User 1) ---
+	// --- Obstacles Logic ---
 	bool isObstacleAt(int x, int y) const;
 	bool tryPushObstacle(Screen& screen, Player& p, Player& other, Direction dir, int pBonusPower = 0);
 
@@ -88,12 +88,11 @@ public:
 	void updateBomb(Screen& screen, Player players[]);
 	void activateBomb(int x, int y);
 
-	// --- Room Travel & Doors (Merged) ---
-	// Updated to accept destination char (User 2 requirement)
+	// --- Room Travel & Doors ---
 	void setPlayerReady(char playerChar, char destChar);
 	bool isPlayerReady(char playerChar) const;
 	
-	// Door locking helpers (User 2)
+	// Door locking helpers
 	bool isDoorUnlocked(int x, int y) const;
 	void setDoorUnlocked(int x, int y);
 	void clearUnlockedDoor();
@@ -103,15 +102,15 @@ public:
 	bool getColorsState() const { return colors; }
 	// Note: get_object_color is handled in Screen.cpp logic using isShopHeart below
 
-	// --- Score & Shop (User 2) ---
+	// --- Score & Shop ---
 	void updateScore(Screen& screen);
 	bool isShopHeart(int x, int y) const;
 
-	// --- Riddles (User 2) ---
+	// --- Riddles ---
 	bool handle_riddle_encounter();
 	std::string getCurrentClue() const;
 
-	// --- Switches (User 2) ---
+	// --- Switches ---
 	void check_switches(Screen& screen);
 
 

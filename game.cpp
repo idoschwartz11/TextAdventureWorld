@@ -28,147 +28,178 @@ static std::string makeWorldFileName(int idx)
 // ROOM 0 (Spawn) - Using User 1's version mostly but ensuring it aligns with Ex2 requirements
 const std::string MAP_ROOM_0[Screen::MAX_Y] = {
    //01234567890123456789012345678901234567890123456789012345678901234567890123456789
-    "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW|--------|", // 0
-    "W    #    WWWWWWWWWWWWWWWW  #    o     o            W              WKW|  P.I : |", // 1
-    "W         W            o  W #                @      W              WWW| <3 x3  |", // 2
-    "W   o     W   WWWWWWW     W # WWWWW WWWWW         WWW   WWWWWWWWW    W|  o x00 |", // 3
-    "W         W * W     W     W   W       o W   o     W o   Woo     W    W|        |", // 4
-    "W   WWWWWWW * W ooo W  o  W * W  o      W         W     Woo     W    W| Inv:   |", // 5
-    "W   W     W * W ooo W     W * W      o  WWWWWWWWWWW  o  WWWWWWWWW    W|        |", // 6
-    "W o W     W   W ooo W     W   W   o      o      o          o         W|        |", // 7
-    "W   W     W   W     W     W   W           WWWWWWWWWWWWW            o W|  X=00  |", // 8
-    "W   W     W   WWWWWWW  o  W   WWWWWWWW o  W          o W             W|  Y=00  |", // 9
-    "W  * W   o        W         o                                        W|        |", // 10
-    "W        ** WWWWWWWWWWWWWW      @      W      @     WWWWWWWWWWWWWWW   |--------|", // 11
-    "W#### ** W            W             W o        o W   W             W1W|  P.II: |", // 12
-    "W   WWWWWWWW   W   o        W   WWWWWWWWWWW          WWW   W   o   WWW| <3 x3  |", // 13
-    "W   W      W   W       o    W   W          o   o        o  W        oW|  o x00 |", // 14
-    "W o W  o   W   W                W   o   o                 WWWWWW     W|        |", // 15
-    "W   W      W   WWWWWWWWWWWWWW   WWWWWWWWWWWWWWWWWWWWWWWWWWW    W    oW| Inv:   |", // 16
-    "W   WWWWWWWW                 o                o           W    W     W|        |", // 17
-    "W                o      o           o      o       o      W o  W     W|        |", // 18
-    "W   o          WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW    W     W|  X=00  |", // 19
-    "W         o    W                     o         o           WWWWWWWWWWW|  Y=00  |", // 20
-    "W   o          W   o             o                    o              W|        |", // 21
-    "W         o    W         o                  o      o                 W|        |", // 22
-    "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWMWWWWWWWWW|        |", // 23
-    "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW|--------|"  // 24
+    "L                   WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW", // 0
+    "                    WWWWWW          o o o o o o o              W              WW ", // 1
+    "                    W  #  W                                    W              WW ", // 2
+    "WWWWWWWWWWWWWWWWWWWWW  #  W     WWWWWWWWWWWWWWWWWWW         WWW   WWWWWWWWW    W", // 3
+    "W         W   W        #  W     W       W         W         W     W  oo   W    W", // 4
+    "W   WWWWWWW   W        #  W     W       W         W    @    W     W  oo   W    W", // 5
+    "W   W     W          W  W       W       W         WWWWWWWWWWW     WWWWWWWWW    W", // 6
+    "W   W     W          W** W      W       W                                      W", // 7
+    "W   W     W          W   W      W       W           WWWWWWWWWWWWW              W", // 8
+    "W   W     W          W @ W      WWWWWWWWWWWWWWWW    W            W             W", // 9
+    "W                    WWWWW                          W            W             W", // 10
+    "W              WWWWWWWWWWWWWW                       W            WWWWWWWWWWWWWWW", // 11
+    "W              W            W                       W            W           W1W", // 12
+    "W   WWWWWWWW   W   oooooo   W     WWWWWW  WWWWWWWWWWW          WWW           WWW", // 13
+    "W   W  oo  W   W            W     W    W  W                          W         W", // 14
+    "W   W  oo  W   W            W     W    W  W                           WWWWWWWWWW", // 15
+    "W   W      W   WWWWW**WWWWWWW     WWWWWW  WWWWWWWWWWWWWWWWWWWWWWWWWWW    W     W", // 16
+    "W   WWWWWWWW                                                        W    W     W", // 17
+    "W                                 WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW    W     W", // 18
+    "W                                 W       ooo  @  ooo    W                     W", // 19
+    "W                                 W          ooooo       W                     W", // 20
+    "W                                 R                      W                     W", // 21
+    "W                                 W                      W                     W", // 22
+    "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWMWWWWWWWWW", // 23
+    "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW"  // 24
 };
 
 // ROOM 9 (Shop/Secret) - User 2's design
 const std::string MAP_ROOM_9[Screen::MAX_Y] = {
 //01234567890123456789012345678901234567890123456789012345678901234567890123456789
- "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW|--------|", // 0
- "W 9                                                                  W|  P.I : |", // 1
- "W                                                                    W| <3 x3  |", // 2
- "W                                                                    W|  o x00 |", // 3
- "W                                                                    W|        |", // 4
- "W                                                                    W| Inv:   |", // 5
- "W                                                                    W|        |", // 6
- "W                                                                    W|        |", // 7
- "W                                                                    W|  X=00  |", // 8
- "W                  W W     W W     W W      W W                      W|  Y=00  |", // 9 
- "W                  W!W     WHW     WKW      W?W                      W|        |", // 10
- "W                  W5W     W5W     W8W      W5W                      W|--------|", // 11
- "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW|  P.II: |", // 12
- "W                                                                    W| <3 x3  |", // 13
- "W                                                                    W|  o x00 |", // 14
- "W                                                                    W|        |", // 15
- "W                                                                    W| Inv:   |", // 16
- "W                                                                    W|        |", // 17
- "W                                                                    W|        |", // 18
- "W        *** THIS IS THE SECRET SHOP ***                             W|        |", // 19
- "W        * ITEM PRICES ARE LISTED UNDER EACH OBJECT                  W|  X=00  |", // 20 
- "W        * TO PURCHASE, SIMPLY STEP ONTO THE ITEM.                   W|  Y=00  |", // 21 
- "W                                                                    W|        |", // 22
- "W                                                                    W|        |", // 23
- "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW|--------|"  // 24
+ "L                    WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW", // 0
+ "                     W                                                         W", // 1
+ "                     W                                                         W", // 2
+ "WWWWWWWW0WWWWWWWWWWWWW                                                         W", // 3
+ "W                                                                              W", // 4
+ "W                                                                              W", // 5
+ "W                                                                              W", // 6
+ "W                                                                              W", // 7
+ "W                                                                              W", // 8
+ "W                         W W     W W     W W      W W                         W", // 9 
+ "W                         W!W     WHW     WKW      W?W                         W", // 10
+ "W                         W5W     W5W     W8W      W5W                         W", // 11
+ "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW**WWWWWWWWWW", // 12
+ "W                                                               W   ##         W", // 13
+ "W                                                               W   ##         W", // 14
+ "W                                                               W   WW         W", // 15
+ "W                                                               W              W", // 16
+ "W                                                               W              2", // 17
+ "W                                                               W              W", // 18
+ "W                   *** THIS IS THE SECRET SHOP ***             W              W", // 19
+ "W                 * ITEM PRICES ARE UNDER EACH OBJECT           W              W", // 20 
+ "W                  * TO PURCHASE,STEP ONTO THE ITEM.            W              W", // 21 
+ "W                                                               W   K          W", // 22
+ "W                                                               W              W", // 23
+ "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW"  // 24
 };
 
 // ROOM 1 (Dark Room / Switches)
 const std::string MAP_ROOM_1[Screen::MAX_Y] = {
     //01234567890123456789012345678901234567890123456789012345678901234567890123456789
-     "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW|--------|", // 0
-     "W/              o           WWWWWWWW          o                      W|  P.I : |", // 1
-     "W   WWWWWWWW  WWWWWWWWWWWWW        W              WWWWWW             W| <3 x3  |", // 2
-     "W   W      W   o   W   W           W            o W    W             W|  o x00 |", // 3
-     "W   W      WWWW    W   W   W   W   WWWWWWWW       W    W             W|        |", // 4
-     "W   WWWWWW    W    W   W   W  !W          W       W    WWWWWWW       W| Inv:   |", // 5
-     "W        W    W    W   W   WWWWW    WWWWWWW     WWW    W @   W       W|        |", // 6
-     "WW1WW    W    W oo W   W        o         W   ooo W    W  K  W       W|        |", // 7
-     "W   W    W    WWWWWW   WWWWWWWWWW   WWWWWWW   WWWWW    WWW WWW       W|  X=00  |", // 8
-     "W   W    W        oo   W             o              o                W|  Y=00  |", // 9
-     "W   W    WWWWWWWWWWW   WWWWWWWWW       WWWWWWW       WWWWWWW      WWWW|        |", // 10
-     "W   W               o          W  o          W  !        W        W 2W|--------|", // 11
-     "W   WWWWWWWWWWWWWWWWWWWWWW     W  WWWWWWW    W  WWWWWWW WWWWWWW   WWWW|  P.II: |", // 12
-     "W        ooo             W     W       W     W      o   W            W| <3 x3  |", // 13
-     "W   WWWWWWWWWWWWWWWWWWW  W  WWWWWWWWWWWWWWWWWWWW   WWWWWW            W|  o x00 |", // 14
-     "W            !W          W                !    W      o              W|        |", // 15
-     "W   WWWWWWWWWWW   WWWWWWWWWWW   WWWWWWWW       W  WWWWWWWWWW         W| Inv:   |", // 16
-     "W   Wooo      W   W/ ooooo  W   W      W   o   W  W         W        W|        |", // 17
-     "W   Wooo      W   W  ooooo  W   W      W       W  W    o    W        W|        |", // 18
-     "W   W   WWWWWWW   W  ooooo  W   WWWWWWWW   WWWWWW  WWWWWWWWWW        W|  X=00  |", // 19
-     "W   W             WWWWWWWWWWW    o             o            W        W|  Y=00  |", // 20
-     "W   WWWWWW                                       WWWWWWWW   W        W|        |", // 21
-     "W        W    WWWWWWWWWWWWWWWWWWWWWWWWW                 W   W        W|        |", // 22
-     "W        W    W !                            WWWWW      W   W        W|        |", // 23
-     "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW|--------|"  // 24
+     "L                   WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW", // 0
+     "                    W                  WWWWWWWW                                W", // 1
+     "                    WWWWWWWW  WWWWWWWWWWWWW        W          WWWWWW           W", // 2
+     "WWWWWWWWWWWWWWWWWWWW                      W     ooooooo       W                W", // 3
+     "W2        R ! W  /                        W @   oo / oo       W                W", // 4
+     "W         WWWWWWWWWWWWW                   WWWWWWWWWWWWWWWWWWWWW                W", // 5
+     "W                                                                              W", // 6
+     "W   WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW    W", // 7
+     "W   W                                                                     W    W", // 8
+     "W   W    WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW    W    W", // 9
+     "W   W    W         W                                       W         W    W    W", // 10
+     "0   W    W  oooo   W       IM SCARED...                    W    @    W    W    W", // 11
+     "W   W    W  oooo   W                                       W         W    W    W", // 12
+     "W   W    W         W                                       W         W    W    W", // 13
+     "W   W    WWWWWWWWWWW                                       WWWWWWWWWWW    W    W", // 14
+     "W   W                                                                     W    W", // 15
+     "W   WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW    W", // 16
+     "W                               W                   W                          W", // 17
+     "WWWWWWWWWWWWWWWWWWWWWW          W                   W           WWWWWWWWWWWWWWWW", // 18
+     "W @            W                W         !         W           W            @ W", // 19
+     "W      /       W                W         W         W           W      /       W", // 20
+     "W    ooooo     W                W         W         W           W    ooooo     W", // 21
+     "W    ooooo     W    WWWWWWWWWWWWW    WWWWWWWWWWW    WWWWWWWWWWWWW    ooooo     W", // 22
+     "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW", // 23
+     "                                                                                "  // 24
 };
 
-// FINAL ROOM
+
 const std::string MAP_ROOM_2[Screen::MAX_Y] = {
-     "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW", // 0
-     "W                                                                              W", // 1
-     "W                                                                              W", // 3
-     "W                                YOU DID IT!                                   W", // 2
-     "W              .g8"" bgd       db      `7MMM.     ,MMF'`7MM" "YMM              W", // 4
-     "W            .dP'     `M      ;MM:       MMMb    dPMM    MM    `7              W", // 5
-     "W            dM'       `     ,V^MM.      M YM   ,M MM    MM   d                W", // 6
-     "W            MM             ,M  `MM      M  Mb  M' MM    MMmmMM                W", // 7
-     "W            MM.    `7MMF'  AbmmmqMA     M  YM.P'  MM    MM   Y  ,             W", // 8
-     "W            `Mb.     MM   A'     VML    M  `YM'   MM    MM     ,M             W", // 9
-     "W              `bmmmdPY .AMA.   .AMMA..JML.   l  .JMML..JMMmmmmMMM             W", // 10
-     "W                                                                              W", // 11
-     "W                  .g8""8q.`7MMF'   `7MF'`7MM"" YMM   7MM"" Mq.                W", // 12
-     "W                .dP'    `YM.`MA     ,V    MM    `7    MM   `MM.               W", // 13
-     "W                dM'      `MM VM:   ,V     MM   d      MM   ,M9                W", // 14
-     "W                MM        MM  MM.  M'     MMmmMM      MMmmdM9                 W", // 15
-     "W                MM.      ,MP  `MM A'      MM   Y  ,   MM  YM.                 W", // 16
-     "W                `Mb.    ,dP'   :MM;       MM     ,M   MM   `Mb.               W", // 17
-     "W                   ""bmd""      VF      .JMMmmmmMMM .JMML. .JMM.              W", // 18
-     "W                                                                              W", // 19
-     "W                                                                              W", // 20
-     "W                                                                              W", // 21
-     "W                                                                              W", // 22
+    //01234567890123456789012345678901234567890123456789012345678901234567890123456789
+     "L                   WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW", // 0
+     "                    WWWWW                                                      W", // 1
+     "                    WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW", // 2
+     "WWWWWWWWWWWWWWWWWWWW            *            W            *                    W", // 3
+     "W1    W            W            W            *            W                    W", // 4
+     "W     WWWWWW  WWWWWWWWWWWWW*WW  WWWWWWWWWWWWWWWW  WWWWWWWWWWWWWWWW  WWWWWWWWWWWW", // 5
+     "W          W  W              W  W              W  W                 W          W", // 6
+     "W          W  W              W  W              W  W              W  W          W", // 7
+     "WWWWWWWWW**W  W  WWWWWWWWWW*WW  W WWWWWWWWWWW*WW  WW WWWWWWWWWWWWW**W  WWWWWWWWW", // 8
+     "W     *    W  W  W        W WW  W WW        W WW  WW W        W                W", // 9
+     "W     *    W  W  W        W WW  W WW  o o o W WW  WW W        W  W  W        K W", // 10
+     "WW**WWWWWWWWWWW**W        W WWWWW*WW  o o o W WWWWWW*W        W  WWWWWWWWWWWW*WW", // 11
+     "W                W        W        W  o o o W        W        W        W       W", // 12
+     "W                W        W   @    W        W        W                 W       W", // 13
+     "WWWWWWWWWWWWWWWWWW        WWWWWWWWWW        WWWWWWWWWW        WWWWWWWWWW       W", // 14
+     "W              W                                  *                            W", // 15
+     "W              W                                  *                            W", // 16
+     "WWWWWWWWWWWWWWWWWW**WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW", // 17
+     "W                W  W                                  W  W  *                 W", // 18
+     "W                W  *   W                              W     W                 W", // 19
+     "W  WWWWWWWWWWWW  W  W  WWWWWWWWWWWWWWWWWWWWWWWWWWWWWW**W**W**WWWWWWWWWWRWWWWWWWW", // 20
+     "W  W          W  W  W  W                            W  WooW  W                 W", // 21
+     "W  W          W  W  W  W                            W     W  W                 W", // 22
+     "W  WWWWWWWWWWWW  W  W  WWWWWWWWWWMWWWWWWWWWWWWWWWWWWW     W  W                3W", // 23
+     "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW"  // 24
+};
+
+
+// FINAL ROOM
+const std::string MAP_ROOM_3[Screen::MAX_Y] = {
+     "L                   WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW", // 0
+     "                    W                                                    #     W", // 1
+     "                    W                                                    #     W", // 3
+     "WWWWWWWWWWWWWWWWWWWWW                                                    #     W", // 2
+     "W                                                                        #     W", // 4
+     "W                                                                        #     W", // 5
+     "W                                                                        #     W", // 6
+     "W                                  YOU DID IT                                  W", // 7
+     "W              .g8"" bgd       db      `7MMM.     ,MMF'`7MM" "YMM        o     W", // 8
+     "W            .dP'     `M      ;MM:       MMMb    dPMM    MM    `7        o     W", // 9
+     "W            dM'       `     ,V^MM.      M YM   ,M MM    MM   d          o     W", // 10
+     "W            MM             ,M  `MM      M  Mb  M' MM    MMmmMM          o     W", // 11
+     "W            MM.    `7MMF'  AbmmmqMA     M  YM.P'  MM    MM   Y  ,       o     W", // 12
+     "W            `Mb.     MM   A'     VMU    M  `YM'   MM    MM     ,M       o     W", // 13
+     "W              `bmmmdPY .AMA.   .AMMA..JMU.   l  .JMMU..JMMmmmmMMM       o     W", // 14
+     "W######                                                                        W", // 15
+     "W                  .g8""8q.`7MMF'   `7MF'`7MM"" YMM   7MM"" Mq.                W", // 16
+     "W                .dP'    `YM.`MA     ,V    MM    `7    MM   `MM.               W", // 17
+     "W                dM'      `MM VM:   ,V     MM   d      MM   ,M9                W", // 18
+     "W                MM        MM  MM.  M'     MMmmMM      MMmmdM9                 W", // 19
+     "W                MM.      ,MP  `MM A'      MM   Y  ,   MM  YM.                 W", // 20
+     "W                `Mb.    ,dP'   :MM;       MM     ,M   MM   `Mb.               W", // 21
+     "W                   ""bmd""      VF      .JMMmmmmMMM .JMMU. .JMM.              W", // 22
      "W                                                                              W", // 23
      "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW"  // 24
 };
 
 // GAME OVER ROOM
-const std::string MAP_ROOM_3[Screen::MAX_Y] = {
+const std::string MAP_ROOM_3_lost[Screen::MAX_Y] = {
      "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW", // 0
      "W                                                                              W", // 1
-     "W                                  YOU LOST!                                   W", // 2
+     "W                                                                              W", // 2
      "W                                                                              W", // 3
-     "W                                                                              W", // 4
+     "W                                  YOU DIED                                    W", // 4
      "W                                                                              W", // 5
      "W                                                                              W", // 6
      "W                                                                              W", // 7
-     "W                                                                              W", // 8
-     "W                                                                              W", // 9
-     "W                                                                              W", // 10
-     "W                                                                              W", // 11
-     "W                                                                              W", // 12
-     "W                                                                              W", // 13
-     "W                                                                              W", // 14
+     "W              .g8"" bgd       db      `7MMM.     ,MMF'`7MM" "YMM              W", // 8
+     "W            .dP'     `M      ;MM:       MMMb    dPMM    MM    `7              W", // 9
+     "W            dM'       `     ,V^MM.      M YM   ,M MM    MM   d                W", // 10
+     "W            MM             ,M  `MM      M  Mb  M' MM    MMmmMM                W", // 11
+     "W            MM.    `7MMF'  AbmmmqMA     M  YM.P'  MM    MM   Y  ,             W", // 12
+     "W            `Mb.     MM   A'     VMU    M  `YM'   MM    MM     ,M             W", // 13
+     "W              `bmmmdPY .AMA.   .AMMA..JMU.   l  .JMMU..JMMmmmmMMM             W", // 14
      "W                                                                              W", // 15
-     "W                                                                              W", // 16
-     "W                                                                              W", // 17
-     "W                                                                              W", // 18
-     "W                                                                              W", // 19
-     "W                                                                              W", // 20
-     "W                                                                              W", // 21
-     "W                                                                              W", // 22
+     "W                  .g8""8q.`7MMF'   `7MF'`7MM"" YMM   7MM"" Mq.                W", // 16
+     "W                .dP'    `YM.`MA     ,V    MM    `7    MM   `MM.               W", // 17
+     "W                dM'      `MM VM:   ,V     MM   d      MM   ,M9                W", // 18
+     "W                MM        MM  MM.  M'     MMmmMM      MMmmdM9                 W", // 19
+     "W                MM.      ,MP  `MM A'      MM   Y  ,   MM  YM.                 W", // 20
+     "W                `Mb.    ,dP'   :MM;       MM     ,M   MM   `Mb.               W", // 21
+     "W                   ""bmd""      VF      .JMMmmmmMMM .JMMU. .JMM.              W", // 22
      "W                                                                              W", // 23
      "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW"  // 24
 };
@@ -342,7 +373,7 @@ void game::game_loop(Screen& screen, Player players[]) {
         updateScore(screen);
 
         if (players[0].isDead() || players[1].isDead()) {
-            screen.setMap(MAP_ROOM_3);
+            screen.setMap(MAP_ROOM_3_lost);
             screen.draw();
             gotoxy(0, 24);
             std::cout << "GAME OVER - Press any key to return to main menu...";
@@ -417,9 +448,13 @@ void game::game_loop(Screen& screen, Player players[]) {
                 if (prev_room == 0) { p1x = 2; p1y = 10; p2x = 2; p2y = 12; }
                 else if (prev_room == 2) { p1x = 2; p1y = 4; p2x = 4; p2y = 6; }
             }
-            else if (current_screen == 2)
-            {
-                p1x = 1; p1y = 5; p2x = 3; p2y = 4;
+            else if (current_screen == 2){
+                if (prev_room == 1) { p1x = 1; p1y = 5; p2x = 3; p2y = 4; }
+                else {
+                    p1x = 33; p1y = 22;
+                    p2x = 35; p2y = 22;
+                }
+                
             }
 
             else if (current_screen == 9) {
@@ -428,10 +463,14 @@ void game::game_loop(Screen& screen, Player players[]) {
                     p2x = 7; p2y = 4;
                 }
                 else {
-					p1x = 78; p1y = 18;
-					p2x = 78; p2y = 16;
+                    p1x = 78; p1y = 18;
+                    p2x = 78; p2y = 16;
                 }
-            
+
+            }
+            if (current_screen == 3) {
+                p1x = 5; p1y = 7;
+                p2x = 7; p2y = 7;
             }
 
                 players[0].resetPosition(p1x, p1y);
@@ -541,6 +580,11 @@ void game::bomb_explode(int bombX, int bombY, Screen& screen, Player players[]) 
             Point p(x, y, '@'); 
 
             if (x <= 0 || x >= 79 || y <= 0 || y >= 24) continue; // Boundary check
+            if (x <= 21 && y <= 4)
+                continue;
+            if (screen.isHudCell(x, y)) continue;
+           
+           
 
             if (screen.is_secret_room(p)) {
                 screen.setCharAt(x, y, '9');

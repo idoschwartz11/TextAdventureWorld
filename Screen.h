@@ -25,12 +25,10 @@ private:
     game* activeGame = nullptr;
     bool unlockedDoors[MAX_Y][MAX_X] = { false };
     // HUD anchor (top-left) taken from 'L' in the .screen file.
-    // If no 'L' exists in the file, defaults to (0,0).
     int legendRow = 0;
     int legendCol = 0;
 
     // Cached HUD state (so game can update via setters, and HUD is always rebuilt consistently).
-    // Merged: Split coins to P1/P2 to support Shop logic
     int hudP1x = 0, hudP1y = 0;
     int hudP2x = 0, hudP2y = 0;
     int hudP1Hearts = 3;
@@ -58,7 +56,7 @@ private:
     "W   W     W   W     W     W   W           WWWWWWWWWWWWW            o W|  X=00  |", // 8
     "W   W     W   WWWWWWW  o  W   WWWWWWWW o  W          o W             W|  Y=00  |", // 9
     "W                                         W   o        W         o   W|        |", // 10
-    "W     o   * WWWWWWWWWWWWWW      @      W      @     WWWWWWWWWWWWWWW|--------|", // 11
+    "W     o   * WWWWWWWWWWWWWW      @      W      @     WWWWWWWWWWWWWWW   |--------|", // 11
     "W              W            W             W o        o W   W       W1W|  P.II: |", // 12
     "W   WWWWWWWW   W   o        W   WWWWWWWWWWW          WWW   W   o   WWW| <3 x3  |", // 13
     "W   W      W   W       o    W   W          o   o        o  W        oW|  o x00 |", // 14
@@ -88,8 +86,6 @@ public:
     std::vector<std::string> getLocksState() const;
     void setLocksState(const std::vector<std::string>& locksState);
 
-    // New (Ex2): load screen from a text file (adv-world*.screen)
-    // Also detects 'L' and uses it as HUD anchor.
     bool loadFromFile(const std::string& filename);
 
     std::vector<std::string> getMapState(const std::vector<Obstacle>& activeObstacles) const;
@@ -142,14 +138,12 @@ public:
     game* getGame() const { return activeGame; }
 
     // Doors & Transitions
-    // Merged: Added destChar to support specific door linking
     void playerReadyToTransition(char playerChar, char destChar);
     void playerReadyToTransition(char playerChar) { playerReadyToTransition(playerChar, '0'); } // overload for compatibility
     bool isOtherPlayerReady(char playerChar) const;
 
     // Colors
     void drawCharAt(int x, int y, char c);
-    // Merged: Added x,y to support User 2's coordinate-based coloring
     Color get_object_color(int x, int y, char c) const;
     Color get_player_color(char playerChar) const;
     void set_text_color(Color color);
@@ -160,6 +154,5 @@ public:
     void displayMessage(const std::string& msg);
     std::string getGameClue() const; 
     bool triggerRiddle();
-    // בתוך Screen.h תחת public:
     bool isDoorUnlocked(int x, int y) const;
 };

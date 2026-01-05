@@ -345,9 +345,7 @@ Color Screen::get_object_color(int x, int y, char c) const {
 	}
 
 	bool isDoorChar = (c == '1' || c == '2' || c == '9');
-    // Note: User 2 checked x < 70, but now HUD is dynamic. 
-    // We assume anything that isn't HUD is part of the map.
-	if (isDoorUnlocked(x, y) && isdigit(c)) return Color::GREEN;
+	if (isDoorUnlocked(x, y) && isdigit(c) && !isInHud(x, y)) return Color::GREEN;
 
 	switch (c) {
 	case '@': return Color::BLUE;    // Bomb
@@ -430,7 +428,6 @@ bool Screen::triggerRiddle() {
 std::vector<std::string> Screen::getMapState(const std::vector<Obstacle>& activeObstacles) const {
 	std::vector<std::string> currentState;
 
-	// 1. העתקת המפה הבסיסית (קירות ורצפה) ללא שחקנים
 	for (int i = 0; i < MAX_Y; ++i) {
 		std::string row = screen[i];
 		for (char& c : row) {
@@ -441,14 +438,11 @@ std::vector<std::string> Screen::getMapState(const std::vector<Obstacle>& active
 		currentState.push_back(row);
 	}
 
-	// 2. הוספת המכשולים (Obstacles) לתוך ה-State שמוחזר
-	// אנחנו עוברים על כל מכשול, ועל כל תא במכשול, ושמים כוכבית במקום המתאים
 	for (const auto& obs : activeObstacles) {
-		for (const auto& cell : obs.getCells()) { // בהנחה שיש פונקציה getCells שמחזירה נקודות
+		for (const auto& cell : obs.getCells()) { 
 			int x = cell.getX();
 			int y = cell.getY();
 
-			// בדיקת גבולות ליתר ביטחון
 			if (y >= 0 && y < MAX_Y && x >= 0 && x < MAX_X) {
 				currentState[y][x] = '*';
 			}
