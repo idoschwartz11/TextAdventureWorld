@@ -140,6 +140,8 @@
     <ClInclude Include="Color.h" />
     <ClInclude Include="Direction.h" />
     <ClInclude Include="game.h" />
+    <ClInclude Include="InputController.h" />
+    <ClInclude Include="KeyboardRecorder.h" />
     <ClInclude Include="Obstacle.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Point.h" />

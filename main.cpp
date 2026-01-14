@@ -1,18 +1,12 @@
 #include <iostream>
 #include <windows.h>
 #include <conio.h>
-#include "Player.h"
-#include "Screen.h"
-#include "utils.h"
 #include "game.h"
 
 using namespace std;
-enum Keys { ESC = 27 };
 
-int main() {
+int main(int argc, char* argv[]) {
 	game g;
-	g.run_game();
-
+	g.run_game(argc, argv);
+	return 0;
 }
-
-

@@ -12,6 +12,7 @@
 #include "Obstacle.h"
 #include <sstream>
 #include <iomanip>
+#include "KeyboardRecorder.h"
 
 enum Keys { ESC = 27 };
 
@@ -206,12 +207,41 @@ const std::string MAP_ROOM_3_lost[Screen::MAX_Y] = {
 
 // --- Game Implementation ---
 
-void game::run_game() {
-	hideCursor();
-    riddle_manager.loadRiddles("riddles.txt"); // From User 2
-	main_menu();
-	cls();
+void game::run_game(int argc, char* argv[]) {
+    bool isLoadMode = false;
+    bool isSaveMode = false;
+
+    if (argc > 1) {
+        std::string mode = argv[1];
+        if (mode == "-save") isSaveMode = true;
+        else if (mode == "-load") isLoadMode = true;
+
+        if (argc > 2 && std::string(argv[2]) == "-silent") isSilent = true;
+    }
+
+	unsigned int seed = static_cast<unsigned int>(time(nullptr));
+
+    if (isLoadMode) {
+        //ido
+    }
+
+    else {
+        inputSource = new KeyboardRecorder(seed, isSaveMode);
+    }
+
+    std::srand(seed);
+
+    hideCursor();
+    riddle_manager.loadRiddles("riddles.txt");
+
+    if (isLoadMode) {
+        start_new_game();
+    }
+    else {
+        main_menu();
+    }
 }
+
 
 void game::main_menu() {
     bool exit_requested = false;
@@ -303,7 +333,6 @@ void game::start_new_game() {
     game_loop(screen, players);
 }
 
-// User 1's BFS Obstacle Loader
 void game::loadObstaclesFromScreen(Screen& screen) {
     obstacles.clear();
     bool visited[Screen::MAX_Y][Screen::MAX_X] = { false };
@@ -365,6 +394,26 @@ void game::game_loop(Screen& screen, Player players[]) {
     while (!quitToMenu) {
         clearUnlockedDoor();
 
+        char key = 0;
+        bool hasInput = false;
+
+        if (inputSource) {
+            hasInput = inputSource->hasInput(game_cycle_counter, key);
+        }
+
+        if (hasInput) {
+            if (key == Keys::ESC) {
+                bool goToMenu = handle_pause();
+                if (goToMenu) quitToMenu = true;
+                else renderFrame(screen, players);
+            }
+            else {
+                for (int i = 0; i < 2; ++i) {
+                    players[i].handleKeyPressed(key);
+                }
+            }
+        }
+
         for (int i = 0; i < 2; ++i) {
             players[i].move();
         }
@@ -373,6 +422,15 @@ void game::game_loop(Screen& screen, Player players[]) {
         updateScore(screen);
 
         if (players[0].isDead() || players[1].isDead()) {
+
+            logEvent("GAME_ENDED SCORE " + std::to_string(score));
+
+            std::ofstream resFile("adv-world.result");
+
+            if (resFile.is_open()) {
+                for (const auto& line : resultsLog) resFile << line << std::endl;
+            }
+
             screen.setMap(MAP_ROOM_3_lost);
             screen.draw();
             gotoxy(0, 24);
@@ -384,16 +442,15 @@ void game::game_loop(Screen& screen, Player players[]) {
 
         if (p1_ready_to_transition && p2_ready_to_transition) {
 
+            int next_r = (p1_dest_room != -1) ? p1_dest_room : (current_screen + 1);
+
+            logEvent("SCREEN_TRANSITION " + std::to_string(next_r));
+
             visitedRooms[current_screen] = screen.getMapState(obstacles);
             visitedRoomLocks[current_screen] = screen.getLocksState();
 
             int prev_room = current_screen;
-            int next_room = current_screen + 1;
-
-            if (p1_dest_room != -1) next_room = p1_dest_room;
-            else if (p2_dest_room != -1) next_room = p2_dest_room;
-
-            current_screen = next_room;
+            current_screen = next_r;
 
             p1_ready_to_transition = false;
             p2_ready_to_transition = false;
@@ -413,6 +470,7 @@ void game::game_loop(Screen& screen, Player players[]) {
                     else if (current_screen == 1) screen.setMap(MAP_ROOM_1);
                     else if (current_screen == 2) screen.setMap(MAP_ROOM_2);
                     else if (current_screen == 9) screen.setMap(MAP_ROOM_9);
+                    else if (current_screen == 3) screen.setMap(MAP_ROOM_3);
                 }
             }
 
@@ -435,8 +493,6 @@ void game::game_loop(Screen& screen, Player players[]) {
 
             loadObstaclesFromScreen(screen);
 
-
-            // Spawn Logic
             int p1x = 1, p1y = 1, p2x = 3, p2y = 1;
 
             if (current_screen == 0) {
@@ -448,15 +504,13 @@ void game::game_loop(Screen& screen, Player players[]) {
                 if (prev_room == 0) { p1x = 2; p1y = 10; p2x = 2; p2y = 12; }
                 else if (prev_room == 2) { p1x = 2; p1y = 4; p2x = 4; p2y = 6; }
             }
-            else if (current_screen == 2){
+            else if (current_screen == 2) {
                 if (prev_room == 1) { p1x = 1; p1y = 5; p2x = 3; p2y = 4; }
                 else {
                     p1x = 33; p1y = 22;
                     p2x = 35; p2y = 22;
                 }
-                
             }
-
             else if (current_screen == 9) {
                 if (prev_room == 0) {
                     p1x = 5; p1y = 4;
@@ -466,31 +520,28 @@ void game::game_loop(Screen& screen, Player players[]) {
                     p1x = 78; p1y = 18;
                     p2x = 78; p2y = 16;
                 }
-
             }
             if (current_screen == 3) {
                 p1x = 5; p1y = 7;
                 p2x = 7; p2y = 7;
             }
 
-                players[0].resetPosition(p1x, p1y);
-                players[1].resetPosition(p2x, p2y);
+            players[0].resetPosition(p1x, p1y);
+            players[1].resetPosition(p2x, p2y);
 
-                players[0].resetPosition(p1x, p1y);
-                players[1].resetPosition(p2x, p2y);
+            screen.setP1Position(p1x, p1y);
+            screen.setP2Position(p2x, p2y);
+            screen.setP1Hearts(players[0].getHearts());
+            screen.setP2Hearts(players[1].getHearts());
+            screen.setP1Inventory(players[0].getItem());
+            screen.setP2Inventory(players[1].getItem());
 
-                screen.setP1Position(p1x, p1y);
-                screen.setP2Position(p2x, p2y);
-                screen.setP1Hearts(players[0].getHearts());
-                screen.setP2Hearts(players[1].getHearts());
-                screen.setP1Inventory(players[0].getItem());
-                screen.setP2Inventory(players[1].getItem());
+            if (current_screen == darkRoomIndex)
+                screen.renderWithVisibility(players[0], players[1]);
+            else
+                screen.renderFull(players[0], players[1]);
+        }
 
-                if (current_screen == darkRoomIndex)
-                    screen.renderWithVisibility(players[0], players[1]);
-                else
-                    screen.renderFull(players[0], players[1]);
-            }
             else {
                 renderFrame(screen, players);
             }
@@ -510,7 +561,9 @@ void game::game_loop(Screen& screen, Player players[]) {
             }
 
             check_switches(screen);
-            Sleep(60);
+            if (!isSilent) {
+                Sleep(60);
+            }
         }
     }
 
@@ -750,7 +803,10 @@ bool game::isShopHeart(int x, int y) const {
 
 bool game::handle_riddle_encounter() {
     int ridx;
-    if (last_riddle_index != -1) ridx = last_riddle_index;
+
+    if (last_riddle_index != -1) {
+        ridx = last_riddle_index;
+    }
     else {
         ridx = riddle_manager.getRandomRiddleIndex();
         if (ridx == -1) return true; 
@@ -777,29 +833,40 @@ bool game::handle_riddle_encounter() {
 
         char c = _getch();
 
-        if (c == 27) { // ESC
-            inRiddle = false; solved = false;
-        } else if (c == 13) { // ENTER
+        if (c == 27) {
+            logEvent("RIDDLE_EXITED_USER_ESC"); 
+            inRiddle = false;
+            solved = false;
+        }
+        else if (c == 13) {
             if (riddle_manager.checkAnswer(ridx, userInput)) {
                 message = "CORRECT! The path opens.";
+                logEvent("RIDDLE_SOLVED CORRECT");
+
                 gotoxy(10, 15); set_text_color(Color::GREEN);
                 std::cout << message << "                       " << std::endl;
                 Sleep(1000);
-                inRiddle = false; solved = true;
+                inRiddle = false;
+                solved = true;
                 last_riddle_index = -1;
-            } else {
+            }
+            else {
+                logEvent("RIDDLE_SOLVED WRONG_ANSWER: " + userInput);
                 message = "WRONG! Try again or ESC.";
                 userInput = "";
             }
-        } else if (c == 8) { // BACKSPACE
+        }
+        else if (c == 8) {
             if (!userInput.empty()) userInput.pop_back();
-        } else if (isalnum(c) || c == ' ') {
+        }
+        else if (isalnum(c) || c == ' ') {
             userInput += c;
         }
     }
     cls();
     return solved;
 }
+
 
 std::string game::getCurrentClue() const {
     if (last_riddle_index == -1) return "Find a riddle first to get a hint!";
@@ -833,4 +900,17 @@ void game::check_switches(Screen& screen) {
             screen.setDoorUnlocked(doorX, doorY, isOpen);
         }
     }
+}
+
+game::~game() {
+    if (inputSource) {
+        delete inputSource;
+        inputSource = nullptr;
+    }
+}
+
+
+void game::logEvent(const std::string& eventDescription) {
+    std::string logLine = std::to_string(game_cycle_counter) + " " + eventDescription;
+    resultsLog.push_back(logLine);
 }
