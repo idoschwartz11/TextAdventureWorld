@@ -1,0 +1,10 @@
+0 SCREEN_TRANSITION 1
+5 LOST_LIFE Player 1 Hearts_Left:2
+5 OST_LIFE Player 2 Hearts_Left:2
+5 LOST_LIFE Player 1 Hearts_Left:1
+5 OST_LIFE Player 2 Hearts_Left:1
+5 LOST_LIFE Player 1 Hearts_Left:0
+5 PLAYER_DIED Player 1
+5 OST_LIFE Player 2 Hearts_Left:0
+5 PLAYER_DIED Player 2
+0 GAME_ENDED SCORE 963

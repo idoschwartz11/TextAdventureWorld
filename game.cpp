@@ -13,6 +13,7 @@
 #include <sstream>
 #include <iomanip>
 #include "KeyboardRecorder.h"
+#include "FileInputPlayer.h"
 
 enum Keys { ESC = 27 };
 
@@ -216,15 +217,19 @@ void game::run_game(int argc, char* argv[]) {
         if (mode == "-save") isSaveMode = true;
         else if (mode == "-load") isLoadMode = true;
 
-        if (argc > 2 && std::string(argv[2]) == "-silent") isSilent = true;
+        if (argc > 2 && std::string(argv[2]) == "-silent")
+            isSilent = true;
     }
 
-	unsigned int seed = static_cast<unsigned int>(time(nullptr));
+    unsigned int seed = static_cast<unsigned int>(time(nullptr));
 
     if (isLoadMode) {
-        //ido
-    }
+        inputSource = new FileInputPlayer("adv-world.steps");
 
+        // Replace the seed with the one from the file (important for deterministic replay)
+        unsigned int fileSeed = static_cast<FileInputPlayer*>(inputSource)->getSeed();
+        if (fileSeed != 0) seed = fileSeed;
+    }
     else {
         inputSource = new KeyboardRecorder(seed, isSaveMode);
     }
@@ -240,6 +245,9 @@ void game::run_game(int argc, char* argv[]) {
     else {
         main_menu();
     }
+
+    delete inputSource;
+    inputSource = nullptr;
 }
 
 
@@ -298,6 +306,7 @@ void game::show_instructions() {
 
 void game::start_new_game() {
     current_screen = 0;
+	current_game_cycle = 0;
     last_riddle_index = riddle_manager.getRandomRiddleIndex(); // User 2 feature
     p1_ready_to_transition = false;
     p2_ready_to_transition = false;
@@ -394,6 +403,7 @@ void game::game_loop(Screen& screen, Player players[]) {
     while (!quitToMenu) {
         clearUnlockedDoor();
 
+        // ===== 1) INPUT (single source of truth) =====
         char key = 0;
         bool hasInput = false;
 
@@ -402,10 +412,23 @@ void game::game_loop(Screen& screen, Player players[]) {
         }
 
         if (hasInput) {
+            // In silent/load we do NOT want pause/menu interaction.
+            // If you still want ESC pause in normal mode, keep this block as is,
+            // but it will only run when input produces ESC.
             if (key == Keys::ESC) {
-                bool goToMenu = handle_pause();
-                if (goToMenu) quitToMenu = true;
-                else renderFrame(screen, players);
+                // In silent mode (and typically in load mode), ignore ESC entirely.
+                // If you want ESC to work only in non-silent keyboard play:
+                if (!isSilent) {
+                    bool goToMenu = handle_pause();
+                    if (goToMenu) {
+                        quitToMenu = true;
+                    }
+                    else {
+                        if (!isSilent) {
+                            renderFrame(screen, players);
+                        }
+                    }
+                }
             }
             else {
                 for (int i = 0; i < 2; ++i) {
@@ -414,6 +437,7 @@ void game::game_loop(Screen& screen, Player players[]) {
             }
         }
 
+        // ===== 2) UPDATE =====
         for (int i = 0; i < 2; ++i) {
             players[i].move();
         }
@@ -421,27 +445,32 @@ void game::game_loop(Screen& screen, Player players[]) {
         updateBomb(screen, players);
         updateScore(screen);
 
+        // ===== 3) GAME OVER =====
         if (players[0].isDead() || players[1].isDead()) {
-
             logEvent("GAME_ENDED SCORE " + std::to_string(score));
 
             std::ofstream resFile("adv-world.result");
-
             if (resFile.is_open()) {
-                for (const auto& line : resultsLog) resFile << line << std::endl;
+                for (const auto& line : resultsLog) {
+                    resFile << line << std::endl;
+                }
             }
 
-            screen.setMap(MAP_ROOM_3_lost);
-            screen.draw();
-            gotoxy(0, 24);
-            std::cout << "GAME OVER - Press any key to return to main menu...";
-            _getch();
+            // In silent mode: do not draw, do not wait for key press.
+            if (!isSilent) {
+                screen.setMap(MAP_ROOM_3_lost);
+                screen.draw();
+                gotoxy(0, 24);
+                std::cout << "GAME OVER - Press any key to return to main menu...";
+                _getch();
+            }
+
             quitToMenu = true;
             continue;
         }
 
+        // ===== 4) SCREEN TRANSITION =====
         if (p1_ready_to_transition && p2_ready_to_transition) {
-
             int next_r = (p1_dest_room != -1) ? p1_dest_room : (current_screen + 1);
 
             logEvent("SCREEN_TRANSITION " + std::to_string(next_r));
@@ -457,10 +486,8 @@ void game::game_loop(Screen& screen, Player players[]) {
             p1_dest_room = -1;
             p2_dest_room = -1;
 
-            bool loadedFromCache = false;
             if (visitedRooms.count(current_screen)) {
                 screen.setMapFromState(visitedRooms[current_screen]);
-                loadedFromCache = true;
             }
             else {
                 std::string filename = makeWorldFileName(current_screen);
@@ -498,7 +525,7 @@ void game::game_loop(Screen& screen, Player players[]) {
             if (current_screen == 0) {
                 if (prev_room == 1) { p1x = 75; p1y = 12; p2x = 75; p2y = 13; }
                 else if (prev_room == 9) { p1x = 69; p1y = 22; p2x = 72; p2y = 22; }
-                else { p1x = 3; p1y = 1; p2x = 1; p2y = 1; };
+                else { p1x = 3; p1y = 1; p2x = 1; p2y = 1; }
             }
             else if (current_screen == 1) {
                 if (prev_room == 0) { p1x = 2; p1y = 10; p2x = 2; p2y = 12; }
@@ -506,21 +533,13 @@ void game::game_loop(Screen& screen, Player players[]) {
             }
             else if (current_screen == 2) {
                 if (prev_room == 1) { p1x = 1; p1y = 5; p2x = 3; p2y = 4; }
-                else {
-                    p1x = 33; p1y = 22;
-                    p2x = 35; p2y = 22;
-                }
+                else { p1x = 33; p1y = 22; p2x = 35; p2y = 22; }
             }
             else if (current_screen == 9) {
-                if (prev_room == 0) {
-                    p1x = 5; p1y = 4;
-                    p2x = 7; p2y = 4;
-                }
-                else {
-                    p1x = 78; p1y = 18;
-                    p2x = 78; p2y = 16;
-                }
+                if (prev_room == 0) { p1x = 5; p1y = 4; p2x = 7; p2y = 4; }
+                else { p1x = 78; p1y = 18; p2x = 78; p2y = 16; }
             }
+
             if (current_screen == 3) {
                 p1x = 5; p1y = 7;
                 p2x = 7; p2y = 7;
@@ -536,36 +555,29 @@ void game::game_loop(Screen& screen, Player players[]) {
             screen.setP1Inventory(players[0].getItem());
             screen.setP2Inventory(players[1].getItem());
 
-            if (current_screen == darkRoomIndex)
-                screen.renderWithVisibility(players[0], players[1]);
-            else
-                screen.renderFull(players[0], players[1]);
+            if (!isSilent) {
+                if (current_screen == darkRoomIndex)
+                    screen.renderWithVisibility(players[0], players[1]);
+                else
+                    screen.renderFull(players[0], players[1]);
+            }
         }
-
-            else {
+        else {
+            if (!isSilent) {
                 renderFrame(screen, players);
             }
-
-            if (_kbhit()) {
-                char key = _getch();
-                if (key == Keys::ESC) {
-                    bool goToMenu = handle_pause();
-                    if (goToMenu) quitToMenu = true;
-                    else renderFrame(screen, players);
-                }
-                else {
-                    for (int i = 0; i < 2; ++i) {
-                        players[i].handleKeyPressed(key);
-                    }
-                }
-            }
-
-            check_switches(screen);
-            if (!isSilent) {
-                Sleep(60);
-            }
         }
+
+        // ===== 5) OTHER UPDATES =====
+        check_switches(screen);
+
+        // ===== 6) ADVANCE TIME (single tick counter) =====
+        game_cycle_counter++;
+
+        // ===== 7) TIMING =====
+        Sleep(isSilent ? 0 : 60);
     }
+}
 
 
 bool game::handle_pause() {
@@ -622,6 +634,10 @@ void game::bomb_explode(int bombX, int bombY, Screen& screen, Player players[]) 
         int py = players[i].getY();
         if (abs(px - bombX) <= 3 && abs(py - bombY) <= 3) {
             players[i].takeDamage(1);
+            logEvent("LOST_LIFE Player " + i + std::to_string(i + 1) + " Hearts_Left:" + std::to_string(players[i].getHearts()));
+			if (players[i].isDead()) {
+				logEvent("PLAYER_DIED Player " + std::to_string(i + 1));
+			}
         }
     }
 

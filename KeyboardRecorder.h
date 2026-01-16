@@ -10,6 +10,13 @@ private:
     bool isSaving;
 
 public:
+
+    bool isRelevantKey(char key) {
+        // Add all relevant keys here
+        const std::string relevant = "WADXSEIJLMKOwadxseijlmko";
+        return relevant.find(key) != std::string::npos;
+    }
+
     KeyboardRecorder(unsigned int seed, bool saveMode) : isSaving(saveMode) {
         if (isSaving) {
             stepsFile.open("adv-world.steps", std::ios::out | std::ios::trunc);
@@ -31,6 +38,9 @@ public:
     bool hasInput(int currentCycle, char& key) override {
         if (_kbhit()) {
             key = _getch();
+			if (!isRelevantKey(key)) {
+				return false; // Ignore irrelevant keys
+			}
             if (isSaving && stepsFile.is_open()) {
                 stepsFile << currentCycle << " " << key << std::endl;
             }
