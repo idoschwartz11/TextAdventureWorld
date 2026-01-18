@@ -61,6 +61,7 @@ private:
 	std::vector<std::string> resultsLog;    
 	bool isSilent = false;                  
 	void logEvent(const std::string& eventDescription);
+	unsigned long total_global_time = 0;
 
 public:
 	game()

@@ -127,6 +127,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="FileInputPlayer.cpp" />
     <ClCompile Include="game.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Obstacle.cpp" />
@@ -139,6 +140,7 @@
   <ItemGroup>
     <ClInclude Include="Color.h" />
     <ClInclude Include="Direction.h" />
+    <ClInclude Include="FileInputPlayer.h" />
     <ClInclude Include="game.h" />
     <ClInclude Include="InputController.h" />
     <ClInclude Include="KeyboardRecorder.h" />

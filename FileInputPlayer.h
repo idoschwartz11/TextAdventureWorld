@@ -5,7 +5,6 @@
 #include <utility>
 #include <string>
 
-// Reads keys from "adv-world.steps" in the SAME format that KeyboardRecorder writes:
 class FileInputPlayer : public InputController {
 private:
     unsigned int seed = 0;
@@ -14,6 +13,6 @@ private:
 
 public:
     unsigned int getSeed() const { return seed; }
-    explicit FileInputPlayer(const std::string& stepsFile); 
+    explicit FileInputPlayer(const std::string& stepsFile);
     bool hasInput(int currentCycle, char& key) override;
 };

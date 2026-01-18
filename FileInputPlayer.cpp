@@ -9,14 +9,14 @@ FileInputPlayer::FileInputPlayer(const std::string& stepsFile) {
     in >> seed;
     int cycle;
     char key;
-	while (in >> cycle >> key) { // Read until EOF
+    while (in >> cycle >> key) { // Read until EOF
         // Ignore ESC in load mode (requirement: no user input, even ESC)
         if (key == 27) continue;
         steps.push_back({ cycle, key });
     }
 }
 
-bool FileInputPlayer::hasInput(int currentCycle, char& key)  {
+bool FileInputPlayer::hasInput(int currentCycle, char& key) {
     if (index < steps.size() && steps[index].first == currentCycle) {
         key = steps[index].second;
         index++;

@@ -209,6 +209,7 @@ const std::string MAP_ROOM_3_lost[Screen::MAX_Y] = {
 // --- Game Implementation ---
 
 void game::run_game(int argc, char* argv[]) {
+    total_global_time = 0;
     bool isLoadMode = false;
     bool isSaveMode = false;
 
@@ -408,7 +409,7 @@ void game::game_loop(Screen& screen, Player players[]) {
         bool hasInput = false;
 
         if (inputSource) {
-            hasInput = inputSource->hasInput(game_cycle_counter, key);
+            hasInput = inputSource->hasInput(total_global_time, key);
         }
 
         if (hasInput) {
@@ -445,9 +446,9 @@ void game::game_loop(Screen& screen, Player players[]) {
         updateBomb(screen, players);
         updateScore(screen);
 
-        // ===== 3) GAME OVER =====
+        // ===== 3 GAME OVER =====
         if (players[0].isDead() || players[1].isDead()) {
-            logEvent("GAME_ENDED SCORE " + std::to_string(score));
+            logEvent("GAME SCORE " + std::to_string(score));
 
             std::ofstream resFile("adv-world.result");
             if (resFile.is_open()) {
@@ -455,21 +456,32 @@ void game::game_loop(Screen& screen, Player players[]) {
                     resFile << line << std::endl;
                 }
             }
+        }
 
-            // In silent mode: do not draw, do not wait for key press.
+        if (current_screen == 3) {
+
+            logEvent("GAME_ENDED VICTORY SCORE " + std::to_string(score));
+
+            std::ofstream resFile("adv-world.result");
+            if (resFile.is_open()) {
+                for (const auto& line : resultsLog) resFile << line << std::endl;
+                resFile.close();
+            }
+
             if (!isSilent) {
-                screen.setMap(MAP_ROOM_3_lost);
-                screen.draw();
+                renderFrame(screen, players); 
+                Sleep(2000);
                 gotoxy(0, 24);
-                std::cout << "GAME OVER - Press any key to return to main menu...";
+                std::cout << "VICTORY! Press any key to return to menu...";
                 _getch();
             }
 
             quitToMenu = true;
             continue;
         }
+        
 
-        // ===== 4) SCREEN TRANSITION =====
+        // ===== 4 SCREEN TRANSITION =====
         if (p1_ready_to_transition && p2_ready_to_transition) {
             int next_r = (p1_dest_room != -1) ? p1_dest_room : (current_screen + 1);
 
@@ -572,8 +584,7 @@ void game::game_loop(Screen& screen, Player players[]) {
         check_switches(screen);
 
         // ===== 6) ADVANCE TIME (single tick counter) =====
-        game_cycle_counter++;
-
+        total_global_time++;
         // ===== 7) TIMING =====
         Sleep(isSilent ? 0 : 60);
     }
@@ -695,7 +706,6 @@ void game::activateBomb(int x, int y) {
 	bombTimer = 10; 
 }
 
-// Merged Transition Setter
 void game::setPlayerReady(char playerChar, char destChar) {
     int destIndex = -1;
     if (isdigit(destChar)) destIndex = destChar - '0';
@@ -730,7 +740,6 @@ int game::findObstacleIndexAt(int x, int y) const {
     return -1;
 }
 
-// User 1's Physics Engine
 bool game::tryPushObstacle(Screen& screen, Player& p, Player& other, Direction dir, int pBonusPower)
 {
     int dx = 0, dy = 0;
@@ -785,7 +794,6 @@ bool game::tryPushObstacle(Screen& screen, Player& p, Player& other, Direction d
     return true;
 }
 
-// --- Features from User 2 ---
 
 void game::updateScore(Screen& screen) {
     game_cycle_counter++;
@@ -817,15 +825,13 @@ bool game::isShopHeart(int x, int y) const {
     return false;
 }
 
+
 bool game::handle_riddle_encounter() {
     int ridx;
-
-    if (last_riddle_index != -1) {
-        ridx = last_riddle_index;
-    }
+    if (last_riddle_index != -1) ridx = last_riddle_index;
     else {
         ridx = riddle_manager.getRandomRiddleIndex();
-        if (ridx == -1) return true; 
+        if (ridx == -1) return true;
         last_riddle_index = ridx;
     }
 
@@ -833,56 +839,73 @@ bool game::handle_riddle_encounter() {
     std::string userInput = "";
     bool inRiddle = true;
     bool solved = false;
-    std::string message = "Type answer & Enter, or ESC to leave.";
+    std::string message = "Type answer. Press 1 to submit.";
+
+    if (inputSource) inputSource->setRiddleMode(true);
+
+    cls();
 
     while (inRiddle) {
-        cls();
-        gotoxy(0, 5);
-        set_text_color(Color::CYAN);
+        total_global_time++;
+
+        gotoxy(0, 5); set_text_color(Color::CYAN);
         std::cout << "=================== RIDDLE ENCOUNTER ===================" << std::endl;
         set_text_color(Color::WHITE);
-
-        gotoxy(1, 8); std::cout << "Riddle: " << question << std::endl;
-        gotoxy(1, 12); std::cout << "Your Answer: " << userInput << "_" << std::endl;
+        gotoxy(1, 8); std::cout << "Riddle: " << question << "                    " << std::endl;
+        gotoxy(1, 12); std::cout << "Your Answer: " << userInput << "_" << "                    " << std::endl;
         gotoxy(10, 15); set_text_color(Color::YELLOW);
-        std::cout << message << std::endl; set_text_color(Color::WHITE);
+        std::cout << message << "                    " << std::endl; set_text_color(Color::WHITE);
 
-        char c = _getch();
+        char c = 0;
+        bool hasInput = false;
 
-        if (c == 27) {
-            logEvent("RIDDLE_EXITED_USER_ESC"); 
-            inRiddle = false;
-            solved = false;
+        if (inputSource) {
+            hasInput = inputSource->hasInput(total_global_time, c);
         }
-        else if (c == 13) {
-            if (riddle_manager.checkAnswer(ridx, userInput)) {
-                message = "CORRECT! The path opens.";
-                logEvent("RIDDLE_SOLVED CORRECT");
 
+        if (!hasInput) {
+            Sleep(50);
+            continue;
+        }
+
+
+        if (c == 27) { // ESC
+            std::string logMsg = "RIDDLE_EVENT Q=\"" + question + "\" A=\"ESC\" RESULT=SKIPPED";
+            logEvent(logMsg);
+            inRiddle = false; solved = false;
+        }
+        else if (c == '1') {
+            bool isCorrect = riddle_manager.checkAnswer(ridx, userInput);
+
+            std::string resultStr = isCorrect ? "CORRECT" : "WRONG";
+            std::string logMsg = "RIDDLE_EVENT Q=\"" + question + "\" A=\"" + userInput + "\" RESULT=" + resultStr;
+            logEvent(logMsg);
+
+            if (isCorrect) {
+                message = "CORRECT! The path opens.";
                 gotoxy(10, 15); set_text_color(Color::GREEN);
                 std::cout << message << "                       " << std::endl;
                 Sleep(1000);
-                inRiddle = false;
-                solved = true;
+                inRiddle = false; solved = true;
                 last_riddle_index = -1;
             }
             else {
-                logEvent("RIDDLE_SOLVED WRONG_ANSWER: " + userInput);
                 message = "WRONG! Try again or ESC.";
                 userInput = "";
             }
         }
-        else if (c == 8) {
+        else if (c == 8) { // BACKSPACE
             if (!userInput.empty()) userInput.pop_back();
         }
-        else if (isalnum(c) || c == ' ') {
+        else if (isalnum(c) || c == ' ') { 
             userInput += c;
         }
     }
+
+    if (inputSource) inputSource->setRiddleMode(false);
     cls();
     return solved;
 }
-
 
 std::string game::getCurrentClue() const {
     if (last_riddle_index == -1) return "Find a riddle first to get a hint!";
@@ -927,6 +950,6 @@ game::~game() {
 
 
 void game::logEvent(const std::string& eventDescription) {
-    std::string logLine = std::to_string(game_cycle_counter) + " " + eventDescription;
+    std::string logLine = std::to_string(total_global_time) + " " + eventDescription;
     resultsLog.push_back(logLine);
 }

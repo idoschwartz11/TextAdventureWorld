@@ -8,8 +8,10 @@ void RiddleManager::loadRiddles(const std::string& filename)
         return;
     }
 
+    riddles.clear();
+
     std::string line;
-    while (std::getline(file, line)) {              // format: Question|Answer|Clue
+    while (std::getline(file, line)) {
         std::stringstream ss(line);
         std::string segment;
         std::vector<std::string> parts;
@@ -27,4 +29,5 @@ void RiddleManager::loadRiddles(const std::string& filename)
         }
     }
     file.close();
+    usedFlags.assign(riddles.size(), false);
 }

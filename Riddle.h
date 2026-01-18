@@ -4,7 +4,8 @@
 #include <fstream>
 #include <sstream>
 #include <iostream>
-#include <cstdlib> // for rand()
+#include <cstdlib> 
+#include <algorithm>
 
 struct Riddle {
     std::string question;
@@ -14,13 +15,33 @@ struct Riddle {
 
 class RiddleManager {
     std::vector<Riddle> riddles;
+    std::vector<bool> usedFlags;
 
 public:
     void loadRiddles(const std::string& filename);
 
-    int getRandomRiddleIndex() const {
+    int getRandomRiddleIndex() {
         if (riddles.empty()) return -1;
-        return rand() % riddles.size();
+
+        bool allUsed = true;
+        for (bool u : usedFlags) {
+            if (!u) {
+                allUsed = false;
+                break;
+            }
+        }
+
+        if (allUsed) {
+            std::fill(usedFlags.begin(), usedFlags.end(), false);
+        }
+
+        int idx;
+        do {
+            idx = rand() % riddles.size();
+        } while (usedFlags[idx] == true);
+
+        usedFlags[idx] = true;
+        return idx;
     }
 
     std::string getClue(int index) const {
@@ -37,7 +58,6 @@ public:
         return "No question available.";
     }
 
-    // Check if the answer provided matches (logic for later)
     bool checkAnswer(int index, const std::string& input) const {
         if (index >= 0 && index < riddles.size()) {
             return riddles[index].answer == input;
