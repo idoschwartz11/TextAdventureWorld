@@ -590,7 +590,6 @@ void game::game_loop(Screen& screen, Player players[]) {
     }
 }
 
-
 bool game::handle_pause() {
 	pause_screen();
 	bool returnToMenu = false;
@@ -645,7 +644,7 @@ void game::bomb_explode(int bombX, int bombY, Screen& screen, Player players[]) 
         int py = players[i].getY();
         if (abs(px - bombX) <= 3 && abs(py - bombY) <= 3) {
             players[i].takeDamage(1);
-            logEvent("LOST_LIFE Player " + i + std::to_string(i + 1) + " Hearts_Left:" + std::to_string(players[i].getHearts()));
+            logEvent("lost_life Player " + i + std::to_string(i + 1) + " Hearts_Left:" + std::to_string(players[i].getHearts()));
 			if (players[i].isDead()) {
 				logEvent("PLAYER_DIED Player " + std::to_string(i + 1));
 			}
@@ -825,7 +824,6 @@ bool game::isShopHeart(int x, int y) const {
     return false;
 }
 
-
 bool game::handle_riddle_encounter() {
     int ridx;
     if (last_riddle_index != -1) ridx = last_riddle_index;
@@ -839,22 +837,24 @@ bool game::handle_riddle_encounter() {
     std::string userInput = "";
     bool inRiddle = true;
     bool solved = false;
-    std::string message = "Type answer. Press 1 to submit.";
+    std::string message = "Type answer. Press ENTER (or '1') to submit.";
+
+    if (!isSilent) cls();
 
     if (inputSource) inputSource->setRiddleMode(true);
-
-    cls();
 
     while (inRiddle) {
         total_global_time++;
 
-        gotoxy(0, 5); set_text_color(Color::CYAN);
-        std::cout << "=================== RIDDLE ENCOUNTER ===================" << std::endl;
-        set_text_color(Color::WHITE);
-        gotoxy(1, 8); std::cout << "Riddle: " << question << "                    " << std::endl;
-        gotoxy(1, 12); std::cout << "Your Answer: " << userInput << "_" << "                    " << std::endl;
-        gotoxy(10, 15); set_text_color(Color::YELLOW);
-        std::cout << message << "                    " << std::endl; set_text_color(Color::WHITE);
+        if (!isSilent) {
+            gotoxy(0, 5); set_text_color(Color::CYAN);
+            std::cout << "=================== RIDDLE ENCOUNTER ===================" << std::endl;
+            set_text_color(Color::WHITE);
+            gotoxy(1, 8); std::cout << "Riddle: " << question << "                    " << std::endl;
+            gotoxy(1, 12); std::cout << "Your Answer: " << userInput << "_" << "                    " << std::endl;
+            gotoxy(10, 15); set_text_color(Color::YELLOW);
+            std::cout << message << "                    " << std::endl; set_text_color(Color::WHITE);
+        }
 
         char c = 0;
         bool hasInput = false;
@@ -864,17 +864,17 @@ bool game::handle_riddle_encounter() {
         }
 
         if (!hasInput) {
-            Sleep(50);
+            if (!isSilent)
+                Sleep(50);
             continue;
         }
-
 
         if (c == 27) { // ESC
             std::string logMsg = "RIDDLE_EVENT Q=\"" + question + "\" A=\"ESC\" RESULT=SKIPPED";
             logEvent(logMsg);
             inRiddle = false; solved = false;
         }
-        else if (c == '1') {
+        else if (c == 13 || c == '1') { // ENTER or '1'
             bool isCorrect = riddle_manager.checkAnswer(ridx, userInput);
 
             std::string resultStr = isCorrect ? "CORRECT" : "WRONG";
@@ -883,9 +883,13 @@ bool game::handle_riddle_encounter() {
 
             if (isCorrect) {
                 message = "CORRECT! The path opens.";
-                gotoxy(10, 15); set_text_color(Color::GREEN);
-                std::cout << message << "                       " << std::endl;
-                Sleep(1000);
+
+                if (!isSilent) {
+                    gotoxy(10, 15); set_text_color(Color::GREEN);
+                    std::cout << message << "                       " << std::endl;
+                    Sleep(1000);
+                }
+
                 inRiddle = false; solved = true;
                 last_riddle_index = -1;
             }
@@ -897,13 +901,16 @@ bool game::handle_riddle_encounter() {
         else if (c == 8) { // BACKSPACE
             if (!userInput.empty()) userInput.pop_back();
         }
-        else if (isalnum(c) || c == ' ') { 
+        else if (isalnum(c) || c == ' ') {
             userInput += c;
         }
     }
 
     if (inputSource) inputSource->setRiddleMode(false);
+
+    //if (!isSilent)
     cls();
+
     return solved;
 }
 
