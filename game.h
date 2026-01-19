@@ -57,11 +57,17 @@ private:
 	int current_game_cycle = 0;
 
 	// --- ex3 ---
-	InputController* inputSource = nullptr; 
-	std::vector<std::string> resultsLog;    
-	bool isSilent = false;                  
+	InputController* inputSource = nullptr;
+	std::vector<std::string> resultsLog;
+	bool isSilent = false;
 	void logEvent(const std::string& eventDescription);
 	unsigned long total_global_time = 0;
+
+	// --- Bomb State (Moved to Private per Code Review) ---
+	bool bombActive = false;
+	int activeBombX = -1;
+	int activeBombY = -1;
+	int bombTimer = 0;
 
 public:
 	game()
@@ -79,7 +85,7 @@ public:
 	bool tryPushObstacle(Screen& screen, Player& p, Player& other, Direction dir, int pBonusPower = 0);
 
 	// --- Core Game Flow ---
-	void run_game(int argc, char* argv[]); 
+	void run_game(int argc, char* argv[]);
 	void main_menu();
 	void start_new_game();
 	void show_instructions();
@@ -90,11 +96,7 @@ public:
 	bool handle_pause();
 	void set_text_color(Color color);
 
-	// --- Bomb State ---
-	bool bombActive = false;
-	int activeBombX = -1;
-	int activeBombY = -1;
-	int bombTimer = 0;
+	// --- Bomb Logic ---
 	void bomb_explode(int bombX, int bombY, Screen& screen, Player players[]);
 	void updateBomb(Screen& screen, Player players[]);
 	void activateBomb(int x, int y);

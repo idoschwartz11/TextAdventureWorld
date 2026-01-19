@@ -4,6 +4,7 @@
 #include <iostream>
 #include <conio.h> 
 #include "game.h"
+#include "utils.h" // For KeyCodes
 
 using std::tolower;
 using std::cout;
@@ -207,91 +208,101 @@ void Player::handleKeyPressed(char key) {
 }
 
 
+// --- REFACTORED MOVE LOGIC ---
+
 void Player::move() {
     springRestoreTick();
     if (x < 0 || y < 0) return;
 
     if (inSpringLaunch) {
-        if (springTicksLeft <= 0 || springSpeed <= 0 || springDir == Direction::STAY) {
-            inSpringLaunch = false;
-            springSpeed = 0;
-            springTicksLeft = 0;
-            body.setDirection(Direction::STAY);
-            return;
-        }
-
-        int currX = body.getX();
-        int currY = body.getY();
-        Point currPos(currX, currY, ch);
-        char under = screen.getCharAt(currPos);
-
-        int dirX = 0, dirY = 0;
-        switch (springDir) {
-        case Direction::UP:    dirY = -1; break;
-        case Direction::DOWN:  dirY = 1;  break;
-        case Direction::LEFT:  dirX = -1; break;
-        case Direction::RIGHT: dirX = 1;  break;
-        default: break;
-        }
-
-        int finalX = currX;
-        int finalY = currY;
-        bool blocked = false;
-
-        for (int step = 0; step < springSpeed; ++step) {
-            int nextX = (finalX + dirX + Screen::MAX_X) % Screen::MAX_X;
-            int nextY = (finalY + dirY + Screen::MAX_Y) % Screen::MAX_Y;
-
-            if (screen.isHudCell(nextX, nextY)) { blocked = true; break; }
-            Point stepPos(nextX, nextY, ch);
-            if (screen.isWall(stepPos)) { blocked = true; break; }
-            if (other != nullptr && nextX == other->getX() && nextY == other->getY()) { blocked = true; break; }
-
-            game* g = screen.getGame();
-            if (g && g->isObstacleAt(nextX, nextY)) {
-                int bonus = compressedCount;
-                bool pushed = false;
-                if (other != nullptr) {
-                    pushed = g->tryPushObstacle(screen, *this, *other, springDir, bonus);
-                }
-                if (!pushed) { blocked = true; break; }
-            }
-
-            char cell = screen.getCharAt(stepPos);
-            if (cell == 'o') {
-                screen.setCharAt(nextX, nextY, ' ');
-                screen.setCoins(screen.getCoins() + 1);
-            }
-            else if ((cell == '!' || cell == 'K' || cell == '@') && item == ' ') {
-                item = cell;
-                screen.setCharAt(nextX, nextY, ' ');
-                if (ch == '$') screen.setP1Inventory(item);
-                else if (ch == '&') screen.setP2Inventory(item);
-            }
-
-            finalX = nextX;
-            finalY = nextY;
-        }
-
-        gotoxy(currX, currY); std::cout << under;
-        body.set(finalX, finalY);
-        x = finalX; y = finalY;
-        draw();
-        if (ch == '$') screen.setP1Position(x, y);
-        else if (ch == '&') screen.setP2Position(x, y);
-
-        --springTicksLeft;
-        if (springTicksLeft <= 0 || blocked) {
-            inSpringLaunch = false;
-            springSpeed = 0;
-            springTicksLeft = 0;
-            body.setDirection(Direction::STAY);
-        }
+        handleSpringMovement();
         return;
     }
 
     if (inSpringCompress) return;
 
+    handleNormalMovement();
+}
+
+void Player::handleSpringMovement() {
+    if (springTicksLeft <= 0 || springSpeed <= 0 || springDir == Direction::STAY) {
+        inSpringLaunch = false;
+        springSpeed = 0;
+        springTicksLeft = 0;
+        body.setDirection(Direction::STAY);
+        return;
+    }
+
+    int currX = body.getX();
+    int currY = body.getY();
+    Point currPos(currX, currY, ch);
+    char under = screen.getCharAt(currPos);
+
+    int dirX = 0, dirY = 0;
+    switch (springDir) {
+    case Direction::UP:    dirY = -1; break;
+    case Direction::DOWN:  dirY = 1;  break;
+    case Direction::LEFT:  dirX = -1; break;
+    case Direction::RIGHT: dirX = 1;  break;
+    default: break;
+    }
+
+    int finalX = currX;
+    int finalY = currY;
+    bool blocked = false;
+
+    for (int step = 0; step < springSpeed; ++step) {
+        int nextX = (finalX + dirX + Screen::MAX_X) % Screen::MAX_X;
+        int nextY = (finalY + dirY + Screen::MAX_Y) % Screen::MAX_Y;
+
+        if (screen.isHudCell(nextX, nextY)) { blocked = true; break; }
+        Point stepPos(nextX, nextY, ch);
+        if (screen.isWall(stepPos)) { blocked = true; break; }
+        if (other != nullptr && nextX == other->getX() && nextY == other->getY()) { blocked = true; break; }
+
+        game* g = screen.getGame();
+        if (g && g->isObstacleAt(nextX, nextY)) {
+            int bonus = compressedCount;
+            bool pushed = false;
+            if (other != nullptr) {
+                pushed = g->tryPushObstacle(screen, *this, *other, springDir, bonus);
+            }
+            if (!pushed) { blocked = true; break; }
+        }
+
+        char cell = screen.getCharAt(stepPos);
+        if (cell == 'o') {
+            screen.setCharAt(nextX, nextY, ' ');
+            screen.setCoins(screen.getCoins() + 1);
+        }
+        else if ((cell == '!' || cell == 'K' || cell == '@') && item == ' ') {
+            item = cell;
+            screen.setCharAt(nextX, nextY, ' ');
+            if (ch == '$') screen.setP1Inventory(item);
+            else if (ch == '&') screen.setP2Inventory(item);
+        }
+
+        finalX = nextX;
+        finalY = nextY;
+    }
+
+    gotoxy(currX, currY); std::cout << under;
+    body.set(finalX, finalY);
+    x = finalX; y = finalY;
+    draw();
+    if (ch == '$') screen.setP1Position(x, y);
+    else if (ch == '&') screen.setP2Position(x, y);
+
+    --springTicksLeft;
+    if (springTicksLeft <= 0 || blocked) {
+        inSpringLaunch = false;
+        springSpeed = 0;
+        springTicksLeft = 0;
+        body.setDirection(Direction::STAY);
+    }
+}
+
+void Player::handleNormalMovement() {
     body.setDirection(currentDir);
 
     if (body.getDiffX() == 0 && body.getDiffY() == 0) return;
@@ -329,55 +340,62 @@ void Player::move() {
         if (!pushed) return;
     }
 
+    // Process cell interactions (items, doors, etc.)
+    bool blocked = processCellInteraction(nextX, nextY, nextPos, currX, currY, under);
+    if (blocked) {
+        currentDir = Direction::STAY;
+        body.setDirection(Direction::STAY);
+        return;
+    }
+
+    gotoxy(currX, currY); std::cout << under;
+    body.move();
+    x = body.getX(); y = body.getY();
+    draw();
+    if (ch == '$') screen.setP1Position(x, y);
+    else if (ch == '&') screen.setP2Position(x, y);
+}
+
+bool Player::processCellInteraction(int nextX, int nextY, const Point& nextPos, int currX, int currY, char underChar) {
     char cell = screen.getCharAt(nextPos);
 
+    // Shop Item
     bool isShopItemChar = screen.is_shop_item(cell);
     bool isMerchandise = false;
-
     if (isShopItemChar && nextY + 1 < Screen::MAX_Y) {
         char tag = screen.getCharAt(Point(nextX, nextY + 1, ' '));
-        if (isdigit(tag)) {
-            isMerchandise = true;
-        }
+        if (isdigit(tag)) isMerchandise = true;
     }
-
     if (isMerchandise) {
-        if (tryToBuyItem(nextX, nextY)) {
-            currentDir = Direction::STAY;
-            body.setDirection(Direction::STAY);
-            return;
-        }
-        else {
-            currentDir = Direction::STAY;
-            body.setDirection(Direction::STAY);
-            return;
-        }
+        tryToBuyItem(nextX, nextY);
+        return true; // Stop movement
     }
 
+    // Riddle
     if (cell == 'R') {
         bool solved = screen.triggerRiddle();
         if (solved) {
             screen.setCharAt(nextX, nextY, ' ');
-            gotoxy(currX, currY); std::cout << under;
+            gotoxy(currX, currY); std::cout << underChar;
             body.set(nextX, nextY);
             x = nextX; y = nextY;
             draw();
             if (ch == '$') screen.setP1Position(x, y);
             else if (ch == '&') screen.setP2Position(x, y);
+            // We return true because we manually moved the player
+            return true;
         }
-        else {
-            currentDir = Direction::STAY;
-            body.setDirection(Direction::STAY);
-        }
-        return;
+        return true; // Blocked if not solved
     }
 
+    // Switches
     if (cell == '\\' || cell == '/') {
         char newState = (cell == '\\') ? '/' : '\\';
         screen.setCharAt(nextX, nextY, newState);
         cell = newState;
     }
 
+    // Spring logic (when stepping on it)
     if (cell == '#') {
         if (restoringSpring) {
             bool sameSpringCell = false;
@@ -398,6 +416,7 @@ void Player::move() {
         if (!restoringSpring) {
             Direction wallDir = findWallDirForSpring(nextPos);
             if (wallDir != Direction::STAY) {
+                // Spring compression logic...
                 int dx = 0, dy = 0;
                 switch (wallDir) {
                 case Direction::UP:    dy = -1; break;
@@ -420,19 +439,18 @@ void Player::move() {
                     screen.setCharAt(cx2, cy2, ' '); cx2 += dx; cy2 += dy; p2 = Point(cx2, cy2, ch);
                 }
                 int wallNeighborX = cx2 - dx; int wallNeighborY = cy2 - dy;
-                gotoxy(currX, currY); std::cout << under;
+                gotoxy(currX, currY); std::cout << underChar;
                 body.set(wallNeighborX, wallNeighborY);
                 x = wallNeighborX; y = wallNeighborY;
                 draw();
                 if (ch == '$') screen.setP1Position(x, y); else if (ch == '&') screen.setP2Position(x, y);
                 inSpringCompress = true; compressDir = wallDir;
-                currentDir = Direction::STAY;
-                body.setDirection(Direction::STAY);
-                return;
+                return true; // Handled movement manually
             }
         }
     }
 
+    // Items
     if (cell == 'o') {
         screen.setCharAt(nextX, nextY, ' ');
         screen.setCoins(screen.getCoins() + 1);
@@ -444,25 +462,22 @@ void Player::move() {
         else if (ch == '&') screen.setP2Inventory(item);
     }
 
+    // Doors
     if (isdigit(cell)) {
         bool isOpen = screen.isDoorUnlocked(nextX, nextY);
-
         if (cell == '9' || cell == '0') isOpen = true;
 
         if (isOpen) {
             if (cell == '9' && !screen.isOtherPlayerReady(ch)) {
-                gotoxy(currX, currY); std::cout << under;
+                gotoxy(currX, currY); std::cout << underChar;
                 x = -1; y = -1; body.set(-1, -1);
-                currentDir = Direction::STAY;
                 screen.playerReadyToTransition(ch, cell);
-                return;
+                return true;
             }
-
-            gotoxy(currX, currY); std::cout << under;
+            gotoxy(currX, currY); std::cout << underChar;
             x = -1; y = -1; body.set(-1, -1);
-            currentDir = Direction::STAY;
             screen.playerReadyToTransition(ch, cell);
-            return;
+            return true;
         }
 
         if (item == 'K') {
@@ -471,25 +486,17 @@ void Player::move() {
             if (ch == '$') screen.setP1Inventory(' ');
             else if (ch == '&') screen.setP2Inventory(' ');
 
-            gotoxy(currX, currY); std::cout << under;
+            gotoxy(currX, currY); std::cout << underChar;
             x = -1; y = -1; body.set(-1, -1);
-            currentDir = Direction::STAY;
             screen.playerReadyToTransition(ch, cell);
-            return;
+            return true;
         }
-
-        currentDir = Direction::STAY;
-        body.setDirection(Direction::STAY);
-        return;
+        return true; // Door is locked and we don't have key
     }
 
-    gotoxy(currX, currY); std::cout << under;
-    body.move();
-    x = body.getX(); y = body.getY();
-    draw();
-    if (ch == '$') screen.setP1Position(x, y);
-    else if (ch == '&') screen.setP2Position(x, y);
+    return false; // No special blocking interaction, proceed with move
 }
+
 
 void Player::resetPosition(int newX, int newY) {
     x = newX;

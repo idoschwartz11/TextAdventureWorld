@@ -43,8 +43,13 @@ class Player {
     Direction findWallDirForSpring(const Point& springPos) const;
     void springRestoreTick();
 
+    //splitting "move()" (hw2 code review fix)
+    void handleSpringMovement();
+    void handleNormalMovement();
+    bool processCellInteraction(int nextX, int nextY, const Point& nextPos, int currX, int currY, char underChar);
+
 public:
-    Player(const Point& p, char c, int startX, int startY,const char movKeys[], Screen& scr);
+    Player(const Point& p, char c, int startX, int startY, const char movKeys[], Screen& scr);
 
     Player(const Point& p, char c, const char movKeys[], Screen& scr);
 
