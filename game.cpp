@@ -12,10 +12,10 @@
 #include "Obstacle.h"
 #include <sstream>
 #include <iomanip>
+#include <fstream>
 #include "KeyboardRecorder.h"
 #include "FileInputPlayer.h"
 
-// Note: Constant KeyCodes are now in utils.h
 
 
 
@@ -305,44 +305,45 @@ void game::show_instructions() {
     _getch();
 }
 
+
 void game::start_new_game() {
     current_screen = 0;
     current_game_cycle = 0;
     last_riddle_index = riddle_manager.getRandomRiddleIndex();
     p1_ready_to_transition = false;
     p2_ready_to_transition = false;
-    score = 1000; // Reset score
+    score = 1000;
 
     Screen screen;
     screen.setGame(this);
 
-    // Dynamic Loading Only - No hardcoded fallback
     bool loadedFromFile = screen.loadFromFile(makeWorldFileName(0));
     if (!loadedFromFile) {
-        logEvent("ERROR: Could not load start screen!");
-        // We might want to exit or handle this gracefully
+        screen.setMap(MAP_ROOM_0);
     }
+
+    loadLevelConfig(0);
 
     loadObstaclesFromScreen(screen);
 
     screen.draw();
 
-    // Default Spawn Points (Ideally these should also be dynamic, but for now fixed)
     Player players[] = {
-        Player(Point(1, 4, 0, 0, '$'),'$', "WADXS", screen),  // P1
-        Player(Point(3, 4, 0, 0, '&'),'&', "IJLMK", screen)   // P2
+        Player(Point(1, 4, 0, 0, '$'),'$', "WADXS", screen),
+        Player(Point(3, 4, 0, 0, '&'),'&', "IJLMK", screen)
     };
 
     players[0].setOther(&players[1]);
     players[1].setOther(&players[0]);
 
-    if (current_screen == darkRoomIndex)
+    if (isCurrentLevelDark)
         screen.renderWithVisibility(players[0], players[1]);
     else
         screen.renderFull(players[0], players[1]);
 
     game_loop(screen, players);
 }
+
 
 void game::loadObstaclesFromScreen(Screen& screen) {
     obstacles.clear();
@@ -388,11 +389,12 @@ void game::loadObstaclesFromScreen(Screen& screen) {
 }
 
 void game::renderFrame(Screen& screen, Player players[]) {
-    if (current_screen == darkRoomIndex)
+    if (isCurrentLevelDark)
         screen.renderWithVisibility(players[0], players[1]);
     else
         screen.renderFull(players[0], players[1]);
 }
+
 
 bool game::isObstacleAt(int x, int y) const {
     int idx = findObstacleIndexAt(x, y);
@@ -401,7 +403,7 @@ bool game::isObstacleAt(int x, int y) const {
 
 void game::game_loop(Screen& screen, Player players[]) {
     bool quitToMenu = false;
-    int deathScreenTimer = 0; // טיימר למניעת יציאה בטעות ממסך המוות
+    int deathScreenTimer = 0;
 
     while (!quitToMenu) {
         clearUnlockedDoor();
@@ -415,7 +417,7 @@ void game::game_loop(Screen& screen, Player players[]) {
         }
 
         if (hasInput) {
-            if (key == KEY_ESC) { // שימוש ב-Enum שהוגדר
+            if (key == KEY_ESC) { 
                 if (!isSilent) {
                     bool goToMenu = handle_pause();
                     if (goToMenu) quitToMenu = true;
@@ -423,7 +425,6 @@ void game::game_loop(Screen& screen, Player players[]) {
                 }
             }
             else {
-                // מונעים תזוזה אם אנחנו במסך המוות
                 if (current_screen != 99) {
                     for (int i = 0; i < 2; ++i) players[i].handleKeyPressed(key);
                 }
@@ -431,14 +432,13 @@ void game::game_loop(Screen& screen, Player players[]) {
         }
 
         // ===== 2) UPDATE =====
-        if (current_screen != 99) { // עדכונים רצים רק אם המשחק פעיל
+        if (current_screen != 99) {
             for (int i = 0; i < 2; ++i) players[i].move();
             updateBomb(screen, players);
             updateScore(screen);
         }
 
         // ===== 3) GAME OVER LOGIC =====
-        // אם שחקן מת ועדיין לא עברנו למסך 99
         if ((players[0].isDead() || players[1].isDead()) && current_screen != 99) {
 
             logEvent("GAME_OVER_DEATH SCORE " + std::to_string(score));
@@ -447,20 +447,16 @@ void game::game_loop(Screen& screen, Player players[]) {
                 for (const auto& line : resultsLog) resFile << line << std::endl;
             }
 
-            // --- התיקון החשוב: הגדרת המעבר למסך 99 ---
             p1_dest_room = 99;
             p2_dest_room = 99;
             p1_ready_to_transition = true;
             p2_ready_to_transition = true;
 
-            deathScreenTimer = 0; // איפוס טיימר
-            // הערה: לא עושים כאן continue כדי לאפשר לקוד המעבר (למטה) לרוץ מיד
+            deathScreenTimer = 0;
         }
 
-        // לוגיקה למסך המוות עצמו (השהייה לפני יציאה)
         if (current_screen == 99) {
             deathScreenTimer++;
-            // מחכים קצת (כ-2 שניות) לפני שמאפשרים לצאת, כדי שהשחקן לא ילחץ בטעות
             if (deathScreenTimer > 30 && hasInput) {
                 quitToMenu = true;
             }
@@ -468,7 +464,6 @@ void game::game_loop(Screen& screen, Player players[]) {
 
         // ===== 4) SCREEN TRANSITION =====
         if (p1_ready_to_transition && p2_ready_to_transition) {
-            // אם היעד הוא -1 (ברירת מחדל) עוברים לחדר הבא. אחרת (כמו 99) עוברים ליעד.
             int next_r = (p1_dest_room != -1) ? p1_dest_room : (current_screen + 1);
 
             logEvent("SCREEN_TRANSITION " + std::to_string(next_r));
@@ -479,7 +474,8 @@ void game::game_loop(Screen& screen, Player players[]) {
             int prev_room = current_screen;
             current_screen = next_r;
 
-            // איפוס דגלים
+            loadLevelConfig(current_screen);
+
             p1_ready_to_transition = false;
             p2_ready_to_transition = false;
             p1_dest_room = -1;
@@ -492,11 +488,9 @@ void game::game_loop(Screen& screen, Player players[]) {
                 std::string filename = makeWorldFileName(current_screen);
                 bool loaded = screen.loadFromFile(filename);
                 if (!loaded) {
-                    // אם אין קובץ 99, ננסה להציג מפת ברירת מחדל או לצאת
-                    if (current_screen == 99) screen.setMap(MAP_ROOM_3_lost); // מפה פנימית למקרה חירום
+                    if (current_screen == 99) screen.setMap(MAP_ROOM_3_lost); 
                     else if (current_screen == 3) screen.setMap(MAP_ROOM_3);
                     else {
-                        // אם לא מצא קובץ סתם כך
                         if (!isSilent) {
                             cls();
                             std::cout << "Error loading file: " << filename << "\nPress any key to exit.";
@@ -510,19 +504,15 @@ void game::game_loop(Screen& screen, Player players[]) {
             if (visitedRoomLocks.count(current_screen)) screen.setLocksState(visitedRoomLocks[current_screen]);
             else screen.resetUnlockedDoors();
 
-            // טעינת מכשולים ומיקום שחקנים
             loadObstaclesFromScreen(screen);
 
-            // ברירת מחדל למיקום בטוח (לא על הקירות/HUD)
             int p1x = 2, p1y = 5;
             int p2x = 4, p2y = 5;
 
-            // מיקומים ספציפיים (אם רוצים לשמור על הקיים)
             if (current_screen == 0) {
                 if (prev_room == 1) { p1x = 75; p1y = 12; p2x = 75; p2y = 13; }
                 else { p1x = 3; p1y = 4; p2x = 1; p2y = 4; }
             }
-            // ... (שאר ה-ifים למיקומים יכולים להישאר כפי שהיו)
 
             players[0].resetPosition(p1x, p1y);
             players[1].resetPosition(p2x, p2y);
@@ -535,7 +525,7 @@ void game::game_loop(Screen& screen, Player players[]) {
             }
         }
         else {
-            if (!isSilent && current_screen != 99) { // לא מציירים שוב ושוב במסך המוות הסטטי
+            if (!isSilent && current_screen != 99) {
                 renderFrame(screen, players);
             }
         }
@@ -885,33 +875,20 @@ std::string game::getCurrentClue() const {
 }
 
 void game::check_switches(Screen& screen) {
-    if (current_screen == 1) { // Dark Room
-
-        int switchesOn = 0;
-        int doorX = -1;
-        int doorY = -1;
-
-        for (int y = 0; y < Screen::MAX_Y; ++y) {
-            for (int x = 0; x < Screen::MAX_X; ++x) {
-                char c = screen.getCharAt(Point(x, y, ' '));
-
-                if (c == '\\') {
-                    switchesOn++;
-                }
-
-                if (c == '2') {
-                    doorX = x;
-                    doorY = y;
-                }
+    int switchesOn = 0;
+    for (int y = 0; y < Screen::MAX_Y; ++y) {
+        for (int x = 0; x < Screen::MAX_X; ++x) {
+            if (screen.getCharAt(Point(x, y, ' ')) == '\\') {
+                switchesOn++;
             }
         }
-
-        if (doorX != -1 && doorY != -1) {
-            bool isOpen = (switchesOn >= 4);
-            screen.setDoorUnlocked(doorX, doorY, isOpen);
-        }
+    }
+    for (const auto& doorCfg : activeSwitchDoors) {
+        bool unlock = (switchesOn >= doorCfg.requiredSwitches);
+        screen.setDoorUnlocked(doorCfg.x, doorCfg.y, unlock);
     }
 }
+
 
 game::~game() {
     if (inputSource) {
@@ -924,4 +901,44 @@ game::~game() {
 void game::logEvent(const std::string& eventDescription) {
     std::string logLine = std::to_string(total_global_time) + " " + eventDescription;
     resultsLog.push_back(logLine);
+}
+
+
+
+//after ex2
+void game::loadLevelConfig(int levelIdx) {
+    activeSwitchDoors.clear();
+    isCurrentLevelDark = false;
+
+    std::string filename = makeWorldFileName(levelIdx);
+    std::ifstream file(filename);
+
+    if (!file.is_open()) return;
+
+    std::string line;
+    int lineCounter = 0;
+
+    while (std::getline(file, line)) {
+
+        if (lineCounter < Screen::MAX_Y) {
+            lineCounter++;
+            continue; 
+        }
+
+        if (line.empty()) continue;
+
+        std::stringstream ss(line);
+        std::string command;
+        ss >> command;
+
+        if (command == "DARK_ROOM") {
+            isCurrentLevelDark = true;
+        }
+        else if (command == "DOOR_SWITCH") {
+            SwitchDoorConfig cfg;
+            ss >> cfg.x >> cfg.y >> cfg.requiredSwitches;
+            activeSwitchDoors.push_back(cfg);
+        }
+    }
+    file.close();
 }

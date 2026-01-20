@@ -69,6 +69,17 @@ private:
 	int activeBombY = -1;
 	int bombTimer = 0;
 
+	// after ex2 
+	struct SwitchDoorConfig {
+		int x, y;            
+		int requiredSwitches; 
+	};
+
+	std::vector<SwitchDoorConfig> activeSwitchDoors;
+	bool isCurrentLevelDark = false;
+
+	void loadLevelConfig(int levelIdx);
+
 public:
 	game()
 		: player1(Point(10, 10, 1, 0, '$'), '$', "WDAXS", screens[current_screen]),

@@ -35,23 +35,20 @@ public:
     bool hasInput(int currentCycle, char& key) override {
         if (_kbhit()) {
             key = _getch();
-
             if (!inRiddleMode && !isRelevantKey(key)) {
                 return false;
             }
-
             if (isSaving && stepsFile.is_open()) {
                 char keyToSave = key;
-
                 if (key == 13 || key == 10) {
                     keyToSave = '1';
                 }
-                
-
                 stepsFile << currentCycle << " " << keyToSave << std::endl;
             }
             return true;
         }
         return false;
     }
+
+
 };
