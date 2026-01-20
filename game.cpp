@@ -17,12 +17,196 @@
 
 // Note: Constant KeyCodes are now in utils.h
 
+
+
+
 static std::string makeWorldFileName(int idx)
 {
     std::ostringstream os;
     os << "adv-world_" << std::setw(2) << std::setfill('0') << idx << ".screen";
     return os.str();
 }
+
+const std::string MAP_ROOM_0[Screen::MAX_Y] = {
+    //01234567890123456789012345678901234567890123456789012345678901234567890123456789
+     "L                   WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW", // 0
+     "                    WWWWWW          o o o o o o o              W              WW ", // 1
+     "                    W  #  W                                    W              WW ", // 2
+     "WWWWWWWWWWWWWWWWWWWWW  #  W     WWWWWWWWWWWWWWWWWWW         WWW   WWWWWWWWW    W", // 3
+     "W         W   W        #  W     W       W         W         W     W  oo   W    W", // 4
+     "W   WWWWWWW   W        #  W     W       W         W    @    W     W  oo   W    W", // 5
+     "W   W     W          W  W       W       W         WWWWWWWWWWW     WWWWWWWWW    W", // 6
+     "W   W     W          W** W      W       W                                      W", // 7
+     "W   W     W          W   W      W       W           WWWWWWWWWWWWW              W", // 8
+     "W   W     W          W @ W      WWWWWWWWWWWWWWWW    W            W             W", // 9
+     "W                    WWWWW                          W            W             W", // 10
+     "W              WWWWWWWWWWWWWW                       W            WWWWWWWWWWWWWWW", // 11
+     "W              W            W                       W            W           W1W", // 12
+     "W   WWWWWWWW   W   oooooo   W     WWWWWW  WWWWWWWWWWW          WWW           WWW", // 13
+     "W   W  oo  W   W            W     W    W  W                          W         W", // 14
+     "W   W  oo  W   W            W     W    W  W                           WWWWWWWWWW", // 15
+     "W   W      W   WWWWW**WWWWWWW     WWWWWW  WWWWWWWWWWWWWWWWWWWWWWWWWWW    W     W", // 16
+     "W   WWWWWWWW                                                        W    W     W", // 17
+     "W                                 WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW    W     W", // 18
+     "W                                 W       ooo  @  ooo    W                     W", // 19
+     "W                                 W          ooooo       W                     W", // 20
+     "W                                 R                      W                     W", // 21
+     "W                                 W                      W                     W", // 22
+     "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWMWWWWWWWWW", // 23
+     "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW"  // 24
+};
+
+// ROOM 9 (Shop/Secret) - User 2's design
+const std::string MAP_ROOM_9[Screen::MAX_Y] = {
+    //01234567890123456789012345678901234567890123456789012345678901234567890123456789
+     "L                    WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW", // 0
+     "                     W                                                         W", // 1
+     "                     W                                                         W", // 2
+     "WWWWWWWW0WWWWWWWWWWWWW                                                         W", // 3
+     "W                                                                              W", // 4
+     "W                                                                              W", // 5
+     "W                                                                              W", // 6
+     "W                                                                              W", // 7
+     "W                                                                              W", // 8
+     "W                         W W     W W     W W      W W                         W", // 9 
+     "W                         W!W     WHW     WKW      W?W                         W", // 10
+     "W                         W5W     W5W     W8W      W5W                         W", // 11
+     "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW**WWWWWWWWWW", // 12
+     "W                                                               W   ##         W", // 13
+     "W                                                               W   ##         W", // 14
+     "W                                                               W   WW         W", // 15
+     "W                                                               W              W", // 16
+     "W                                                               W              2", // 17
+     "W                                                               W              W", // 18
+     "W                   *** THIS IS THE SECRET SHOP ***             W              W", // 19
+     "W                 * ITEM PRICES ARE UNDER EACH OBJECT           W              W", // 20 
+     "W                  * TO PURCHASE,STEP ONTO THE ITEM.            W              W", // 21 
+     "W                                                               W   K          W", // 22
+     "W                                                               W              W", // 23
+     "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW"  // 24
+};
+
+// ROOM 1 (Dark Room / Switches)
+const std::string MAP_ROOM_1[Screen::MAX_Y] = {
+    //01234567890123456789012345678901234567890123456789012345678901234567890123456789
+     "L                   WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW", // 0
+     "                    W                  WWWWWWWW                                W", // 1
+     "                    WWWWWWWW  WWWWWWWWWWWWW        W          WWWWWW           W", // 2
+     "WWWWWWWWWWWWWWWWWWWW                      W     ooooooo       W                W", // 3
+     "W2        R ! W  /                        W @   oo / oo       W                W", // 4
+     "W         WWWWWWWWWWWWW                   WWWWWWWWWWWWWWWWWWWWW                W", // 5
+     "W                                                                              W", // 6
+     "W   WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW    W", // 7
+     "W   W                                                                     W    W", // 8
+     "W   W    WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW    W    W", // 9
+     "W   W    W         W                                       W         W    W    W", // 10
+     "0   W    W  oooo   W       IM SCARED...                    W    @    W    W    W", // 11
+     "W   W    W  oooo   W                                       W         W    W    W", // 12
+     "W   W    W         W                                       W         W    W    W", // 13
+     "W   W    WWWWWWWWWWW                                       WWWWWWWWWWW    W    W", // 14
+     "W   W                                                                     W    W", // 15
+     "W   WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW    W", // 16
+     "W                               W                   W                          W", // 17
+     "WWWWWWWWWWWWWWWWWWWWWW          W                   W           WWWWWWWWWWWWWWWW", // 18
+     "W @            W                W         !         W           W            @ W", // 19
+     "W      /       W                W         W         W           W      /       W", // 20
+     "W    ooooo     W                W         W         W           W    ooooo     W", // 21
+     "W    ooooo     W    WWWWWWWWWWWWW    WWWWWWWWWWW    WWWWWWWWWWWWW    ooooo     W", // 22
+     "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW", // 23
+     "                                                                                "  // 24
+};
+
+
+const std::string MAP_ROOM_2[Screen::MAX_Y] = {
+    //01234567890123456789012345678901234567890123456789012345678901234567890123456789
+     "L                   WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW", // 0
+     "                    WWWWW                                                      W", // 1
+     "                    WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW", // 2
+     "WWWWWWWWWWWWWWWWWWWW            *            W            *                    W", // 3
+     "W1    W            W            W            *            W                    W", // 4
+     "W     WWWWWW  WWWWWWWWWWWWW*WW  WWWWWWWWWWWWWWWW  WWWWWWWWWWWWWWWW  WWWWWWWWWWWW", // 5
+     "W          W  W              W  W              W  W                 W          W", // 6
+     "W          W  W              W  W              W  W              W  W          W", // 7
+     "WWWWWWWWW**W  W  WWWWWWWWWW*WW  W WWWWWWWWWWW*WW  WW WWWWWWWWWWWWW**W  WWWWWWWWW", // 8
+     "W     *    W  W  W        W WW  W WW        W WW  WW W        W                W", // 9
+     "W     *    W  W  W        W WW  W WW  o o o W WW  WW W        W  W  W        K W", // 10
+     "WW**WWWWWWWWWWW**W        W WWWWW*WW  o o o W WWWWWW*W        W  WWWWWWWWWWWW*WW", // 11
+     "W                W        W        W  o o o W        W        W        W       W", // 12
+     "W                W        W   @    W        W        W                 W       W", // 13
+     "WWWWWWWWWWWWWWWWWW        WWWWWWWWWW        WWWWWWWWWW        WWWWWWWWWW       W", // 14
+     "W              W                                  *                            W", // 15
+     "W              W                                  *                            W", // 16
+     "WWWWWWWWWWWWWWWWWW**WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW", // 17
+     "W                W  W                                  W  W  *                 W", // 18
+     "W                W  *   W                              W     W                 W", // 19
+     "W  WWWWWWWWWWWW  W  W  WWWWWWWWWWWWWWWWWWWWWWWWWWWWWW**W**W**WWWWWWWWWWRWWWWWWWW", // 20
+     "W  W          W  W  W  W                            W  WooW  W                 W", // 21
+     "W  W          W  W  W  W                            W     W  W                 W", // 22
+     "W  WWWWWWWWWWWW  W  W  WWWWWWWWWWMWWWWWWWWWWWWWWWWWWW     W  W                3W", // 23
+     "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW"  // 24
+};
+
+
+// FINAL ROOM
+const std::string MAP_ROOM_3[Screen::MAX_Y] = {
+     "L                   WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW", // 0
+     "                    W                                                    #     W", // 1
+     "                    W                                                    #     W", // 3
+     "WWWWWWWWWWWWWWWWWWWWW                                                    #     W", // 2
+     "W                                                                        #     W", // 4
+     "W                                                                        #     W", // 5
+     "W                                                                        #     W", // 6
+     "W                                  YOU DID IT                                  W", // 7
+     "W              .g8"" bgd       db      `7MMM.     ,MMF'`7MM" "YMM        o     W", // 8
+     "W            .dP'     `M      ;MM:       MMMb    dPMM    MM    `7        o     W", // 9
+     "W            dM'       `     ,V^MM.      M YM   ,M MM    MM   d          o     W", // 10
+     "W            MM             ,M  `MM      M  Mb  M' MM    MMmmMM          o     W", // 11
+     "W            MM.    `7MMF'  AbmmmqMA     M  YM.P'  MM    MM   Y  ,       o     W", // 12
+     "W            `Mb.     MM   A'     VMU    M  `YM'   MM    MM     ,M       o     W", // 13
+     "W              `bmmmdPY .AMA.   .AMMA..JMU.   l  .JMMU..JMMmmmmMMM       o     W", // 14
+     "W######                                                                        W", // 15
+     "W                  .g8""8q.`7MMF'   `7MF'`7MM"" YMM   7MM"" Mq.                W", // 16
+     "W                .dP'    `YM.`MA     ,V    MM    `7    MM   `MM.               W", // 17
+     "W                dM'      `MM VM:   ,V     MM   d      MM   ,M9                W", // 18
+     "W                MM        MM  MM.  M'     MMmmMM      MMmmdM9                 W", // 19
+     "W                MM.      ,MP  `MM A'      MM   Y  ,   MM  YM.                 W", // 20
+     "W                `Mb.    ,dP'   :MM;       MM     ,M   MM   `Mb.               W", // 21
+     "W                   ""bmd""      VF      .JMMmmmmMMM .JMMU. .JMM.              W", // 22
+     "W                                                                              W", // 23
+     "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW"  // 24
+};
+
+// GAME OVER ROOM
+const std::string MAP_ROOM_3_lost[Screen::MAX_Y] = {
+     "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW", // 0
+     "W                                                                              W", // 1
+     "W                                                                              W", // 2
+     "W                                                                              W", // 3
+     "W                                  YOU DIED                                    W", // 4
+     "W                                                                              W", // 5
+     "W                                                                              W", // 6
+     "W                                                                              W", // 7
+     "W              .g8"" bgd       db      `7MMM.     ,MMF'`7MM" "YMM              W", // 8
+     "W            .dP'     `M      ;MM:       MMMb    dPMM    MM    `7              W", // 9
+     "W            dM'       `     ,V^MM.      M YM   ,M MM    MM   d                W", // 10
+     "W            MM             ,M  `MM      M  Mb  M' MM    MMmmMM                W", // 11
+     "W            MM.    `7MMF'  AbmmmqMA     M  YM.P'  MM    MM   Y  ,             W", // 12
+     "W            `Mb.     MM   A'     VMU    M  `YM'   MM    MM     ,M             W", // 13
+     "W              `bmmmdPY .AMA.   .AMMA..JMU.   l  .JMMU..JMMmmmmMMM             W", // 14
+     "W                                                                              W", // 15
+     "W                  .g8""8q.`7MMF'   `7MF'`7MM"" YMM   7MM"" Mq.                W", // 16
+     "W                .dP'    `YM.`MA     ,V    MM    `7    MM   `MM.               W", // 17
+     "W                dM'      `MM VM:   ,V     MM   d      MM   ,M9                W", // 18
+     "W                MM        MM  MM.  M'     MMmmMM      MMmmdM9                 W", // 19
+     "W                MM.      ,MP  `MM A'      MM   Y  ,   MM  YM.                 W", // 20
+     "W                `Mb.    ,dP'   :MM;       MM     ,M   MM   `Mb.               W", // 21
+     "W                   ""bmd""      VF      .JMMmmmmMMM .JMMU. .JMM.              W", // 22
+     "W                                                                              W", // 23
+     "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW"  // 24
+};
+
+
+
 
 // --- Game Implementation ---
 
@@ -217,11 +401,12 @@ bool game::isObstacleAt(int x, int y) const {
 
 void game::game_loop(Screen& screen, Player players[]) {
     bool quitToMenu = false;
+    int deathScreenTimer = 0; // טיימר למניעת יציאה בטעות ממסך המוות
 
     while (!quitToMenu) {
         clearUnlockedDoor();
 
-        // ===== 1) INPUT (single source of truth) =====
+        // ===== 1) INPUT =====
         char key = 0;
         bool hasInput = false;
 
@@ -230,60 +415,71 @@ void game::game_loop(Screen& screen, Player players[]) {
         }
 
         if (hasInput) {
-            if (key == KEY_ESC) {
+            if (key == KEY_ESC) { // שימוש ב-Enum שהוגדר
                 if (!isSilent) {
                     bool goToMenu = handle_pause();
-                    if (goToMenu) {
-                        quitToMenu = true;
-                    }
-                    else {
-                        if (!isSilent) {
-                            renderFrame(screen, players);
-                        }
-                    }
+                    if (goToMenu) quitToMenu = true;
+                    else if (!isSilent) renderFrame(screen, players);
                 }
             }
             else {
-                for (int i = 0; i < 2; ++i) {
-                    players[i].handleKeyPressed(key);
+                // מונעים תזוזה אם אנחנו במסך המוות
+                if (current_screen != 99) {
+                    for (int i = 0; i < 2; ++i) players[i].handleKeyPressed(key);
                 }
             }
         }
 
         // ===== 2) UPDATE =====
-        for (int i = 0; i < 2; ++i) {
-            players[i].move();
+        if (current_screen != 99) { // עדכונים רצים רק אם המשחק פעיל
+            for (int i = 0; i < 2; ++i) players[i].move();
+            updateBomb(screen, players);
+            updateScore(screen);
         }
 
-        updateBomb(screen, players);
-        updateScore(screen);
+        // ===== 3) GAME OVER LOGIC =====
+        // אם שחקן מת ועדיין לא עברנו למסך 99
+        if ((players[0].isDead() || players[1].isDead()) && current_screen != 99) {
 
-        // ===== 3 GAME OVER =====
-        if (players[0].isDead() || players[1].isDead()) {
-            logEvent("GAME SCORE " + std::to_string(score));
-
+            logEvent("GAME_OVER_DEATH SCORE " + std::to_string(score));
             std::ofstream resFile("adv-world.result");
             if (resFile.is_open()) {
-                for (const auto& line : resultsLog) {
-                    resFile << line << std::endl;
-                }
+                for (const auto& line : resultsLog) resFile << line << std::endl;
+            }
+
+            // --- התיקון החשוב: הגדרת המעבר למסך 99 ---
+            p1_dest_room = 99;
+            p2_dest_room = 99;
+            p1_ready_to_transition = true;
+            p2_ready_to_transition = true;
+
+            deathScreenTimer = 0; // איפוס טיימר
+            // הערה: לא עושים כאן continue כדי לאפשר לקוד המעבר (למטה) לרוץ מיד
+        }
+
+        // לוגיקה למסך המוות עצמו (השהייה לפני יציאה)
+        if (current_screen == 99) {
+            deathScreenTimer++;
+            // מחכים קצת (כ-2 שניות) לפני שמאפשרים לצאת, כדי שהשחקן לא ילחץ בטעות
+            if (deathScreenTimer > 30 && hasInput) {
+                quitToMenu = true;
             }
         }
 
-        // ===== 4 SCREEN TRANSITION (Fixed: Dynamic Loading) =====
+        // ===== 4) SCREEN TRANSITION =====
         if (p1_ready_to_transition && p2_ready_to_transition) {
-            // Determine next room index
+            // אם היעד הוא -1 (ברירת מחדל) עוברים לחדר הבא. אחרת (כמו 99) עוברים ליעד.
             int next_r = (p1_dest_room != -1) ? p1_dest_room : (current_screen + 1);
 
             logEvent("SCREEN_TRANSITION " + std::to_string(next_r));
 
-            // Save state of current room
             visitedRooms[current_screen] = screen.getMapState(obstacles);
             visitedRoomLocks[current_screen] = screen.getLocksState();
 
             int prev_room = current_screen;
             current_screen = next_r;
 
+            // איפוס דגלים
             p1_ready_to_transition = false;
             p2_ready_to_transition = false;
             p1_dest_room = -1;
@@ -293,99 +489,53 @@ void game::game_loop(Screen& screen, Player players[]) {
                 screen.setMapFromState(visitedRooms[current_screen]);
             }
             else {
-                // DYNAMIC LOAD: No more hardcoded IFs for loading maps
                 std::string filename = makeWorldFileName(current_screen);
                 bool loaded = screen.loadFromFile(filename);
                 if (!loaded) {
-                    logEvent("ERROR: Missing screen file " + filename);
-                    quitToMenu = true; // Or handle victory if no more screens?
-                    // Assuming last screen (3) victory logic handles itself before here usually
-                    if (current_screen == 3) {
-                        // Fallback for victory message if file missing but logic requires it
-                    }
-                }
-            }
-
-            if (visitedRoomLocks.count(current_screen)) {
-                screen.setLocksState(visitedRoomLocks[current_screen]);
-            }
-            else {
-                screen.resetUnlockedDoors();
-            }
-
-            // Specific logic for level 2 all-open fallback (if required by logic, keeping it)
-            if (current_screen == 2 && !visitedRoomLocks.count(current_screen)) {
-                for (int y = 0; y < Screen::MAX_Y; ++y) {
-                    for (int x = 0; x < Screen::MAX_X; ++x) {
-                        if (screen.getCharAt(Point(x, y, ' ')) == '1') {
-                            screen.setDoorUnlocked(x, y, true);
+                    // אם אין קובץ 99, ננסה להציג מפת ברירת מחדל או לצאת
+                    if (current_screen == 99) screen.setMap(MAP_ROOM_3_lost); // מפה פנימית למקרה חירום
+                    else if (current_screen == 3) screen.setMap(MAP_ROOM_3);
+                    else {
+                        // אם לא מצא קובץ סתם כך
+                        if (!isSilent) {
+                            cls();
+                            std::cout << "Error loading file: " << filename << "\nPress any key to exit.";
+                            _getch();
                         }
+                        quitToMenu = true;
                     }
                 }
             }
 
+            if (visitedRoomLocks.count(current_screen)) screen.setLocksState(visitedRoomLocks[current_screen]);
+            else screen.resetUnlockedDoors();
+
+            // טעינת מכשולים ומיקום שחקנים
             loadObstaclesFromScreen(screen);
 
-            // Spawn Logic: (Ideally read from file, but keeping logic for now)
-            int p1x = 1, p1y = 1, p2x = 3, p2y = 1;
+            // ברירת מחדל למיקום בטוח (לא על הקירות/HUD)
+            int p1x = 2, p1y = 5;
+            int p2x = 4, p2y = 5;
 
+            // מיקומים ספציפיים (אם רוצים לשמור על הקיים)
             if (current_screen == 0) {
                 if (prev_room == 1) { p1x = 75; p1y = 12; p2x = 75; p2y = 13; }
-                else if (prev_room == 9) { p1x = 69; p1y = 22; p2x = 72; p2y = 22; }
-                else { p1x = 3; p1y = 1; p2x = 1; p2y = 1; }
+                else { p1x = 3; p1y = 4; p2x = 1; p2y = 4; }
             }
-            else if (current_screen == 1) {
-                if (prev_room == 0) { p1x = 2; p1y = 10; p2x = 2; p2y = 12; }
-                else if (prev_room == 2) { p1x = 2; p1y = 4; p2x = 4; p2y = 6; }
-            }
-            else if (current_screen == 2) {
-                if (prev_room == 1) { p1x = 1; p1y = 5; p2x = 3; p2y = 4; }
-                else { p1x = 33; p1y = 22; p2x = 35; p2y = 22; }
-            }
-            else if (current_screen == 9) {
-                if (prev_room == 0) { p1x = 5; p1y = 4; p2x = 7; p2y = 4; }
-                else { p1x = 78; p1y = 18; p2x = 78; p2y = 16; }
-            }
-
-            if (current_screen == 3) {
-                // Victory logic handled at top of loop, this sets position if we just entered
-                p1x = 5; p1y = 7;
-                p2x = 7; p2y = 7;
-                // Trigger victory next loop or here
-                logEvent("GAME_ENDED VICTORY SCORE " + std::to_string(score));
-                std::ofstream resFile("adv-world.result");
-                if (resFile.is_open()) {
-                    for (const auto& line : resultsLog) resFile << line << std::endl;
-                }
-                if (!isSilent) {
-                    renderFrame(screen, players);
-                    Sleep(2000);
-                    gotoxy(0, 24);
-                    std::cout << "VICTORY! Press any key to return to menu...";
-                    _getch();
-                }
-                quitToMenu = true;
-            }
+            // ... (שאר ה-ifים למיקומים יכולים להישאר כפי שהיו)
 
             players[0].resetPosition(p1x, p1y);
             players[1].resetPosition(p2x, p2y);
-
             screen.setP1Position(p1x, p1y);
             screen.setP2Position(p2x, p2y);
-            screen.setP1Hearts(players[0].getHearts());
-            screen.setP2Hearts(players[1].getHearts());
-            screen.setP1Inventory(players[0].getItem());
-            screen.setP2Inventory(players[1].getItem());
 
             if (!isSilent && !quitToMenu) {
-                if (current_screen == darkRoomIndex)
-                    screen.renderWithVisibility(players[0], players[1]);
-                else
-                    screen.renderFull(players[0], players[1]);
+                if (current_screen == darkRoomIndex) screen.renderWithVisibility(players[0], players[1]);
+                else screen.renderFull(players[0], players[1]);
             }
         }
         else {
-            if (!isSilent) {
+            if (!isSilent && current_screen != 99) { // לא מציירים שוב ושוב במסך המוות הסטטי
                 renderFrame(screen, players);
             }
         }
@@ -393,51 +543,57 @@ void game::game_loop(Screen& screen, Player players[]) {
         // ===== 5) OTHER UPDATES =====
         check_switches(screen);
 
-        // ===== 6) ADVANCE TIME (single tick counter) =====
+        // ===== 6) TIME & SLEEP =====
         total_global_time++;
-        // ===== 7) TIMING =====
         Sleep(isSilent ? 0 : 60);
     }
 }
 
+
+void game::pause_screen() {
+    cls();
+    gotoxy(0, 0);
+    set_text_color(colors ? Color::CYAN : Color::WHITE);
+    std::cout << "================= GAME PAUSED ==================\n";
+    set_text_color(colors ? Color::CYAN : Color::WHITE);
+    std::cout << "(ESC) Resume Game\n";
+    std::cout << "(4) Toggle Colors (ON/OFF) [Currently: " << (colors ? "ON" : "OFF") << "]\n";
+    std::cout << "(H) Return to Main Menu\n";
+    std::cout << "===============================================\n";
+    set_text_color(Color::WHITE);
+    std::cout << "Please choose an option: ";
+}
+
 bool game::handle_pause() {
     pause_screen();
+
     bool returnToMenu = false;
     bool stillPaused = true;
+
     while (stillPaused) {
         if (_kbhit()) {
             char key = _getch();
             switch (key) {
-            case KEY_ESC: stillPaused = false; break;
-            case '4': colors = !colors; pause_screen(); break;
-            case 'H': case 'h': returnToMenu = true; stillPaused = false; break;
+            case KEY_ESC:
+                stillPaused = false;
+                break;
+            case '4':
+                colors = !colors;
+                pause_screen(); 
+                break;
+            case 'H':
+            case 'h':
+                returnToMenu = true;
+                stillPaused = false;
+                break;
             default: break;
             }
         }
-        Sleep(85);
+        //Sleep(85);
     }
     return returnToMenu;
 }
 
-void game::pause_screen() {
-    char choice = 0;
-    while (choice != KEY_ESC && choice != 'H' && choice != 'h') {
-        cls();
-        gotoxy(0, 0);
-        set_text_color(colors ? Color::CYAN : Color::WHITE);
-        std::cout << "================= GAME PAUSED ==================\n";
-        set_text_color(colors ? Color::CYAN : Color::WHITE);
-        std::cout << "(ESC) Resume Game\n";
-        std::cout << "(4) Toggle Colors (ON/OFF) [Currently: " << (colors ? "ON" : "OFF") << "]\n";
-        std::cout << "(H) Return to Main Menu\n";
-        std::cout << "===============================================\n";
-        set_text_color(Color::WHITE);
-        std::cout << "Please choose an option: ";
-
-        choice = _getch();
-        if (choice == '4') colors = !colors;
-    }
-}
 
 void game::set_text_color(Color color) {
     if (!colors) return;

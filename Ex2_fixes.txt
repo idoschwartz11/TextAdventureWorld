@@ -1,0 +1,23 @@
+1. Hardcoded Screen File Identifiers (-2 points [Run Check]):
+   - FIXED.
+   - The game no longer uses hardcoded `if(screen==0)` logic to load maps.
+   - It now dynamically generates the filename (e.g., "adv-world_00.screen", "adv-world_01.screen") based on the current level index.
+   - This supports adding additional screen files without editing the code.
+
+2. Class Data Members Should Be Private (-3 points):
+   - FIXED.
+   - Moved public data members in `game.h` (such as `bombActive`, `activeBombX`, `bombTimer`, etc.) to the `private` section of the class.
+
+3. Use Named Constants / Enum Instead of Literals (-2 points):
+   - FIXED.
+   - Replaced magic numbers (e.g., 27 for ESC, 13 for ENTER) with an enum `KeyCodes` defined in `utils.h`.
+   - Updated `game.cpp` and `Player.cpp` to use these constants.
+
+4. Long Functions Should Be Split (-2 points):
+   - FIXED.
+   - Refactored the long `Player::move()` function.
+   - Logic has been split into private helper functions: `handleSpringMovement()`, `handleNormalMovement()`, and `processCellInteraction()` to improve readability and maintenance.
+
+5. RNG Seeding (-1 point):
+   - FIXED.
+   - `std::srand` is called exactly once at the beginning of the program (in `run_game`), ensuring proper randomization for riddles and other events.
